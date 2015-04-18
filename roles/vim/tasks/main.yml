@@ -1,0 +1,31 @@
+---
+- name: 'Create the ~/.vim directory'
+  file:
+    path: '~/.vim'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: directory
+
+- name: 'Create the ~/.vim/bundle directory'
+  file:
+    path: '~/.vim/bundle'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: directory
+
+- name: 'Clone a copy of Vundle'
+  git:
+    repo: 'https://github.com/gmarik/Vundle.vim.git'
+    dest: '~/.vim/bundle/Vundle.vim'
+    force: yes
+    update: yes
+
+- name: 'Put the vimrc file in place'
+  copy:
+    src: 'vimrc'
+    dest: "~/.vimrc"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'

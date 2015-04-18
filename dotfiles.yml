@@ -1,0 +1,12 @@
+---
+- hosts: all
+  connection: local
+  roles:
+    - 'bash'
+    - 'xdg'
+    - 'i3'
+    - 'vim'
+    - 'tmux'
+    - 'git'
+    - 'symlinks'
+    - 'ssh_config'

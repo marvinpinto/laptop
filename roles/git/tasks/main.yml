@@ -1,0 +1,11 @@
+---
+- name: 'Put the git config files in place'
+  copy:
+    src: "{{ item }}"
+    dest: "~/.{{ item }}"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+  with_items:
+    - 'gitconfig'
+    - 'gitignore_global'

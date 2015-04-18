@@ -1,0 +1,19 @@
+---
+- name: 'Put all the bash-related config files in place'
+  copy:
+    src: "{{ item }}"
+    dest: "~/.{{ item }}"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+  with_items:
+    - 'bash_profile'
+    - 'profile'
+    - 'bashrc'
+
+- name: 'Ensure that these files do not exist'
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - '~/.bash_login'

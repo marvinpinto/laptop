@@ -1,0 +1,54 @@
+---
+- name: 'Create the ~/.config directory'
+  file:
+    path: '~/.config'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: directory
+
+- name: 'Create the ~/crap directory'
+  file:
+    path: '~/crap'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: directory
+
+- name: 'Delete the following directories'
+  file:
+    path: "~/{{ item }}"
+    state: absent
+  with_items:
+    - 'Desktop'
+    - 'Downloads'
+    - 'Templates'
+    - 'Public'
+    - 'Documents'
+    - 'Music'
+    - 'Pictures'
+    - 'Videos'
+
+- name: 'Put the user-dirs.dirs file in place'
+  copy:
+    src: 'user-dirs.dirs'
+    dest: '~/.config/user-dirs.dirs'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+
+- name: 'Create the ~/.config/gtk-3.0 directory'
+  file:
+    path: '~/.config/gtk-3.0'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: directory
+
+- name: 'Put the gtk settings file in place'
+  copy:
+    src: 'gtk-settings.ini'
+    dest: '~/.config/gtk-3.0/settings.ini'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'

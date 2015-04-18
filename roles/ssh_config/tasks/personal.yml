@@ -1,0 +1,14 @@
+---
+- name: 'Put the ~/.ssh/id_rsa-personal.pub file in place'
+  copy:
+    src: 'id_rsa-personal.pub'
+    dest: '~/.ssh/id_rsa-personal.pub'
+    mode: '0644'
+    force: 'yes'
+
+- name: 'Put the ~/.ssh/id_rsa-personal file in place'
+  copy:
+    content: "{{ id_rsa_personal_private_key }}"
+    dest: '~/.ssh/id_rsa-personal'
+    mode: '0400'
+    force: 'yes'

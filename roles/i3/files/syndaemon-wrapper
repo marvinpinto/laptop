@@ -1,0 +1,8 @@
+#!/bin/bash
+
+/usr/bin/pgrep -F /tmp/syndaemon.pid > /dev/null 2>&1
+RUNNING=$?
+
+if [ $RUNNING -ne 0 ]; then
+	/usr/bin/syndaemon -i 1.5 -d -k -p /tmp/syndaemon.pid
+fi

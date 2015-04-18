@@ -1,0 +1,151 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" Show the (partial) command as it's being typed
+set showcmd
+
+" Show current mode down the bottom
+set showmode
+
+" Enable line numbers
+set number
+
+" Convert tabs to spaces
+set expandtab
+
+" Make tabs as wide as two spaces
+set tabstop=2
+set shiftwidth=2
+
+" Auto indenting
+set cindent
+set smartindent
+set autoindent
+
+" Show 'invisible' characters
+set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
+set list
+
+" Enable syntax highlighting
+syntax on
+
+" Disable error bells
+set noerrorbells
+
+" It seems that 'some' servers can't handle screen-256colors correctly and I'm
+" tired of fighting :(
+" colorscheme distinguished
+
+" Use the OS clipboard by default (on versions compiled with `+clipboard`)
+set clipboard=unnamedplus
+
+"""" Start of Vundle related items
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+Plugin 'gmarik/Vundle.vim'
+Plugin 'tpope/vim-fugitive'
+Plugin 'rodjek/vim-puppet'
+Plugin 'flazz/vim-colorschemes'
+Plugin 'tomtom/tcomment_vim'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
+"""" End of Vundle related items
+
+" Default status line
+hi statusline ctermfg=15 ctermbg=102
+
+" Format status line
+set laststatus=2         " always show the status line
+set statusline=\ [%n]    " buffer number
+" set statusline+=\ %f     " relative path to the current file
+set statusline+=\ %t     " tail of the file name
+set statusline+=\ [%{strlen(&fenc)?&fenc:'none'},  " file encoding
+set statusline+=%{&ff}]  " file format
+set statusline+=\ %h     " help file flag
+set statusline+=%m       " modified flag
+set statusline+=%r       " read only flag
+set statusline+=[%{empty(&filetype)?'none':&filetype}] " filetype or 'none'
+set statusline+=%=       " left/right separator
+set statusline+=(%l,     " row
+set statusline+=%c\ %L)  " cursor column
+set statusline+=\ %P     " percent through file
+
+" Searching
+set incsearch   " incremental search
+set hlsearch    " highlight search items
+set ignorecase  " case-insensitive searches
+set smartcase   " ignore case if search pattern is all lowercase,
+                " case-sensitive otherwise
+
+" Clear the search highlights
+nnoremap <F3> :set hlsearch!<CR>
+
+" Remove access to the arrow keys
+nnoremap <up> <nop>
+nnoremap <down> <nop>
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
+nnoremap j gj
+nnoremap k gk
+
+" Respect modeline in files
+set modeline
+set modelines=1
+
+" Map the <leader> key to ,
+let mapleader = ","
+
+" Re-hardwrap paragraphs of text
+nnoremap <leader>q gqip
+
+" Change the swap file directory
+set swapfile
+set dir=~/tmp
+
+" Enable hidden buffers by default (doesn't bother you
+" when switching back and forth)
+set hidden
+
+" Enhance command-line completion
+set wildmenu
+
+" Optimize for fast terminal connections
+set ttyfast
+
+" Don't reset cursor to start of line when moving around.
+set nostartofline
+
+" Show the cursor position
+set ruler
+
+" Don't show the intro message when starting Vim
+set shortmess=atI
+
+" Start scrolling three lines before the horizontal window border
+set scrolloff=3
+
+" Use the distinguised colorscheme
+colorscheme railscasts

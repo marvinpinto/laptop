@@ -1,0 +1,14 @@
+---
+- name: 'Create the ~/.ssh directory'
+  file:
+    path: '~/.ssh'
+    state: 'directory'
+    mode: '0700'
+    force: 'yes'
+
+- name: 'Put the ~/.ssh/config file in place'
+  template:
+    src: 'ssh_config.j2'
+    dest: '~/.ssh/config'
+    mode: '0444'
+    force: 'yes'

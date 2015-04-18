@@ -1,0 +1,229 @@
+# vim: set filetype=sh :
+
+#****************
+# Shell options
+#****************
+
+# Use Vi, not Emacs, style editing
+set editing-mode vi
+set keymap vi
+
+# vi mode in bash
+set -o vi
+
+# Make Tab autocomplete regardless of filename case
+set completion-ignore-case on
+
+# List all matches in case multiple possible completions are possible
+set show-all-if-ambiguous on
+
+# Immediately add a trailing slash when autocompleting symlinks to directories
+set mark-symlinked-directories on
+
+# Do not autocomplete hidden files unless the pattern explicitly begins with a dot
+set match-hidden-files off
+
+# Show all autocomplete results at once
+set page-completions off
+
+# If there are more than 200 possible completions for a word, ask to show them all
+set completion-query-items 200
+
+# Show extra file information when completing, like `ls -F` does
+set visible-stats on
+
+# Be more intelligent when autocompleting by also looking at the text after
+# the cursor. For example, when the current line is "cd ~/src/mozil", and
+# the cursor is on the "z", pressing Tab will not autocomplete it to "cd
+# ~/src/mozillail", but to "cd ~/src/mozilla". (This is supported by the
+# Readline used by Bash 4.)
+set skip-completed-text on
+
+# Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
+set input-meta on
+set output-meta on
+set convert-meta off
+
+# Case-insensitive globbing (used in pathname expansion)
+shopt -s nocaseglob
+
+# Append to the Bash history file, rather than overwriting it
+shopt -s histappend
+
+# Autocorrect typos in path names when using `cd`
+shopt -s cdspell
+
+shopt -s checkwinsize
+
+#***************
+# Bash Exports
+#***************
+
+# Set the terminal type to xterm-256color
+export TERM=xterm-256color
+
+# Make vim the default editor
+export EDITOR="vim"
+
+# Larger bash history
+export HISTSIZE=2000
+export HISTFILESIZE=$HISTSIZE
+export HISTCONTROL=ignoredups
+# Make some commands not show up in history
+export HISTIGNORE="ls:cd:cd -:pwd:exit:date:* --help"
+
+# Prefer US English and use UTF-8
+export LANG="en_US"
+export LC_ALL="en_US.UTF-8"
+
+# Highlight section titles in manual pages
+export LESS_TERMCAP_md="$ORANGE"
+
+# Don’t clear the screen after quitting a manual page
+export MANPAGER="less -X"
+
+# Always enable colored `grep` output
+export GREP_OPTIONS="--color=auto"
+
+# Fancy ls colors
+export CLICOLOR='Yes'
+export LSCOLORS='ExGxCxDxBxegedabagacad'
+
+# Prevent 'less' from
+export LESS="-i -R"
+export LESSHISTFILE='/dev/null'
+export LESSHISTSIZE=0
+
+#***************
+# Bash Aliases
+#***************
+
+# List all files colorized in long format
+alias l="ls -lF --color"
+
+# List all files colorized in long format, including dot files
+alias la="ls -laF --color"
+
+# List only directories
+alias lsd="ls -lF --color | grep --color=never '^d'"
+
+# Always use color output for `ls`
+alias ls="command ls --color"
+
+# List and kill off tmux sessions
+alias tls='tmux ls'
+alias tks='tmux kill-session -t '
+
+# Alias git to g
+alias g="git"
+
+# APG alias for friendly passwords
+alias apgf='apg -a 0 -n 10 -m 10 -t -E lI10O -M NCSL'
+
+#*****************
+# Tab Completion
+#*****************
+
+# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
+if [ -e "$HOME/.ssh/config" ]; then
+  complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2 | tr ' ' '\n')" scp sftp ssh cs
+fi
+
+# If possible, add tab completion for many more commands
+if [ -f /etc/bash_completion ]; then
+  source /etc/bash_completion
+fi
+
+#**************
+# Bash Prompt
+#**************
+
+function __prompt_command() {
+  local EXIT="$?"
+  PS1=""
+
+  # Set the terminal title
+  echo -ne "\033]0;${HOSTNAME}\007"
+
+  local RED="\[$(tput setaf 1)\]"
+  local GREEN="\[$(tput setaf 2)\]"
+  local YELLOW="\[$(tput setaf 3)\]"
+  local BLUE="\[$(tput setaf 4)\]"
+  local MAGENTA="\[$(tput setaf 5)\]"
+  local CYAN="\[$(tput setaf 6)\]"
+  local WHITE="\[$(tput setaf 7)\]"
+  local BOLD="\[$(tput bold)\]"
+  local UNDERLINE="\[$(tput sgr 0 1)\]"
+  local RESET="\[$(tput sgr0)\]"
+  local PROMPTCOL="${YELLOW}"
+
+  # Bright red prompt if root
+  if [ `id -u` == 0 ]; then
+    PS1+="\n${RED}"
+  else
+    PS1+="\n${PROMPTCOL}"
+  fi
+
+  # Second line of bash prompt
+  PS1+="[\H: \t]${RESET}${PROMPTCOL} \w${RESET}\n"
+
+  # Print out the last exit code, if it wasn't zero
+  if [ $EXIT != 0 ]; then
+    PS1+="${RED}[${EXIT}]${RESET} "
+  fi
+
+  # Finally print out a $ or #, depending on uid
+  PS1+="${PROMPTCOL}\\$ ${RESET}"
+}
+
+export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
+
+#*******************
+# Helper Functions
+#*******************
+
+# Setup an existing repo to use GitHub Enterprise exclusively
+function ghe-setup() {
+  git config user.name "Marvin Pinto"
+  git config user.email marvin@freshbooks.com
+}
+
+# Simple calculator
+function calc() {
+  local result=""
+  result="$(printf "scale=10;$*\n" | bc --mathlib | tr -d '\\\n')"
+  #                       └─ default (when `--mathlib` is used) is 20
+  #
+  if [[ "$result" == *.* ]]; then
+    # improve the output for decimal numbers
+    printf "$result" |
+    sed -e 's/^\./0./'        `# add "0" for cases like ".5"` \
+        -e 's/^-\./-0./'      `# add "0" for cases like "-.5"`\
+        -e 's/0*$//;s/\.$//'   # remove trailing zeros
+  else
+    printf "$result"
+  fi
+  printf "\n"
+}
+
+# Determine size of a file or total size of a directory
+function fs() {
+  if du -b /dev/null > /dev/null 2>&1; then
+    local arg=-sbh
+  else
+    local arg=-sh
+  fi
+  if [[ -n "$@" ]]; then
+    du $arg -- "$@"
+  else
+    du $arg .[^.]* *
+  fi
+}
+
+# `tre` is a shorthand for `tree` with hidden files and color enabled, ignoring
+# the `.git` directory, listing directories first. The output gets piped into
+# `less` with options to preserve color and line numbers, unless the output is
+# small enough for one screen.
+function tre() {
+  tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX
+}

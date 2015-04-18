@@ -1,0 +1,8 @@
+---
+- name: 'Put the tmux.conf in place'
+  copy:
+    src: 'tmux.conf'
+    dest: '~/.tmux.conf'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'

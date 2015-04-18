@@ -1,0 +1,55 @@
+---
+- hosts: all
+  connection: local
+  roles:
+    - role: 'user_account_wrapper'
+      account_username: 'marvin'
+      account_fullname: 'Marvin Pinto'
+      account_passwordhash: "{{ marvin_passwordhash }}"
+      account_sshkey: 'https://github.com/marvinpinto.keys'
+      account_sudoers_entry: 'marvin ALL=(ALL) ALL'
+
+    - role: 'sshd'
+      sshd_enabled: 'no'
+      sshd_state: 'stopped'
+
+    - 'sudoers'
+
+    - role: 'apt_repositories'
+      ubuntu_base_repos:
+        - 'deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} main restricted'
+        - 'deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }}-updates main restricted'
+        - 'deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} universe'
+        - 'deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }}-updates universe'
+        - 'deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} multiverse'
+        - 'deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }}-updates multiverse'
+        - 'deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }}-backports main restricted universe multiverse'
+        - 'deb http://security.ubuntu.com/ubuntu {{ ansible_distribution_release }}-security main restricted'
+        - 'deb http://security.ubuntu.com/ubuntu {{ ansible_distribution_release }}-security universe'
+        - 'deb http://security.ubuntu.com/ubuntu {{ ansible_distribution_release }}-security multiverse'
+        - 'deb http://archive.canonical.com/ubuntu {{ ansible_distribution_release }} partner'
+        - 'deb http://extras.ubuntu.com/ubuntu {{ ansible_distribution_release }} main'
+      
+    - 'macbook_setup'
+    - 'docker_package'
+
+    - role: 'delete_unmanaged_files'
+      managed_files_directory: '/etc/X11/xorg.conf.d'
+      managed_files:
+        - '60-magictrackpad.conf'
+        - '60-synaptics.conf'
+
+    - role: 'delete_unmanaged_files'
+      managed_files_directory: '/etc/apt/sources.list.d'
+      managed_files:
+        - 'archive_canonical_com_ubuntu.list'
+        - 'ppa_ansible_ansible_trusty.list'
+        - 'archive_ubuntu_com_ubuntu.list'
+        - 'extras_ubuntu_com_ubuntu.list'
+        - 'ppa_git_core_ppa_trusty.list'
+        - 'dl_google_com_linux_chrome_deb.list'
+        - 'security_ubuntu_com_ubuntu.list'
+        - 'linux_dropbox_com_ubuntu.list'
+        - 'get_docker_com_ubuntu.list'
+        - 'vagrant_deb_linestarve_com.list'
+        - 'download_virtualbox_org_virtualbox_debian.list'

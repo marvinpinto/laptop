@@ -1,0 +1,42 @@
+---
+- name: 'Create the ~/.i3 directory'
+  file:
+    path: '~/.i3'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: directory
+
+- name: 'Put the i3 config files in place'
+  copy:
+    src: "{{ item }}"
+    dest: "~/.i3/{{ item }}"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+  with_items:
+    - 'config'
+    - 'i3status.conf'
+
+- name: 'Put the i3 executable files in place'
+  copy:
+    src: "{{ item }}"
+    dest: "~/.i3/{{ item }}"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0755'
+  with_items:
+    - 'i3ctl.sh'
+    - 'i3lock.sh'
+    - 'syndaemon-wrapper'
+
+- name: 'Put the other X11 based files in place'
+  copy:
+    src: "{{ item }}"
+    dest: "~/.{{ item }}"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0444'
+  with_items:
+    - 'xresources'
+    - 'xmodmap'
