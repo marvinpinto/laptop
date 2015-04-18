@@ -14,6 +14,7 @@
       sshd_state: 'stopped'
 
     - 'sudoers'
+    - 'verbose_boot'
 
     - role: 'apt_repositories'
       ubuntu_base_repos:
