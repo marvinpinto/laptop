@@ -28,7 +28,6 @@
   with_items:
     - 'i3ctl.sh'
     - 'i3lock.sh'
-    - 'syndaemon-wrapper'
 
 - name: 'Put the other X11 based files in place'
   copy:
