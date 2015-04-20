@@ -23,7 +23,7 @@ set smartindent
 set autoindent
 
 " Show 'invisible' characters
-set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
+set listchars=tab:>-,trail:~,extends:>,precedes:<,nbsp:.
 set list
 
 " Enable syntax highlighting
