@@ -120,6 +120,16 @@ alias g="git"
 # APG alias for friendly passwords
 alias apgf='apg -a 0 -n 10 -m 10 -t -E lI10O -M NCSL'
 
+#************
+# GPG agent
+#************
+
+if [ -f "${HOME}/.gnupg/gpg-agent-info" ]; then
+  . "${HOME}/.gnupg/gpg-agent-info"
+  export GPG_AGENT_INFO
+  export SSH_AUTH_SOCK
+fi
+
 #*****************
 # Tab Completion
 #*****************

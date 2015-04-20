@@ -28,6 +28,7 @@
   with_items:
     - 'i3ctl.sh'
     - 'i3lock.sh'
+    - 'gpg-agent.sh'
 
 - name: 'Put the other X11 based files in place'
   copy:

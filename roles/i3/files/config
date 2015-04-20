@@ -129,6 +129,7 @@ exec_always --no-startup-id /usr/bin/xmodmap ~/.xmodmap
 exec_always --no-startup-id /usr/bin/xrdb -load ~/.xresources
 exec_always --no-startup-id /usr/bin/gnome-settings-daemon &
 exec_always --no-startup-id /usr/bin/dropbox start -i
+exec_always --no-startup-id ~/.i3/gpg-agent.sh
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
 bindsym $mod+Control+Left workspace prev
