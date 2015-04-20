@@ -12,3 +12,10 @@
     dest: '~/.ssh/id_rsa-work'
     mode: '0400'
     force: 'yes'
+
+- name: 'Put the ~/.ssh/id_rsa-ecs-work file in place'
+  copy:
+    content: "{{ id_rsa_ecs_private_key }}"
+    dest: '~/.ssh/id_rsa-ecs-work'
+    mode: '0400'
+    force: 'yes'
