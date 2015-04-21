@@ -279,6 +279,7 @@ function devbox () {
     dockerid=$(docker run -dit \
       -e "HOSTNAME=${boxname}" \
       --name $boxname \
+      --hostname ${boxname} \
       -v /home/marvin:/var/shared \
       -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
       -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
