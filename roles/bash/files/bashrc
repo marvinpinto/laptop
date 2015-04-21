@@ -171,15 +171,23 @@ function __prompt_command() {
   local RESET="\[$(tput sgr0)\]"
   local PROMPTCOL="${YELLOW}"
 
-  # Bright red prompt if root
-  if [ `id -u` == 0 ]; then
+  if [ -f '/.dockerinit' ]; then
+    # We're inside a docker environment
+    PS1+="\n${GREEN}"
+  elif [ `id -u` == 0 ]; then
+    # Bright red prompt if root
     PS1+="\n${RED}"
   else
     PS1+="\n${PROMPTCOL}"
   fi
 
   # Second line of bash prompt
-  PS1+="[\H: \t]${RESET}${PROMPTCOL} \w${RESET}\n"
+  if [ -f '/.dockerinit' ]; then
+    # We're inside a docker environment
+    PS1+="[docker-\H: \t]${RESET}${PROMPTCOL} \w${RESET}\n"
+  else
+    PS1+="[\H: \t]${RESET}${PROMPTCOL} \w${RESET}\n"
+  fi
 
   # Print out the last exit code, if it wasn't zero
   if [ $EXIT != 0 ]; then
