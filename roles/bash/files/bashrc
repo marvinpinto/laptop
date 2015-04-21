@@ -123,6 +123,7 @@ alias apgf='apg -a 0 -n 10 -m 10 -t -E lI10O -M NCSL'
 # Docker related aliases
 alias drm="docker rm -f"
 alias dps="docker ps"
+alias db="devbox"
 
 #************
 # GPG agent
@@ -257,12 +258,12 @@ function drma() {
 }
 
 # Bash function to attach to, or spin up a new (named) docker container
-function newbox () {
+function devbox () {
   local boxname=$1
   local dockerimage=$2
 
   if [ -z "$boxname" ]; then
-    echo "usage: newbox <box name> [docker image]"
+    echo "usage: devbox <box name> [docker image]"
     return 1
   fi
 
