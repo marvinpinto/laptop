@@ -245,6 +245,7 @@ function tre() {
 # Function to delete all docker containers
 function drma() {
   docker rm -f $(docker ps -aq)
+  docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
 }
 
 # Bash function to attach to, or spin up a new (named) docker container
