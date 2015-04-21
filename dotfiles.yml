@@ -12,13 +12,7 @@
     - 'ssh_config'
 
     - role: 'set_gsettings_value'
-      schema: 'org.gnome.settings-daemon.peripherals.keyboard'
-      key: 'repeat-interval'
-      value: '20'
-      expected_value: 'uint32 20'
-
-    - role: 'set_gsettings_value'
-      schema: 'org.gnome.settings-daemon.peripherals.keyboard'
-      key: 'delay'
-      value: '500'
-      expected_value: 'uint32 500'
+      schema: 'org.gnome.settings-daemon.plugins.keyboard'
+      key: 'active'
+      value: 'false'
+      expected_value: 'false'
