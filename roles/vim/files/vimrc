@@ -123,9 +123,9 @@ let mapleader = ","
 " Re-hardwrap paragraphs of text
 nnoremap <leader>q gqip
 
-" Change the swap file directory
-set swapfile
-set dir=~/tmp
+" Disable backup and swap files
+set nobackup
+set noswapfile
 
 " Enable hidden buffers by default (doesn't bother you
 " when switching back and forth)
