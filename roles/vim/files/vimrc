@@ -53,6 +53,7 @@ Plugin 'rodjek/vim-puppet'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
+Plugin 'fatih/vim-go'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -150,3 +151,13 @@ set scrolloff=3
 
 " Use the distinguised colorscheme
 colorscheme railscasts
+
+" Disable some misc vim-go defaults
+let g:go_play_open_browser = 0
+let g:go_fmt_fail_silently = 1
+let g:go_fmt_autosave = 0
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
