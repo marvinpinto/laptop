@@ -161,3 +161,4 @@ let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
+autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
