@@ -16,3 +16,9 @@
       key: 'active'
       value: 'false'
       expected_value: 'false'
+
+    - role: 'set_gsettings_value'
+      schema: 'org.gnome.desktop.lockdown'
+      key: 'disable-lock-screen'
+      value: 'true'
+      expected_value: 'true'
