@@ -142,6 +142,9 @@ bindsym $mod+Control+Right workspace next
 bindsym $mod+Shift+Control+Left move workspace prev
 bindsym $mod+Shift+Control+Right move workspace next
 
+# Move the current workspace to another monitor
+bindsym $mod+m move workspace to output left
+
 # System functions triggered by Mod+x
 set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown
 
