@@ -84,7 +84,7 @@
 [push]
   default = simple
 [user]
-  email = me@marvinp.ca
+  email = marvin@pinto.im
   name = Marvin Pinto
 [fetch]
   prune = true
