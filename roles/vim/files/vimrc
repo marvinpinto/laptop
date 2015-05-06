@@ -165,3 +165,6 @@ autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 
 " Set some filetypes depending on the file extension
 autocmd BufNewFile,BufRead *.pp setfiletype puppet
+
+" Do not display the tab character in makefiles
+autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
