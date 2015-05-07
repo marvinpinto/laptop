@@ -164,7 +164,8 @@ let g:go_highlight_build_constraints = 1
 autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 
 " Set some filetypes depending on the file extension
-autocmd BufNewFile,BufRead *.pp setfiletype puppet
+autocmd BufNewFile,BufRead *.pp set filetype=puppet
+autocmd BufNewFile,BufRead *.md set filetype=markdown
 
 " Do not display the tab character in makefiles
 autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
