@@ -54,6 +54,7 @@ Plugin 'flazz/vim-colorschemes'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'fatih/vim-go'
+Plugin 'ledger/vim-ledger'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -166,6 +167,7 @@ autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 " Set some filetypes depending on the file extension
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
+autocmd BufNewFile,BufRead *.ledger set filetype=ledger
 
 " Do not display the tab character in makefiles
 autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
