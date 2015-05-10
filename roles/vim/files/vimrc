@@ -22,6 +22,9 @@ set cindent
 set smartindent
 set autoindent
 
+" Disable autofolding
+set nofoldenable
+
 " Show 'invisible' characters
 set listchars=tab:>-,trail:~,extends:>,precedes:<,nbsp:.
 set list
