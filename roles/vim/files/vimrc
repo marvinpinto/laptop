@@ -172,5 +172,6 @@ autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 autocmd BufNewFile,BufRead *.ledger set filetype=ledger
 
-" Do not display the tab character in makefiles
+" Do not display the tab character in the following kind of files
 autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
+autocmd filetype gitcommit set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
