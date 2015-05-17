@@ -281,6 +281,7 @@ function devbox () {
       --hostname ${boxname} \
       -v /home/marvin:/var/shared \
       -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
+      -v /var/run/docker.sock:/var/run/docker.sock \
       -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
       ${dockerimage})
   fi
