@@ -111,8 +111,8 @@ alias lsd="ls -lF --color | grep --color=never '^d'"
 alias ls="command ls --color"
 
 # List and kill off tmux sessions
-alias tls='tmux ls'
-alias tks='tmux kill-session -t '
+alias tls='/usr/bin/tmux ls'
+alias tks='/usr/bin/tmux kill-session -t '
 
 # Alias git to g
 alias g="git"
