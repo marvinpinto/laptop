@@ -156,6 +156,9 @@ set scrolloff=3
 " Use the distinguised colorscheme
 colorscheme railscasts
 
+" Disable the background color erase facility
+set t_ut=
+
 " Disable some misc vim-go defaults
 let g:go_play_open_browser = 0
 let g:go_fmt_fail_silently = 1
