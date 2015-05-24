@@ -94,6 +94,11 @@ export LESS="-i -R"
 export LESSHISTFILE='/dev/null'
 export LESSHISTSIZE=0
 
+# git prompt related environment variables
+export GIT_PS1_SHOWDIRTYSTATE='yes'
+export GIT_PS1_SHOWSTASHSTATE='yes'
+export GIT_PS1_SHOWUNTRACKEDFILES='yes'
+
 #***************
 # Bash Aliases
 #***************
@@ -184,9 +189,9 @@ function __prompt_command() {
   # Second line of bash prompt
   if [ -f '/.dockerinit' ]; then
     # We're inside a docker environment
-    PS1+="[docker-\H: \t]${RESET}${PROMPTCOL} \w${RESET}\n"
+    PS1+="[docker-\H: \t]${RESET}${BLUE}$(__git_ps1 ' [%s]')${RESET}${PROMPTCOL} \w${RESET}\n"
   else
-    PS1+="[\H: \t]${RESET}${PROMPTCOL} \w${RESET}\n"
+    PS1+="[\H: \t]${RESET}${BLUE}$(__git_ps1 ' [%s]')${RESET}${PROMPTCOL} \w${RESET}\n"
   fi
 
   # Print out the last exit code, if it wasn't zero
