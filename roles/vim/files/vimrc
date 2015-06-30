@@ -180,3 +180,4 @@ autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
 autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype gitcommit set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype python set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
+autocmd filetype java set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
