@@ -265,6 +265,7 @@ function drma() {
 function devbox () {
   local boxname=$1
   local dockerimage=$2
+  local workdir="/home/dev"
 
   if [ -z "$boxname" ]; then
     echo "usage: devbox <box name> [docker image]"
@@ -273,6 +274,12 @@ function devbox () {
 
   if [ -z "$dockerimage" ]; then
     dockerimage="marvin/devbox"
+  fi
+
+  if [ -e "${HOME}/projects/${boxname}" ]; then
+    workdir="/home/dev/projects/${boxname}"
+  elif [ -e "${HOME}/freshbooks/${boxname}" ]; then
+    workdir="/home/dev/freshbooks/${boxname}"
   fi
 
   local dockerid=$(docker ps -aq --filter=name=$boxname)
@@ -288,6 +295,7 @@ function devbox () {
       -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+      -w $workdir \
       ${dockerimage})
   fi
   docker exec -it $dockerid /bin/bash
