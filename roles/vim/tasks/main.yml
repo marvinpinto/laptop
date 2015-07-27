@@ -29,3 +29,6 @@
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
+
+- name: 'Install the Vundle plugins'
+  shell: vim +PluginInstall +qall > /dev/null

@@ -154,7 +154,7 @@ set shortmess=atI
 set scrolloff=3
 
 " Use the distinguised colorscheme
-colorscheme railscasts
+silent! colorscheme railscasts
 
 " Disable the background color erase facility
 set t_ut=
