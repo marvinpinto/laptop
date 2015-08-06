@@ -315,3 +315,9 @@ function delete-ec2-ami() {
   aws ec2 deregister-image --image-id ${ami_id}
   aws ec2 delete-snapshot --snapshot-id ${snap_id}
 }
+
+# Mirror my laptop display to the connected monitor (i.e. presentation mode!)
+function presentation-mode() {
+  local display=$(xrandr | grep -v LVDS1 | grep " connected" | cut -d" " -f1)
+  xrandr --output ${display} --same-as LVDS1
+}
