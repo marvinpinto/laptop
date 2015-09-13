@@ -181,3 +181,6 @@ autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype gitcommit set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype python set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype java set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
+
+" Do not use tabs when in python mode
+autocmd filetype python set expandtab
