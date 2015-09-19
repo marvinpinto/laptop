@@ -255,10 +255,18 @@ function tre() {
   tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX
 }
 
-# Function to delete all docker containers
+# Function to clean up docker containers
 function drma() {
-  docker rm -f $(docker ps -aq)
-  docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+  local dps=$(docker ps -aq)
+  if [ -n "$dps" ]; then
+    docker rm -f $dps
+  fi
+
+  # Delete all untagged docker images
+  local untagged=$(docker images | grep "^<none>" | awk "{print $3}")
+  if [ -n "$untagged" ]; then
+    docker rmi -f $untagged
+  fi
 }
 
 # Bash function to attach to, or spin up a new (named) docker container
