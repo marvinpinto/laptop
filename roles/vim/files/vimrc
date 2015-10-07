@@ -168,19 +168,20 @@ let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
-autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 
 " Set some filetypes depending on the file extension
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 autocmd BufNewFile,BufRead *.ledger set filetype=ledger
 autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
+autocmd BufNewFile,BufRead *.tf set filetype=go
 
 " Do not display the tab character in the following kind of files
 autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype gitcommit set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype python set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype java set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
+autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 
 " Do not use tabs when in python mode
 autocmd filetype python set expandtab
