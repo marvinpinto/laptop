@@ -329,3 +329,27 @@ function presentation-mode() {
   local display=$(xrandr | grep -v LVDS1 | grep " connected" | cut -d" " -f1)
   xrandr --output ${display} --same-as LVDS1
 }
+
+# Start my irssi im container
+function im() {
+  docker run -it \
+    -e TERM \
+    -u $(id -u):$(id -g) \
+    --read-only \
+    -v $HOME/.irssi:/home/user/.irssi \
+    -v /etc/localtime:/etc/localtime \
+    irssi \
+    irssi --config=/home/user/.irssi/config-im --home=/home/user/.irssi
+}
+
+# Start my irssi slack container
+function slack() {
+  docker run -it \
+    -e TERM \
+    -u $(id -u):$(id -g) \
+    --read-only \
+    -v $HOME/.irssi:/home/user/.irssi \
+    -v /etc/localtime:/etc/localtime \
+    irssi \
+    irssi --config=/home/user/.irssi/config-slack --home=/home/user/.irssi
+}
