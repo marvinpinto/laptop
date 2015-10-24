@@ -281,7 +281,7 @@ function devbox () {
   fi
 
   if [ -z "$dockerimage" ]; then
-    dockerimage="marvin/devbox"
+    dockerimage="quay.io/marvin/devbox"
   fi
 
   if [ -e "${HOME}/projects/${boxname}" ]; then
