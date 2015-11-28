@@ -129,9 +129,6 @@ alias apgf='apg -a 0 -n 10 -m 10 -t -E lI10O -M NCSL'
 alias drm="docker rm -f"
 alias dps="docker ps"
 
-# Delete any local branches that have already been merged to master
-alias gcl='git branch --merged master | grep -v "\master" | xargs -n 1 git branch -d'
-
 #************
 # GPG agent
 #************
