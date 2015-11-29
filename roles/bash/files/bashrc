@@ -382,3 +382,17 @@ function docker-chrome() {
     --name chrome \
     jess/chrome
 }
+
+# Launch a containerized inkscape
+function docker-inkscape() {
+  xhost local:root
+  docker run -it \
+    --rm \
+    -u inkscaper \
+    -v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v $HOME/.Xauthority:/home/inkscaper/.Xauthority \
+    -e DISPLAY=$DISPLAY \
+    -v $HOME/crap:/home/inkscaper/Downloads \
+    --name inkscape \
+    rasch/inkscape
+}
