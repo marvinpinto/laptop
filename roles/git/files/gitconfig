@@ -86,6 +86,7 @@
 
 [push]
   default = simple
+  followTags = true
 [user]
   email = marvin@pinto.im
   name = Marvin Pinto
