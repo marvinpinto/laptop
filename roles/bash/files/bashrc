@@ -396,18 +396,3 @@ function docker-inkscape() {
     --name inkscape \
     rasch/inkscape
 }
-
-# Launch a containerized calibre
-function docker-calibre() {
-  xhost local:root
-  sudo docker run -it \
-    --rm \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -e DISPLAY=$DISPLAY \
-    -v "${HOME}/Dropbox/calibre/library":"/home/user/Calibre Library" \
-    -v "${HOME}/Dropbox/calibre/config":"/home/user/.config/calibre" \
-    -v "${HOME}/crap":"/home/user/Downloads" \
-    --name calibre \
-    zeitgeist/docker-calibre
-}
