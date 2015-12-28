@@ -71,6 +71,8 @@
   log = true
 
 # URL shorthands
+[url "https://github.com"]
+  insteadOf = "git://github.com"
 [url "git@github.com:"]
   insteadOf = "gh:"
   pushInsteadOf = "github:"
