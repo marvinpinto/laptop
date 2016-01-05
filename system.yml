@@ -30,7 +30,7 @@
         - 'deb http://security.ubuntu.com/ubuntu {{ ansible_distribution_release }}-security multiverse'
         - 'deb http://archive.canonical.com/ubuntu {{ ansible_distribution_release }} partner'
         - 'deb http://extras.ubuntu.com/ubuntu {{ ansible_distribution_release }} main'
-      
+
     - 'macbook_setup'
     - 'docker_package'
 
@@ -54,3 +54,4 @@
         - 'vagrant_deb_linestarve_com.list'
         - 'download_virtualbox_org_virtualbox_debian.list'
         - 'apt_dockerproject_org_repo.list'
+        - 'debian_sur5r_net_i3.list'

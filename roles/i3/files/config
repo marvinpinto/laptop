@@ -162,6 +162,16 @@ mode "$mode_system" {
 }
 bindsym $mod+x mode "$mode_system"
 
+# Restore layout system functions triggered by Mod+shift+d
+set $mode_restore laptop only (l), laptop + monitor (m)
+mode "$mode_restore" {
+    bindsym l exec --no-startup-id ~/.i3/restore-layout.sh laptop, mode "default"
+    bindsym m exec --no-startup-id ~/.i3/restore-layout.sh monitor, mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+Shift+d mode "$mode_restore"
+
 # color defines for zenburn styled i3
 set $bg     #2c2c2e
 set $fg     #9f9f9f

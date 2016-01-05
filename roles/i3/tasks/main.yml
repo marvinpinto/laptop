@@ -17,6 +17,11 @@
   with_items:
     - 'config'
     - 'i3status.conf'
+    - 'workspace-1-laptop.json'
+    - 'workspace-2-laptop.json'
+    - 'workspace-3-laptop.json'
+    - 'workspace-2-monitor.json'
+    - 'workspace-3-monitor.json'
 
 - name: 'Put the i3 executable files in place'
   copy:
@@ -29,6 +34,7 @@
     - 'i3ctl.sh'
     - 'i3lock.sh'
     - 'gpg-agent.sh'
+    - 'restore-layout.sh'
 
 - name: 'Put the other X11 based files in place'
   copy:
