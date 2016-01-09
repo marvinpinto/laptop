@@ -59,6 +59,7 @@ Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'fatih/vim-go'
 Plugin 'ledger/vim-ledger'
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'mustache/vim-mustache-handlebars'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -176,6 +177,7 @@ autocmd BufNewFile,BufRead *.md set filetype=markdown
 autocmd BufNewFile,BufRead *.ledger set filetype=ledger
 autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
 autocmd BufNewFile,BufRead *.tf set filetype=go
+autocmd BufNewFile,BufRead *.{handlebars,hb,hbs,hbt} set filetype=html.handlebars
 
 " Do not display the tab character in the following kind of files
 autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
