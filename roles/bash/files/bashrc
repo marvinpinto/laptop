@@ -273,7 +273,7 @@ function drma() {
 function devbox () {
   local boxname=$1
   local dockerimage=$2
-  local workdir="/home/dev"
+  local workdir="/home/marvin"
 
   if [ -z "$boxname" ]; then
     echo "usage: devbox <box name> [docker image]"
@@ -285,9 +285,9 @@ function devbox () {
   fi
 
   if [ -e "${HOME}/projects/${boxname}" ]; then
-    workdir="/home/dev/projects/${boxname}"
+    workdir="/home/marvin/projects/${boxname}"
   elif [ -e "${HOME}/freshbooks/${boxname}" ]; then
-    workdir="/home/dev/freshbooks/${boxname}"
+    workdir="/home/marvin/freshbooks/${boxname}"
   fi
 
   local dockerid=$(docker ps -aq --filter=name=$boxname)
