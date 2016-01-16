@@ -19,6 +19,7 @@ workspace2_monitor() {
   i3-msg 'workspace 2; exec xterm'
   i3-msg 'workspace 2; exec xterm'
   i3-msg 'workspace 2; exec xterm'
+  i3-msg 'workspace 2; exec xterm'
 }
 
 workspace3_laptop() {

@@ -10,7 +10,7 @@
        "y": 0
     },
     "name": "mp-x1",
-    "percent": 0.233333333333333,
+    "percent": 0.183333333333333,
     "swallows": [
        {
            "class": "^XTerm$",
@@ -25,7 +25,7 @@
     "border": "normal",
     "floating": "auto_off",
     "layout": "splitv",
-    "percent": 0.533333333333333,
+    "percent": 0.633333333333334,
     "type": "con",
     "nodes": [
         {
@@ -49,24 +49,54 @@
             "type": "con"
         },
         {
+            // stacked split container with 2 children
             "border": "normal",
-            "current_border_width": 2,
             "floating": "auto_off",
-            "geometry": {
-               "height": 388,
-               "width": 564,
-               "x": 0,
-               "y": 0
-            },
-            "name": "mp-x1",
+            "layout": "stacked",
             "percent": 0.9,
-            "swallows": [
-               {
-                   "class": "^XTerm$",
-                   "instance": "^xterm$"
-               }
-            ],
-            "type": "con"
+            "type": "con",
+            "nodes": [
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 388,
+                       "width": 564,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "name": "mp-x1",
+                    "percent": 0.5,
+                    "swallows": [
+                       {
+                           "class": "^XTerm$",
+                           "instance": "^xterm$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 388,
+                       "width": 564,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "name": "mp-x1",
+                    "percent": 0.5,
+                    "swallows": [
+                       {
+                           "class": "^XTerm$",
+                           "instance": "^xterm$"
+                       }
+                    ],
+                    "type": "con"
+                }
+            ]
         }
     ]
 }
@@ -82,7 +112,7 @@
        "y": 0
     },
     "name": "mp-x1",
-    "percent": 0.233333333333333,
+    "percent": 0.183333333333333,
     "swallows": [
        {
            "class": "^XTerm$",
