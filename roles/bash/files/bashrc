@@ -396,3 +396,23 @@ function docker-inkscape() {
     --name inkscape \
     rasch/inkscape
 }
+
+# Launch a containerized bittorrent client
+function docker-bittorrent() {
+  echo "Web username: docktorrent"
+  echo "Web password: p@ssw0rd"
+  echo "Web url: docker inspect --format '{{ .NetworkSettings.IPAddress }}' bittorrent"
+  echo "May need to futz with the $HOME/bittorrent permissions a bit"
+  mkdir -p ${HOME}/bittorrent
+  rm -f ${HOME}/bittorrent/.session/rtorrent.lock
+  docker rm -f bittorrent || true
+  docker run -it \
+    --rm \
+    -p 45566:45566 \
+    -p 9527:9527/udp \
+    --dns 8.8.8.8 \
+    -v $HOME/bittorrent:/rtorrent \
+    -e UPLOAD_RATE=1024 \
+    --name bittorrent \
+    kfei/docktorrent
+}
