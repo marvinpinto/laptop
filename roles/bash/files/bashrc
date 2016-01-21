@@ -399,9 +399,7 @@ function docker-inkscape() {
 
 # Launch a containerized bittorrent client
 function docker-bittorrent() {
-  echo "Web username: docktorrent"
-  echo "Web password: p@ssw0rd"
-  echo "Web url: docker inspect --format '{{ .NetworkSettings.IPAddress }}' bittorrent"
+  echo "http://docktorrent:p@ssw0rd@`docker inspect --format '{{ .NetworkSettings.IPAddress }}' bittorrent`"
   echo "May need to futz with the $HOME/bittorrent permissions a bit"
   mkdir -p ${HOME}/bittorrent
   rm -f ${HOME}/bittorrent/.session/rtorrent.lock
