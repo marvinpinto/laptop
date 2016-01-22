@@ -429,3 +429,17 @@ function docker-vlc() {
     --name vlc \
     chrisdaish/vlc
 }
+
+# Launch a containerized letsencrypt client
+function docker-letsencrypt() {
+  docker run -it \
+    --rm \
+    --name letsencrypt \
+    -v "${HOME}/Dropbox/lets-encrypt/etc:/etc/letsencrypt" \
+    -v "${HOME}/Dropbox/lets-encrypt/lib:/var/lib/letsencrypt" \
+    quay.io/letsencrypt/letsencrypt:latest \
+    -a manual \
+    --verbose \
+    auth
+  sudo chown -R marvin: ${HOME}/Dropbox/lets-encrypt
+}
