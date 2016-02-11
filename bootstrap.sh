@@ -19,9 +19,10 @@ git clone https://github.com/marvinpinto/dotfiles.git
 
 echo "Bootstrapping system"
 cd dotfiles
-make system
+sudo make system
 
 echo "Installing dotfiles"
+sudo rm -rf ~/.ansible
 make dotfiles
 
 echo "Upgrading Ubuntu"

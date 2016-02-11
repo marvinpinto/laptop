@@ -35,11 +35,11 @@ install_git:
 
 system: cloneroles install_git install_ansible
 	ANSIBLE_ROLES_PATH=$(ROLESDIR): ansible-playbook \
-										 --diff -v --ask-sudo-pass \
-										 --ask-vault-pass \
-										 -i inventory system.yml
+		--diff -v \
+		--ask-vault-pass \
+		-i inventory system.yml
 
 dotfiles: cloneroles
 	ANSIBLE_ROLES_PATH=$(ROLESDIR):./roles ansible-playbook \
-										 --diff -v --ask-vault-pass \
-										 -i inventory dotfiles.yml
+		--diff -v --ask-vault-pass \
+		-i inventory dotfiles.yml
