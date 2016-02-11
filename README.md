@@ -8,6 +8,15 @@ For a previous incantation of this, have a look through my
 [osx-bootstrapping](https://github.com/marvinpinto/osx-bootstrapping)
 repository.
 
+## Scenarios
+
+The three main scenarios where this comes into play are:
+
+- [Bootstrapping from scratch](#bootstrapping-from-scratch)
+- Updating a user config file (i.e. dotfile)
+- Installing/removing a system application
+
+
 ## Bootstrapping from scratch
 
 In this scenario, I'm either setting up a brand new laptop or rebuilding the
