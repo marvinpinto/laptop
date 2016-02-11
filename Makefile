@@ -1,16 +1,3 @@
-ifneq ("$(wildcard ${HOME}/projects/ansible-roles/.git)","")
-	# ${HOME}/projects/ansible-roles exists!
-	ROLESDIR := ${HOME}/projects/ansible-roles
-	CLONEROLES := false
-else ifneq ("$(wildcard /tmp/ansible-roles/.git)","")
-	# /tmp/ansible-roles exists!
-	ROLESDIR := /tmp/ansible-roles
-	CLONEROLES := false
-else
-	ROLESDIR := /tmp/ansible-roles
-	CLONEROLES := true
-endif
-
 all:
 	@echo "Available targets are: system, dotfiles"
 	@exit 1
@@ -18,13 +5,6 @@ all:
 /tmp/ansible-galaxy-roles:
 	mkdir -p /tmp/ansible-galaxy-roles
 	ansible-galaxy install -r galaxy-roles.yml -p /tmp/ansible-galaxy-roles
-
-cloneroles:
-	@if [ "$(CLONEROLES)" = "true" ]; then \
-	echo "cloning https://github.com/marvinpinto/ansible-roles.git"; \
-	rm -rf $(ROLESDIR); \
-	git clone https://github.com/marvinpinto/ansible-roles.git $(ROLESDIR); \
-	fi
 
 install_ansible:
 	@if [ -z "`which ansible-playbook`" ]; then \
@@ -42,13 +22,13 @@ install_git:
 	sudo apt-get install git; \
 	fi
 
-system: cloneroles install_git install_ansible /tmp/ansible-galaxy-roles
-	ANSIBLE_ROLES_PATH=$(ROLESDIR):./roles:/tmp/ansible-galaxy-roles ansible-playbook \
+system: install_git install_ansible /tmp/ansible-galaxy-roles
+	ANSIBLE_ROLES_PATH=./roles:/tmp/ansible-galaxy-roles ansible-playbook \
 		--diff -v \
 		--ask-vault-pass \
 		-i inventory system.yml
 
-dotfiles: cloneroles
-	ANSIBLE_ROLES_PATH=$(ROLESDIR):./roles ansible-playbook \
+dotfiles:
+	ANSIBLE_ROLES_PATH=./roles ansible-playbook \
 		--diff -v --ask-vault-pass \
 		-i inventory dotfiles.yml
