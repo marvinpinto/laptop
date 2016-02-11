@@ -1,0 +1,9 @@
+---
+- name: 'Put the screenshot script file in place'
+  sudo: yes
+  copy:
+    src: 'screenshot.sh'
+    dest: '/usr/local/bin/screenshot'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'

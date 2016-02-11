@@ -1,0 +1,13 @@
+---
+- name: 'Add the ansible ubuntu repo'
+  sudo: yes
+  apt_repository:
+    repo: 'ppa:ansible/ansible'
+    state: present
+    update_cache: yes
+
+- name: 'Install ansible'
+  sudo: yes
+  apt:
+    name: 'ansible'
+    state: latest

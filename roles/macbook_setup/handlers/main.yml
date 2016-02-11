@@ -1,0 +1,8 @@
+---
+- name: 'Trigger an initramfs bootfile update'
+  sudo: yes
+  command: '/usr/sbin/update-initramfs -u -k all'
+
+- name: 'Load the mba6x_bl module'
+  sudo: yes
+  command: '/sbin/modprobe mba6x_bl'

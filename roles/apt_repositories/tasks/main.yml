@@ -1,0 +1,18 @@
+---
+- name: 'Ensure the /etc/apt/sources.list file contains ~nothing'
+  copy:
+    dest: '/etc/apt/sources.list'
+    content: '# This is a stub'
+    owner: 'root'
+    group: 'root'
+    mode: '0444'
+  notify: 'Perform an apt-get update'
+
+- name: 'Add the base ubuntu repositories'
+  apt_repository:
+    repo: "{{ item }}"
+    state: 'present'
+  with_items: '{{ ubuntu_base_repos }}'
+  notify: 'Perform an apt-get update'
+
+- meta: flush_handlers

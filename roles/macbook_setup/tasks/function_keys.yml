@@ -1,0 +1,10 @@
+---
+- name: 'Put the /etc/modprobe.d/hid_apple.conf file in place'
+  sudo: yes
+  copy:
+    content: "options hid_apple fnmode=2\n"
+    dest: '/etc/modprobe.d/hid_apple.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'Trigger an initramfs bootfile update'

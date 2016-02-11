@@ -1,0 +1,29 @@
+---
+- name: 'Add the i3wm ubuntu repo'
+  sudo: yes
+  apt_repository:
+    repo: "deb http://debian.sur5r.net/i3/ {{ ansible_distribution_release }} universe"
+    state: present
+    update_cache: yes
+
+- name: 'Install the needed sur5r-keyring package'
+  sudo: yes
+  apt:
+    name: "sur5r-keyring"
+    state: latest
+    force: yes
+
+- name: 'Perform an apt-get update'
+  sudo: yes
+  apt:
+    update_cache: yes
+
+- name: 'Install i3wm + friends'
+  sudo: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'i3'
+    - 'i3lock'
+    - 'i3status'

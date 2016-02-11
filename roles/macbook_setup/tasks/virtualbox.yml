@@ -1,0 +1,56 @@
+---
+- name: 'Create the /usr/local/etc/virtualbox directory'
+  sudo: yes
+  file:
+    path: '/usr/local/etc/virtualbox'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Add the virtualbox apt signing key'
+  sudo: yes
+  apt_key:
+    keyserver: 'keyserver.ubuntu.com'
+    id: '98AB5139'
+    state: present
+
+- name: 'Add the Virtualbox ubuntu repo'
+  sudo: yes
+  apt_repository:
+    repo: "deb http://download.virtualbox.org/virtualbox/debian {{ ansible_distribution_release }} contrib"
+    state: present
+    update_cache: yes
+
+- name: 'Install Virtualbox'
+  sudo: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'virtualbox-5.0'
+    - 'dkms'
+
+- name: 'Check to see if the extension pack file exists'
+  sudo: yes
+  stat:
+    path: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.10-104061.vbox-extpack'
+  register: extension_pack_binary
+
+- name: 'Download the extension pack'
+  sudo: yes
+  get_url:
+    url: 'http://download.virtualbox.org/virtualbox/5.0.10/Oracle_VM_VirtualBox_Extension_Pack-5.0.10-104061.vbox-extpack'
+    dest: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.10-104061.vbox-extpack'
+    mode: '0755'
+  when: extension_pack_binary.stat.exists == False
+
+- name: 'Install the extension pack'
+  sudo: yes
+  command: '/usr/bin/VBoxManage extpack install --replace /usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.10-104061.vbox-extpack'
+  when: extension_pack_binary.stat.exists == False
+
+- name: 'Add marvin to the vboxusers group'
+  sudo: yes
+  user:
+    name: 'marvin'
+    groups: 'vboxusers'
+    append: yes

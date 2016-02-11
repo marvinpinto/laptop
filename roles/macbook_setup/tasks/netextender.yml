@@ -1,0 +1,54 @@
+---
+- name: 'Install the ppp program'
+  sudo: yes
+  apt:
+    name: "ppp"
+    state: installed
+
+- name: 'Check to see if the netExtender binary exists'
+  stat:
+    path: '/usr/sbin/netExtender'
+  register: netextender_binary
+
+- name: 'Download the netextender tarball'
+  get_url:
+    url: 'https://vpn.2ndsiteinc.com:444/NetExtender.Linux.7.0.746.x86_64.tgz'
+    dest: '/tmp/netextender.tar.gz'
+    mode: '0755'
+  when: netextender_binary.stat.exists == False
+
+- name: 'Download and untar the netextender tarball'
+  unarchive:
+    src: '/tmp/netextender.tar.gz'
+    dest: '/tmp'
+    copy: no
+  when: netextender_binary.stat.exists == False
+
+- name: 'Fix netextender pppd permissions'
+  sudo: yes
+  shell: /tmp/netExtenderClient/install fixppp
+  when: netextender_binary.stat.exists == False
+
+- name: 'Install netextender'
+  sudo: yes
+  shell: ./install
+  args:
+    chdir: /tmp/netExtenderClient
+  when: netextender_binary.stat.exists == False
+
+- name: 'Check to see if the netExtender binary exists'
+  stat:
+    path: '/usr/sbin/netExtender'
+  register: netextender_binary
+
+- name: 'Clean up the netextender tarball'
+  file:
+    path: '/tmp/netextender.tar.gz'
+    state: absent
+  when: netextender_binary.stat.exists == True
+
+- name: 'Clean up untarred netextender directory'
+  file:
+    path: '/tmp/netExtenderClient'
+    state: absent
+  when: netextender_binary.stat.exists == True

@@ -1,0 +1,13 @@
+---
+- shell: "ls -1 {{ managed_files_directory }}"
+  sudo: yes
+  changed_when: false
+  register: contents
+
+- name: 'Delete everything from this directory that is not managed by us'
+  sudo: yes
+  file:
+    path: "{{ managed_files_directory }}/{{ item }}"
+    state: absent
+  with_items: contents.stdout_lines
+  when: item not in managed_files
