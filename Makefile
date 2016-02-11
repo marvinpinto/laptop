@@ -1,9 +1,14 @@
 ifneq ("$(wildcard ${HOME}/projects/ansible-roles/.git)","")
-    ROLESDIR := ${HOME}/projects/ansible-roles
-    CLONEROLES := false
+	# ${HOME}/projects/ansible-roles exists!
+	ROLESDIR := ${HOME}/projects/ansible-roles
+	CLONEROLES := false
+else ifneq ("$(wildcard /tmp/ansible-roles/.git)","")
+	# /tmp/ansible-roles exists!
+	ROLESDIR := /tmp/ansible-roles
+	CLONEROLES := false
 else
-    ROLESDIR := /tmp/ansible-roles
-    CLONEROLES := true
+	ROLESDIR := /tmp/ansible-roles
+	CLONEROLES := true
 endif
 
 all:
