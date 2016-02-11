@@ -30,3 +30,7 @@ cd /tmp
 sudo apt-get -qq update
 sudo apt-get -y dist-upgrade
 sudo apt-get autoremove -y --purge
+
+echo "Last time for good measure"
+cd /tmp/dotfiles
+sudo make system
