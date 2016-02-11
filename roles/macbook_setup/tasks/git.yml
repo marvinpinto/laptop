@@ -1,0 +1,13 @@
+---
+- name: 'Add the git ubuntu repo'
+  sudo: yes
+  apt_repository:
+    repo: 'ppa:git-core/ppa'
+    state: present
+    update_cache: yes
+
+- name: 'Install git'
+  sudo: yes
+  apt:
+    name: 'git'
+    state: latest

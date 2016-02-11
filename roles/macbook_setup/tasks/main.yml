@@ -1,0 +1,17 @@
+---
+- include: networking.yml
+- include: programs.yml
+- include: i3wm.yml
+- include: google_chrome.yml
+- include: dropbox.yml
+- include: vagrant.yml
+- include: virtualbox.yml
+- include: git.yml
+- include: ansible.yml
+- include: x11.yml
+- include: function_keys.yml
+- include: scripts.yml
+- include: sounds.yml
+- include: devbox.yml
+- include: netextender.yml
+- include: yubikey.yml

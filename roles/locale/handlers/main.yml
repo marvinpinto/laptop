@@ -1,0 +1,16 @@
+---
+- name: 'Reconfigure locales'
+  environment:
+    LANGUAGE: "{{ locale_string }}"
+    LANG: "{{ locale_string }}"
+    LC_ALL: "{{ locale_string }}"
+  sudo: yes
+  command: '/usr/sbin/dpkg-reconfigure locales'
+
+- name: 'Purge un-needed locales'
+  environment:
+    LANGUAGE: "{{ locale_string }}"
+    LANG: "{{ locale_string }}"
+    LC_ALL: "{{ locale_string }}"
+  sudo: yes
+  command: "/usr/sbin/locale-gen --purge {{ locale_string }}"

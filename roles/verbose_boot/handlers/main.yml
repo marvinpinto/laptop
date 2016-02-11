@@ -1,0 +1,4 @@
+---
+- name: 'Update grub'
+  sudo: yes
+  command: '/usr/sbin/update-grub'

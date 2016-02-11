@@ -1,0 +1,32 @@
+---
+- name: 'Install sshd'
+  sudo: yes
+  apt:
+    pkg: 'openssh-server'
+    state: present
+
+- name: 'Ensure that sshd autostarts'
+  sudo: yes
+  service:
+    name: 'ssh'
+    enabled: "{{ sshd_enabled | default(yes) }}"
+    state: "{{ sshd_state | default(started) }}"
+
+- name: 'Create the /etc/ssh/authorized_keys directory'
+  sudo: yes
+  file:
+    path: '/etc/ssh/authorized_keys'
+    owner: 'root'
+    group: 'root'
+    state: directory
+
+- name: 'Configure sshd'
+  sudo: yes
+  copy:
+    src: 'sshd_config'
+    dest: '/etc/ssh/sshd_config'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - 'Restart sshd'

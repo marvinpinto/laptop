@@ -1,0 +1,46 @@
+---
+- name: 'Create the specified user'
+  sudo: yes
+  user:
+    name: "{{ account_username }}"
+    comment: "{{ account_fullname }}"
+    home: "/home/{{ account_username }}"
+    password: "{{ account_passwordhash }}"
+    shell: '/bin/bash'
+
+- name: 'Add the user to the specified groups'
+  sudo: true
+  user:
+    name: '{{ account_username }}'
+    append: true
+    groups: '{{ account_groups }}'
+
+- name: 'Create the /etc/ssh/authorized_keys directory'
+  sudo: yes
+  file:
+    path: '/etc/ssh/authorized_keys'
+    owner: 'root'
+    group: 'root'
+    state: directory
+
+- name: 'Put the ssh key in place'
+  sudo: yes
+  authorized_key:
+    user: "{{ account_username }}"
+    key: "{{ account_sshkey }}"
+    path: "/etc/ssh/authorized_keys/{{ account_username }}"
+    state: present
+    exclusive: yes
+    manage_dir: no
+
+- name: 'Create an /etc/sudoers.d entry for this user'
+  sudo: yes
+  copy:
+    content: |
+      {{ account_sudoers_entry }}
+      
+    dest: "/etc/sudoers.d/00-{{ account_username }}"
+    owner: 'root'
+    group: 'root'
+    mode: '0440'
+    validate: '/usr/sbin/visudo -cf %s'

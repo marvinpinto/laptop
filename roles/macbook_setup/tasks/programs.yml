@@ -1,0 +1,65 @@
+---
+- name: 'Install a bunch of needed programs'
+  sudo: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'vim-gtk'
+    - 'tmux'
+    - 'fonts-inconsolata'
+    - 'scrot'
+    - 'imagemagick'
+    - 'xautolock'
+    - 'tree'
+    - 'whois'
+    - 'touchegg'
+    - 'pass'
+    - 'iftop'
+    - 'htop'
+    - 'editorconfig'
+    - 'simplestreams'
+
+- name: "Remove a few things I don't care for"
+  sudo: yes
+  apt:
+    name: "{{ item }}"
+    state: absent
+    purge: yes
+  with_items:
+    - 'avahi-daemon'
+    - 'apport'
+    - 'libreoffice-base-core'
+    - 'rhythmbox'
+    - 'thunderbird'
+    - 'evolution-data-server'
+    - 'empathy'
+    - 'duplicity'
+    - 'friends'
+    - 'remmina'
+    - 'shotwell'
+    - 'shotwell-common'
+    - 'telepathy-gabble'
+    - 'telepathy-haze'
+    - 'telepathy-idle'
+    - 'telepathy-indicator'
+    - 'telepathy-logger'
+    - 'telepathy-mission-control-5'
+    - 'totem'
+    - 'libreoffice-avmedia-backend-gstreamer'
+    - 'libreoffice-common'
+    - 'libreoffice-core'
+    - 'libreoffice-draw'
+    - 'libreoffice-gnome'
+    - 'libreoffice-gtk'
+    - 'libreoffice-impress'
+    - 'libreoffice-math'
+    - 'libreoffice-ogltrans'
+    - 'libreoffice-pdfimport'
+    - 'libreoffice-presentation-minimizer'
+    - 'libreoffice-style-human'
+    - 'account-plugin-facebook'
+    - 'account-plugin-flickr'
+    - 'account-plugin-google'
+    - 'libaccount-plugin-generic-oauth'
+    - 'libaccount-plugin-google'

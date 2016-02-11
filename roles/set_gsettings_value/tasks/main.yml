@@ -1,0 +1,8 @@
+---
+- command: "/usr/bin/gsettings get {{ schema }} {{ key }}"
+  changed_when: false
+  register: contents
+
+- name: 'Set the gsettings value'
+  command: "/usr/bin/gsettings set {{ schema }} {{ key }} {{ value }}"
+  when: 'expected_value != contents.stdout'
