@@ -25,7 +25,9 @@
 
 - name: 'Put the config-im file in place'
   copy:
-    content: "{{ config_im }}\\n"
+    content: |
+      {{ config_im }}
+      
     dest: '~/.irssi/config-im'
     owner: 'marvin'
     group: 'marvin'
@@ -33,7 +35,9 @@
 
 - name: 'Put the config-slack file in place'
   copy:
-    content: "{{ config_slack }}\\n"
+    content: |
+      {{ config_slack }}
+      
     dest: '~/.irssi/config-slack'
     owner: 'marvin'
     group: 'marvin'
