@@ -14,7 +14,7 @@ The three main scenarios where this comes into play are:
 
 - [Bootstrapping from scratch](#bootstrapping-from-scratch)
 - [Updating a user config file (i.e. dotfile)](#updating-a-user-config-file)
-- Installing/removing a system application
+- [Installing/removing a system application](#Adding-or-removing-a-system-application)
 
 
 ## Bootstrapping from scratch
@@ -64,3 +64,12 @@ Make the changes as needed and then run: `make dotfiles`
 
 This will take care of putting all the files in the correct places, setting
 permissions, that sort of thing.
+
+
+## Adding or removing a system application
+
+Similar to adding a config file, adding/removing system applications (and their
+configuration) will involve tweaking the ansible roles linked to this
+repository.
+
+After that is done a simple `make system` should do it,
