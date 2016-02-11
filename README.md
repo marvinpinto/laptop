@@ -13,7 +13,7 @@ repository.
 The three main scenarios where this comes into play are:
 
 - [Bootstrapping from scratch](#bootstrapping-from-scratch)
-- Updating a user config file (i.e. dotfile)
+- [Updating a user config file (i.e. dotfile)](#updating-a-user-config-file)
 - Installing/removing a system application
 
 
@@ -53,3 +53,14 @@ login
 
 This should bring the machine up to a useable state with all my apps and config
 in place!
+
+
+## Updating a user config file
+
+In this scenario, I'm either adding a new config file (dotfile) to my setup or
+tweaking an existing one. Pretty simple.
+
+Make the changes as needed and then run: `make dotfiles`
+
+This will take care of putting all the files in the correct places, setting
+permissions, that sort of thing.
