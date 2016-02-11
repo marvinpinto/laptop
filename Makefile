@@ -15,6 +15,10 @@ all:
 	@echo "Available targets are: system, dotfiles"
 	@exit 1
 
+/tmp/ansible-galaxy-roles:
+	mkdir -p /tmp/ansible-galaxy-roles
+	ansible-galaxy install -r galaxy-roles.yml -p /tmp/ansible-galaxy-roles
+
 cloneroles:
 	@if [ "$(CLONEROLES)" = "true" ]; then \
 	echo "cloning https://github.com/marvinpinto/ansible-roles.git"; \
@@ -38,8 +42,8 @@ install_git:
 	sudo apt-get install git; \
 	fi
 
-system: cloneroles install_git install_ansible
-	ANSIBLE_ROLES_PATH=$(ROLESDIR): ansible-playbook \
+system: cloneroles install_git install_ansible /tmp/ansible-galaxy-roles
+	ANSIBLE_ROLES_PATH=$(ROLESDIR):./roles:/tmp/ansible-galaxy-roles ansible-playbook \
 		--diff -v \
 		--ask-vault-pass \
 		-i inventory system.yml

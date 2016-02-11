@@ -2,12 +2,14 @@
 - hosts: all
   connection: local
   roles:
+    - role: 'marvinpinto.docker'
     - role: 'user_account_wrapper'
       account_username: 'marvin'
       account_fullname: 'Marvin Pinto'
       account_passwordhash: "{{ marvin_passwordhash }}"
       account_sshkey: 'https://github.com/marvinpinto.keys'
       account_sudoers_entry: 'marvin ALL=(ALL) ALL'
+      account_groups: 'docker'
 
     - role: 'sshd'
       sshd_enabled: 'no'
@@ -32,7 +34,6 @@
         - 'deb http://extras.ubuntu.com/ubuntu {{ ansible_distribution_release }} main'
 
     - 'macbook_setup'
-    - 'docker_package'
 
     - role: 'delete_unmanaged_files'
       managed_files_directory: '/etc/X11/xorg.conf.d'
