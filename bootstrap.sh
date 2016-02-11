@@ -12,13 +12,13 @@ sudo apt-add-repository -y ppa:ansible/ansible
 sudo apt-get -qq update
 sudo apt-get install -y ansible
 
-echo "Cloning https://github.com/marvinpinto/dotfiles.git"
+echo "Cloning https://github.com/marvinpinto/laptop.git"
 cd /tmp
-sudo rm -rf dotfiles
-git clone https://github.com/marvinpinto/dotfiles.git
+sudo rm -rf laptop
+git clone https://github.com/marvinpinto/laptop.git
 
 echo "Bootstrapping system"
-cd dotfiles
+cd laptop
 sudo make system
 
 echo "Installing dotfiles"
@@ -32,5 +32,5 @@ sudo apt-get -y dist-upgrade
 sudo apt-get autoremove -y --purge
 
 echo "Last time for good measure"
-cd /tmp/dotfiles
+cd /tmp/laptop
 sudo make system

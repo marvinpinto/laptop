@@ -36,7 +36,7 @@ makes things a lot simpler.
 
 - Then run this wonderful curl/bash incantation that will get everything going:
   ```
-  bash -xec "$(curl -L https://raw.githubusercontent.com/marvinpinto/dotfiles/master/bootstrap.sh)"
+  bash -xec "$(curl -L https://raw.githubusercontent.com/marvinpinto/laptop/master/bootstrap.sh)"
   ```
 
 - Assuming everything installed correctly, reboot the machine.
