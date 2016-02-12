@@ -1,6 +1,7 @@
 # Laptop
 
 [![Build Status](https://img.shields.io/travis/marvinpinto/laptop/master.svg?style=flat-square)](https://travis-ci.org/marvinpinto/laptop)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.txt)
 
 This is the config I use to bootstrap and maintain my Lenovo X1 Carbon laptop.
 I have automated the bulk of this over the years and it has greatly helped me
