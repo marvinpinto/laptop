@@ -36,6 +36,7 @@ makes things a lot simpler.
 
 - Then run this wonderful curl/bash incantation that will get everything going:
   ```
+  export ANSIBLE_VAULT_PASSWORD=sekrit
   bash -xec "$(curl -L https://raw.githubusercontent.com/marvinpinto/laptop/master/bootstrap.sh)"
   ```
 

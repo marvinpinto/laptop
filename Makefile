@@ -8,11 +8,10 @@ all:
 
 system: /tmp/ansible-galaxy-roles
 	ANSIBLE_ROLES_PATH=./roles:/tmp/ansible-galaxy-roles ansible-playbook \
-		--diff -v \
-		--ask-vault-pass \
+		--vault-password-file=vault_pass.py \
 		-i inventory system.yml
 
 dotfiles:
 	ANSIBLE_ROLES_PATH=./roles ansible-playbook \
-		--diff -v --ask-vault-pass \
+		--vault-password-file=vault_pass.py \
 		-i inventory dotfiles.yml
