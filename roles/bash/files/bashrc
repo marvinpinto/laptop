@@ -342,18 +342,6 @@ function im() {
     irssi --config=/home/user/.irssi/config-im --home=/home/user/.irssi
 }
 
-# Start my irssi slack container
-function slack() {
-  docker run -it \
-    -e TERM \
-    -u $(id -u):$(id -g) \
-    --read-only \
-    -v $HOME/.irssi:/home/user/.irssi \
-    -v /etc/localtime:/etc/localtime \
-    irssi \
-    irssi --config=/home/user/.irssi/config-slack --home=/home/user/.irssi
-}
-
 # Launch a containerized gimp
 function docker-gimp() {
   xhost local:root

@@ -32,13 +32,3 @@
     owner: 'marvin'
     group: 'marvin'
     mode: '0600'
-
-- name: 'Put the config-slack file in place'
-  copy:
-    content: |
-      {{ config_slack }}
-      
-    dest: '{{ home_directory }}/.irssi/config-slack'
-    owner: 'marvin'
-    group: 'marvin'
-    mode: '0600'
