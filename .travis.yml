@@ -1,0 +1,20 @@
+---
+language: 'generic'
+sudo: 'required'
+dist: 'trusty'
+
+env:
+  global:
+    - secure: "6b9nmqigAAyOcMsD6tunR3edXy8cxEGGGtRalopl61WkdFee+PWjCPcw/ZWeoQsl9bzvHToAFHHH9/SEbWPguuanyaudMiH77vtlYovSBSSr39UPZ46SasBFdfL+1lXz/IiULwE/X7aC0LYsyJW6o4XdFoDYLguF/nooHshKaI3sNpSmcjsYSIO3YIRYtHebRB5jVlnxSGIJjQZ+pTHxnRnnMYgOD8YgjDRqwzGsK63EzVxonjYjDvV2K8JV6OrOaLrsI620I/c+Iv2U5LenQ3Pkw3p5eYF6eO1Rf13coS/tPxhDj60BEklHTseoE3v4zgrvikwuj07i+5O68JJcA6VVOiSfnLlGbtKmsJpD/EiIQ7lzTp4p2r0cT1niXnbdUns0p8QFLo5Mu9JMyb9B30XbFn6lo5fI1NO2sqE0SLIM7rqa3xRsVYwzzFsoqMrAgbvKHPxUYePfqar3jeF6Jfj8q3zMkmZQ7wcJcgujolB93gE4TcTbocvSvYh/r1BBDPxdPkuqfXfKDSPVp+27WGcgQzKT6OtdkqiLdnbRAyEu13l5B5v4NgTwFqBEgLtt5GjUXVWX4z/NQZi/AK9AXLIV9YN18Sraidw5I/hn5gJT4LbtSHjulNQmF+hdixpAM52YR479Cqa7tIAqUDYCWgylAZglPXqDNhI+b24F2Sw="
+    - 'DEBIAN_FRONTEND=noninteractive'
+
+script:
+  - './bootstrap.sh'
+
+notifications:
+  email: false
+  irc:
+    channels:
+      - secure: "KwQoqu9OGfj8GDeGNh+gWSrzYJjIGjZOu+OF4b7FHV6aVk11agux/Dm1TdK7zpOFLCPm4XeJfvPQmIs7y9qIVGPi/Ta2TewvoaZA/3t3vOJNziYMpyjHXwoRs3XeywSDPMud3ztbIO5HBBMzaps1Wun2O0ALKZHG6jBZCeXLFWn9UzUMigxW2UlWRiip35rEgb7+yfxbAQBo/QmT7dKyLvGbQ/d0wpqZYG5Q+FmPirjTEMPh80sM1ady/YKzxmxEaFsfHXfMkFPPq5WTsKPaLBYZAAYomVxZDZHMuryyFyJTcpJsoFwrVAxkCbU7+krIql1o/B8Ae662ITubVqDpLPfynnMU3ijdOHTxqG8kgpTQBlwxFFX6gGFXKSCZHtHaluZX/1HHeYBpqOrZwWceqe8QvXhJVckYVEZmoclgj5wV7lv5K1uhUYIQyP3d+C8D9ZHDqrOchkQzPu4qBuhRgWs7YmtNM+saGZDtmb7JJ3DiAlKI8TFqbqC/HdHDAiSuP7pOOXPxlCkDiKJ4b4Fs4tfb497ORpBjmJcrNfmIU1wA45yRgiv7KqJdnCM+TFqAh0F+7cB5xWt18wk1a4ONOukOwEj49Qo34nxleMHGVfE3dZgDjUSzl/dp+hp+pRRqAEX7KN5XZXTPBZY1fmcQJAgB46h+rqZatUBbkzXFcYE="
+    on_success: "change"
+    on_failure: "change"

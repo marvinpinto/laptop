@@ -1,5 +1,8 @@
 # Laptop
 
+[![Build Status](https://img.shields.io/travis/marvinpinto/laptop/master.svg?style=flat-square)](https://travis-ci.org/marvinpinto/laptop)
+[![License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.txt)
+
 This is the config I use to bootstrap and maintain my Lenovo X1 Carbon laptop.
 I have automated the bulk of this over the years and it has greatly helped me
 maintain my sanity.
@@ -7,6 +10,18 @@ maintain my sanity.
 For a previous incantation of this, have a look through my
 [osx-bootstrapping](https://github.com/marvinpinto/osx-bootstrapping)
 repository.
+
+
+## Travis CI
+
+You will also notice that this repository is linked into [Travis
+CI](https://travis-ci.org/marvinpinto/laptop) and builds are kicked off
+automatically on PRs and such.
+
+The idea here is that if this successfully builds in Travis, there's a
+reasonable chance it will build when it comes time to bootstrap my laptop
+again.
+
 
 ## Scenarios
 
@@ -36,6 +51,7 @@ makes things a lot simpler.
 
 - Then run this wonderful curl/bash incantation that will get everything going:
   ```
+  export ANSIBLE_VAULT_PASSWORD=sekrit
   bash -xec "$(curl -L https://raw.githubusercontent.com/marvinpinto/laptop/master/bootstrap.sh)"
   ```
 

@@ -1,7 +1,7 @@
 ---
 - name: 'Create the ~/.i3 directory'
   file:
-    path: '~/.i3'
+    path: '{{ home_directory }}/.i3'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
@@ -10,7 +10,7 @@
 - name: 'Put the i3 config files in place'
   copy:
     src: "{{ item }}"
-    dest: "~/.i3/{{ item }}"
+    dest: "{{ home_directory }}/.i3/{{ item }}"
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
@@ -26,7 +26,7 @@
 - name: 'Put the i3 executable files in place'
   copy:
     src: "{{ item }}"
-    dest: "~/.i3/{{ item }}"
+    dest: "{{ home_directory }}/.i3/{{ item }}"
     owner: 'marvin'
     group: 'marvin'
     mode: '0755'
@@ -39,7 +39,7 @@
 - name: 'Put the other X11 based files in place'
   copy:
     src: "{{ item }}"
-    dest: "~/.{{ item }}"
+    dest: "{{ home_directory }}/.{{ item }}"
     owner: 'marvin'
     group: 'marvin'
     mode: '0444'

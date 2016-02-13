@@ -1,5 +1,8 @@
 ---
 - hosts: all
+  vars_files:
+    - 'vars/secret.yml'
+    - 'vars/public.yml'
   connection: local
   roles:
     - 'bash'

@@ -1,40 +1,40 @@
 ---
 - name: 'symlink ~/Dropbox/gnupg to ~/.gnupg'
   file:
-    src: '~/Dropbox/gnupg'
-    dest: '~/.gnupg'
+    src: '{{ home_directory }}/Dropbox/gnupg'
+    dest: '{{ home_directory }}/.gnupg'
     state: 'link'
     force: 'yes'
 
 - name: 'symlink ~/Dropbox/projects to ~/projects'
   file:
-    src: '~/Dropbox/projects'
-    dest: '~/projects'
+    src: '{{ home_directory }}/Dropbox/projects'
+    dest: '{{ home_directory }}/projects'
     state: 'link'
     force: 'yes'
 
 - name: 'symlink ~/Dropbox/freshbooks to ~/freshbooks'
   file:
-    src: '~/Dropbox/freshbooks'
-    dest: '~/freshbooks'
+    src: '{{ home_directory }}/Dropbox/freshbooks'
+    dest: '{{ home_directory }}/freshbooks'
     state: 'link'
     force: 'yes'
 
 - name: 'symlink ~/Dropbox/projects/password-store to ~/.password-store'
   file:
-    src: '~/Dropbox/projects/password-store'
-    dest: '~/.password-store'
+    src: '{{ home_directory }}/Dropbox/projects/password-store'
+    dest: '{{ home_directory }}/.password-store'
     state: 'link'
     force: 'yes'
 
 - name: 'symlink ~/Dropbox/projects/tmuxinator-templates to ~/.tmuxinator'
   file:
-    src: '~/Dropbox/projects/tmuxinator-templates'
-    dest: '~/.tmuxinator'
+    src: '{{ home_directory }}/Dropbox/projects/tmuxinator-templates'
+    dest: '{{ home_directory }}/.tmuxinator'
     state: 'link'
     force: 'yes'
 
 - name: 'Create the ~/tmp directory'
   file:
-    dest: '~/tmp'
+    dest: '{{ home_directory }}/tmp'
     state: 'directory'

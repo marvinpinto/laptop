@@ -1,7 +1,7 @@
 ---
 - name: 'Create the ~/.vim directory'
   file:
-    path: '~/.vim'
+    path: '{{ home_directory }}/.vim'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
@@ -9,7 +9,7 @@
 
 - name: 'Create the ~/.vim/bundle directory'
   file:
-    path: '~/.vim/bundle'
+    path: '{{ home_directory }}/.vim/bundle'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
@@ -18,14 +18,14 @@
 - name: 'Clone a copy of Vundle'
   git:
     repo: 'https://github.com/gmarik/Vundle.vim.git'
-    dest: '~/.vim/bundle/Vundle.vim'
+    dest: '{{ home_directory }}/.vim/bundle/Vundle.vim'
     force: yes
     update: yes
 
 - name: 'Put the vimrc file in place'
   copy:
     src: 'vimrc'
-    dest: "~/.vimrc"
+    dest: "{{ home_directory }}/.vimrc"
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'

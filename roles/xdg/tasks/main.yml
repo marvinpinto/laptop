@@ -1,7 +1,7 @@
 ---
 - name: 'Create the ~/.config directory'
   file:
-    path: '~/.config'
+    path: '{{ home_directory }}/.config'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
@@ -9,7 +9,7 @@
 
 - name: 'Create the ~/crap directory'
   file:
-    path: '~/crap'
+    path: '{{ home_directory }}/crap'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
@@ -17,7 +17,7 @@
 
 - name: 'Delete the following directories'
   file:
-    path: "~/{{ item }}"
+    path: "{{ home_directory }}/{{ item }}"
     state: absent
   with_items:
     - 'Desktop'
@@ -32,14 +32,14 @@
 - name: 'Put the user-dirs.dirs file in place'
   copy:
     src: 'user-dirs.dirs'
-    dest: '~/.config/user-dirs.dirs'
+    dest: '{{ home_directory }}/.config/user-dirs.dirs'
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
 
 - name: 'Create the ~/.config/gtk-3.0 directory'
   file:
-    path: '~/.config/gtk-3.0'
+    path: '{{ home_directory }}/.config/gtk-3.0'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
@@ -48,7 +48,7 @@
 - name: 'Put the gtk settings file in place'
   copy:
     src: 'gtk-settings.ini'
-    dest: '~/.config/gtk-3.0/settings.ini'
+    dest: '{{ home_directory }}/.config/gtk-3.0/settings.ini'
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'

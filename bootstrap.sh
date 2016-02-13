@@ -1,36 +1,59 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
 export DEBIAN_FRONTEND=noninteractive
+SUDO="sudo -E"
+
+if [ "$TRAVIS" == "true" ]; then
+  echo "Bootstrapping Travis CI"
+  $SUDO useradd marvin
+  $SUDO mkdir -p /home/marvin
+  $SUDO chown -R marvin: /home/marvin
+  $SUDO apt-get -qq update
+  $SUDO apt-get install -qq -y -o Dpkg::Options::=--force-confnew network-manager ubuntu-desktop
+fi
 
 echo "Installing git"
-sudo apt-add-repository -y ppa:git-core/ppa
-sudo apt-get -qq update
-sudo apt-get -y install git
+$SUDO apt-add-repository -y ppa:git-core/ppa
+$SUDO apt-get -qq update
+$SUDO apt-get -y install -qq git
 
 echo "Installing ansible"
-sudo apt-add-repository -y ppa:ansible/ansible
-sudo apt-get -qq update
-sudo apt-get install -y ansible
+$SUDO apt-add-repository -y ppa:ansible/ansible
+$SUDO apt-get -qq update
+$SUDO apt-get install -qq -y ansible
 
-echo "Cloning https://github.com/marvinpinto/laptop.git"
-cd /tmp
-sudo rm -rf laptop
-git clone https://github.com/marvinpinto/laptop.git
+# Only clone if this isn't being built on travis
+if [ -z "$TRAVIS" ]; then
+  echo "Cloning https://github.com/marvinpinto/laptop.git"
+  cd /tmp
+  $SUDO rm -rf laptop
+  git clone https://github.com/marvinpinto/laptop.git
+fi
 
 echo "Bootstrapping system"
-cd laptop
-sudo make system
+if [ -z "$TRAVIS" ]; then
+  cd laptop
+fi
+$SUDO make system
 
 echo "Installing dotfiles"
-sudo rm -rf ~/.ansible
-make dotfiles
+$SUDO rm -rf ~/.ansible
+if [ "$TRAVIS" == "true" ]; then
+  $SUDO make dotfiles
+else
+  make dotfiles
+fi
 
 echo "Upgrading Ubuntu"
-cd /tmp
-sudo apt-get -qq update
-sudo apt-get -y dist-upgrade
-sudo apt-get autoremove -y --purge
+if [ -z "$TRAVIS" ]; then
+  cd /tmp
+fi
+$SUDO apt-get -qq update
+$SUDO apt-get -qq -y -o Dpkg::Options::=--force-confnew dist-upgrade
+$SUDO apt-get autoremove -y --purge
 
 echo "Last time for good measure"
-cd /tmp/laptop
-sudo make system
+if [ -z "$TRAVIS" ]; then
+  cd /tmp/laptop
+fi
+$SUDO make system
