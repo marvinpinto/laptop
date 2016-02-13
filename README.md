@@ -11,6 +11,18 @@ For a previous incantation of this, have a look through my
 [osx-bootstrapping](https://github.com/marvinpinto/osx-bootstrapping)
 repository.
 
+
+## Travis CI
+
+You will also notice that this repository is linked into [Travis
+CI](https://travis-ci.org/marvinpinto/laptop) and builds are kicked off
+automatically on PRs and such.
+
+The idea here is that if this successfully builds in Travis, there's a
+reasonable chance it will build when it comes time to bootstrap my laptop
+again.
+
+
 ## Scenarios
 
 The three main scenarios where this comes into play are:
