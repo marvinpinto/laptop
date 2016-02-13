@@ -2,7 +2,7 @@
 - name: 'Put the git config files in place'
   copy:
     src: "{{ item }}"
-    dest: "~/.{{ item }}"
+    dest: "{{ home_directory }}/.{{ item }}"
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'

@@ -1,7 +1,7 @@
 ---
 - name: 'Create the ~/.irssi directory'
   file:
-    path: '~/.irssi'
+    path: '{{ home_directory }}/.irssi'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
@@ -10,7 +10,7 @@
 - name: 'Put the scripts directory in place'
   copy:
     src: 'scripts'
-    dest: '~/.irssi/'
+    dest: '{{ home_directory }}/.irssi/'
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
@@ -18,7 +18,7 @@
 - name: 'Put the fear2.theme file in place'
   copy:
     src: 'fear2.theme'
-    dest: "~/.irssi/fear2.theme"
+    dest: "{{ home_directory }}/.irssi/fear2.theme"
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
@@ -28,7 +28,7 @@
     content: |
       {{ config_im }}
       
-    dest: '~/.irssi/config-im'
+    dest: '{{ home_directory }}/.irssi/config-im'
     owner: 'marvin'
     group: 'marvin'
     mode: '0600'
@@ -38,7 +38,7 @@
     content: |
       {{ config_slack }}
       
-    dest: '~/.irssi/config-slack'
+    dest: '{{ home_directory }}/.irssi/config-slack'
     owner: 'marvin'
     group: 'marvin'
     mode: '0600'

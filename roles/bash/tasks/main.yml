@@ -2,7 +2,7 @@
 - name: 'Put all the bash-related config files in place'
   copy:
     src: "{{ item }}"
-    dest: "~/.{{ item }}"
+    dest: "{{ home_directory }}/.{{ item }}"
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
@@ -16,4 +16,4 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - '~/.bash_login'
+    - '{{ home_directory }}/.bash_login'

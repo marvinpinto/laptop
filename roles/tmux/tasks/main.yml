@@ -2,7 +2,7 @@
 - name: 'Put the tmux.conf in place'
   copy:
     src: 'tmux.conf'
-    dest: '~/.tmux.conf'
+    dest: '{{ home_directory }}/.tmux.conf'
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'

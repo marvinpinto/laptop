@@ -2,27 +2,27 @@
 - name: 'Put the ~/.ssh/id_rsa-work.pub file in place'
   copy:
     src: 'id_rsa-work.pub'
-    dest: '~/.ssh/id_rsa-work.pub'
+    dest: '{{ home_directory }}/.ssh/id_rsa-work.pub'
     mode: '0644'
     force: 'yes'
 
 - name: 'Put the ~/.ssh/id_rsa-work file in place'
   copy:
     content: "{{ id_rsa_work_private_key }}"
-    dest: '~/.ssh/id_rsa-work'
+    dest: '{{ home_directory }}/.ssh/id_rsa-work'
     mode: '0400'
     force: 'yes'
 
 - name: 'Put the ~/.ssh/id_rsa-ecs-work.pub file in place'
   copy:
     src: 'id_rsa-ecs-work.pub'
-    dest: '~/.ssh/id_rsa-ecs-work.pub'
+    dest: '{{ home_directory }}/.ssh/id_rsa-ecs-work.pub'
     mode: '0644'
     force: 'yes'
 
 - name: 'Put the ~/.ssh/id_rsa-ecs-work file in place'
   copy:
     content: "{{ id_rsa_ecs_private_key }}"
-    dest: '~/.ssh/id_rsa-ecs-work'
+    dest: '{{ home_directory }}/.ssh/id_rsa-ecs-work'
     mode: '0400'
     force: 'yes'
