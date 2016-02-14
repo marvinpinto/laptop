@@ -50,7 +50,7 @@ select the appropriate USB boot device.
 makes things a lot simpler.
 
 - Then run this wonderful curl/bash incantation that will get everything going:
-  ```
+  ```bash
   export ANSIBLE_VAULT_PASSWORD=sekrit
   bash -xec "$(curl -L https://raw.githubusercontent.com/marvinpinto/laptop/master/bootstrap.sh)"
   ```
@@ -63,7 +63,7 @@ makes things a lot simpler.
 login
 
 - After logging in, start and install Dropbox as follows:
-  ```
+  ```bash
   /usr/bin/dropbox start -i
   ```
 
@@ -79,7 +79,12 @@ in place!
 In this scenario, I'm either adding a new config file (dotfile) to my setup or
 tweaking an existing one. Pretty simple.
 
-Make the changes as needed and then run: `make dotfiles`
+Make the changes as needed and then run:
+
+```bash
+export ANSIBLE_VAULT_PASSWORD=sekrit
+make dotfiles
+```
 
 This will take care of putting all the files in the correct places, setting
 permissions, that sort of thing.
@@ -91,4 +96,9 @@ Similar to adding a config file, adding/removing system applications (and their
 configuration) will involve tweaking the ansible roles linked to this
 repository.
 
-After that is done a simple `make system` should do it,
+Make the changes as needed and then run:
+
+```bash
+export ANSIBLE_VAULT_PASSWORD=sekrit
+sudo -E make system
+```
