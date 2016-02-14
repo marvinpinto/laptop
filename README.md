@@ -70,6 +70,9 @@ login
 - Ensure that the Fn keys at the top act as actual Function keys by default,
   and not their lenovo counterparts. This will need to be done in the bios.
 
+- Ensure that VTx virtualization has been enabled. This will also need to be
+  done in the bios.
+
 This should bring the machine up to a useable state with all my apps and config
 in place!
 
