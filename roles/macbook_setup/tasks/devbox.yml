@@ -1,8 +1,0 @@
----
-- name: 'symlink /home/marvin to /home/dev'
-  sudo: yes
-  file:
-    src: '/home/marvin'
-    dest: '/home/dev'
-    state: 'link'
-    force: 'yes'
