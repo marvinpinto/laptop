@@ -12,6 +12,5 @@
 - include: function_keys.yml
 - include: scripts.yml
 - include: sounds.yml
-- include: devbox.yml
 - include: netextender.yml
 - include: yubikey.yml

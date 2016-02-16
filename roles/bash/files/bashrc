@@ -270,18 +270,18 @@ function drma() {
 }
 
 # Bash function to attach to, or spin up a new (named) docker container
-function devbox () {
+function sink () {
   local boxname=$1
   local dockerimage=$2
   local workdir="/home/marvin"
 
   if [ -z "$boxname" ]; then
-    echo "usage: devbox <box name> [docker image]"
+    echo "usage: sink <box name> [docker image]"
     return 1
   fi
 
   if [ -z "$dockerimage" ]; then
-    dockerimage="quay.io/marvin/devbox"
+    dockerimage="quay.io/marvin/kitchensink"
   fi
 
   if [ -e "${HOME}/projects/${boxname}" ]; then
