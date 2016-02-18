@@ -19,6 +19,7 @@
     - 'htop'
     - 'editorconfig'
     - 'simplestreams'
+    - 'xclip'
 
 - name: "Remove a few things I don't care for"
   sudo: yes
