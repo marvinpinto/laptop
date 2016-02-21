@@ -209,12 +209,6 @@ export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
 # Helper Functions
 #*******************
 
-# Setup an existing repo to use GitHub Enterprise exclusively
-function ghe-setup() {
-  git config user.name "Marvin Pinto"
-  git config user.email marvin@freshbooks.com
-}
-
 # Simple calculator
 function calc() {
   local result=""
