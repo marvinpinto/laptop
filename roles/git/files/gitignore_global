@@ -41,3 +41,7 @@ Desktop.ini
 # Vagrant #
 # #########
 .vagrant
+
+# Custom stuff #
+# ##############
+env_vars
