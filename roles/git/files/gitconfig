@@ -89,7 +89,7 @@
   default = simple
   followTags = true
 [user]
-  email = marvin@pinto.im
+  email = git@pinto.im
   name = Marvin Pinto
 [fetch]
   prune = true
