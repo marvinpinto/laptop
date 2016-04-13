@@ -266,22 +266,17 @@ function drma() {
 # Bash function to attach to, or spin up a new (named) docker container
 function sink () {
   local boxname=$1
-  local dockerimage=$2
+  local dockerargs=$2
   local workdir="/home/marvin"
 
   if [ -z "$boxname" ]; then
-    echo "usage: sink <box name> [docker image]"
+    echo "usage: sink <box name> [extra docker args]"
+    echo "e.g. sink tidycat-ui \"-p 4200:4200\""
     return 1
-  fi
-
-  if [ -z "$dockerimage" ]; then
-    dockerimage="quay.io/marvin/kitchensink"
   fi
 
   if [ -e "${HOME}/projects/${boxname}" ]; then
     workdir="/home/marvin/projects/${boxname}"
-  elif [ -e "${HOME}/freshbooks/${boxname}" ]; then
-    workdir="/home/marvin/freshbooks/${boxname}"
   fi
 
   local dockerid=$(docker ps -aq --filter=name=$boxname)
@@ -297,8 +292,9 @@ function sink () {
       -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+      $dockerargs \
       -w $workdir \
-      ${dockerimage})
+      "quay.io/marvin/kitchensink")
   fi
   docker exec -it $dockerid /bin/bash
 }
