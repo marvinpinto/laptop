@@ -129,6 +129,8 @@ alias apgf='apg -a 0 -n 10 -m 10 -t -E lI10O -M NCSL'
 alias drm="docker rm -f"
 alias dps="docker ps"
 
+# Command line weather
+alias weather="curl http://wttr.in/toronto"
 #************
 # GPG agent
 #************
