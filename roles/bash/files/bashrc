@@ -178,7 +178,7 @@ function __prompt_command() {
   local RESET="\[$(tput sgr0)\]"
   local PROMPTCOL="${YELLOW}"
 
-  if [ -f '/.dockerinit' ]; then
+  if [ -f '/.dockerenv' ]; then
     # We're inside a docker environment
     PS1+="\n${GREEN}"
   elif [ `id -u` == 0 ]; then
