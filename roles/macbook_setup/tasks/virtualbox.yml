@@ -32,20 +32,20 @@
 - name: 'Check to see if the extension pack file exists'
   sudo: yes
   stat:
-    path: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.14-105127.vbox-extpack'
+    path: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.18-106667.vbox-extpack'
   register: extension_pack_binary
 
 - name: 'Download the extension pack'
   sudo: yes
   get_url:
-    url: 'http://download.virtualbox.org/virtualbox/5.0.14/Oracle_VM_VirtualBox_Extension_Pack-5.0.14-105127.vbox-extpack'
-    dest: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.14-105127.vbox-extpack'
+    url: 'http://download.virtualbox.org/virtualbox/5.0.18/Oracle_VM_VirtualBox_Extension_Pack-5.0.18-106667.vbox-extpack'
+    dest: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.18-106667.vbox-extpack'
     mode: '0755'
   when: extension_pack_binary.stat.exists == False
 
 - name: 'Install the extension pack'
   sudo: yes
-  command: '/usr/bin/VBoxManage extpack install --replace /usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.14-105127.vbox-extpack'
+  command: '/usr/bin/VBoxManage extpack install --replace /usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-5.0.18-106667.vbox-extpack'
   when: extension_pack_binary.stat.exists == False
 
 - name: 'Add marvin to the vboxusers group'
