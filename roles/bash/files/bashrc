@@ -427,3 +427,22 @@ function docker-letsencrypt() {
     auth
   sudo chown -R marvin: ${HOME}/Dropbox/lets-encrypt
 }
+
+function adiff() {
+  local commit="$1"
+  local file="$2"
+  local vault_password_file="$3"
+
+  if [ -z "$commit" -o -z "$file" ]; then
+    echo "usage: adiff <commit> <file> [vault_password_file]"
+    return 1
+  fi
+
+  if [ -z "$vault_password_file" ]; then
+    vault_password_file=vault_pass.py
+  fi
+
+  diff -u \
+    <( ansible-vault --vault-password-file="${vault_password_file}" view <( git show "${commit}^":"${file}" )) \
+    <( ansible-vault --vault-password-file="${vault_password_file}" view <( git show "${commit}":"${file}" ))
+}
