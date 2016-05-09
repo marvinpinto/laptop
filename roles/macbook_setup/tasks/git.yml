@@ -11,3 +11,33 @@
   apt:
     name: 'git'
     state: latest
+
+- name: 'Add the git-lfs apt signing key'
+  sudo: yes
+  apt_key:
+    url: 'https://packagecloud.io/github/git-lfs/gpgkey'
+    state: present
+
+- name: 'Perform an apt-get update'
+  sudo: yes
+  apt:
+    update_cache: yes
+
+- name: 'Install apt-transport-https'
+  sudo: yes
+  apt:
+    name: 'apt-transport-https'
+    state: latest
+
+- name: 'Add the git-lfs ubuntu repo'
+  sudo: yes
+  apt_repository:
+    repo: 'deb https://packagecloud.io/github/git-lfs/ubuntu/ {{ ansible_distribution_release }} main'
+    state: present
+    update_cache: yes
+
+- name: 'Install git-lfs'
+  sudo: yes
+  apt:
+    name: 'git-lfs'
+    state: latest
