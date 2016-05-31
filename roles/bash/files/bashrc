@@ -135,6 +135,8 @@ alias weather="curl http://wttr.in/toronto"
 # System Update
 alias yoloupdate="sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get clean && sudo apt-get autoremove -y --purge"
 
+
+
 #************
 # GPG agent
 #************
@@ -445,4 +447,16 @@ function adiff() {
   diff -u \
     <( ansible-vault --vault-password-file="${vault_password_file}" view <( git show "${commit}^":"${file}" )) \
     <( ansible-vault --vault-password-file="${vault_password_file}" view <( git show "${commit}":"${file}" ))
+}
+
+# Determine size of a remote file via a HEAD request
+function rfs() {
+  local url="$1"
+
+  if [ -z "$url" ]; then
+    echo "usage: rfs <url>"
+    return 1
+  fi
+
+  curl -sIL "$url" | grep Content-Length | sed 's/[^0-9]//g' | numfmt --to=si
 }
