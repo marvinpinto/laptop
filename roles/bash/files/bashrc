@@ -55,6 +55,9 @@ shopt -s cdspell
 
 shopt -s checkwinsize
 
+# Set the correct terminal size
+eval $(/usr/bin/resize)
+
 #***************
 # Bash Exports
 #***************
