@@ -30,6 +30,8 @@
   restore = "!f() { git checkout $(git rev-list -n 1 HEAD -- $1)~1 -- $(git diff --name-status $(git rev-list -n 1 HEAD -- $1)~1 | grep '^D' | cut -f 2); }; f"
   # Delete all local branches that have been merged into master
   cleanup = "!git branch --merged | grep  -v '\\*\\|master' | xargs -n 1 git branch -d"
+  # Special grep -- include untracked files, case insensitive, no pager
+  gr = "!f() { git --no-pager grep --untracked --ignore-case $1; }; f"
 
 [core]
   # Use custom `.gitignore` and `.gitattributes`
