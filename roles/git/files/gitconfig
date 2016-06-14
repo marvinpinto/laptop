@@ -50,6 +50,23 @@
   # files such as git status.
   untrackedCache = true
 
+[pager]
+  # Use the diff-highlight script to emphasize the changed parts of a line
+  # https://github.com/blog/2188-git-2-9-has-been-released
+  log = diff-highlight | less
+  show = diff-highlight | less
+  diff = diff-highlight | less
+
+[diff]
+  # Enable the experimental compaction heuristic option
+  # https://github.com/git/git/commit/5580b271af518bae30148edfd42cc8459d8da384
+  compactionHeuristic = true
+
+[interactive]
+  # Use the diff-highlight script to emphasize the changed parts of a line
+  # https://github.com/blog/2188-git-2-9-has-been-released
+  diffFilter = diff-highlight
+
 [color]
   # Use colors in Git commands that are capable of colored output when
   # outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)

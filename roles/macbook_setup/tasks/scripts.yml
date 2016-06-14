@@ -7,3 +7,12 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the diff-highlight script file in place'
+  sudo: yes
+  copy:
+    src: 'diff-highlight'
+    dest: '/usr/local/bin/diff-highlight'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
