@@ -131,6 +131,7 @@ exec_always --no-startup-id /usr/bin/gnome-settings-daemon &
 exec_always --no-startup-id /usr/bin/xset r rate 250 50
 exec_always --no-startup-id /usr/bin/dropbox start
 exec_always --no-startup-id ~/.i3/gpg-agent.sh
+exec --no-startup-id /usr/bin/emojione-picker
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
 bindsym $mod+Control+Left workspace prev

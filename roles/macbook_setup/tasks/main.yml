@@ -14,3 +14,4 @@
 - include: sounds.yml
 - include: netextender.yml
 - include: yubikey.yml
+- include: emojione_picker.yml

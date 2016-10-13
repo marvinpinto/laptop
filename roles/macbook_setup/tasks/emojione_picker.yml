@@ -1,0 +1,14 @@
+---
+- name: 'Add the emojione ubuntu repo'
+  sudo: 'yes'
+  apt_repository:
+    repo: 'ppa:ys/emojione-picker'
+    state: 'present'
+    update_cache: 'yes'
+    filename: 'emojione-picker'
+
+- name: 'Install emojione-picker'
+  sudo: 'yes'
+  apt:
+    name: 'emojione-picker'
+    state: 'latest'
