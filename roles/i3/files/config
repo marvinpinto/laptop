@@ -124,7 +124,8 @@ focus_follows_mouse no
 
 # Startup programs
 exec_always --no-startup-id xsetroot -solid "#00001A"
-exec_always --no-startup-id xautolock -time 5 -locker '~/.i3/i3lock.sh' &
+exec_always --no-startup-id xautolock -detectsleep -time 3 -locker '~/.i3/i3lock.sh' -notify 30 -notifier "notify-send -i info -u normal -t 1000 -- 'Locking screen in 30 seconds'" &
+exec_always --no-startup-id xautolock -enable
 exec_always --no-startup-id /usr/bin/xmodmap ~/.xmodmap
 exec_always --no-startup-id /usr/bin/xrdb -load ~/.xresources
 exec_always --no-startup-id /usr/bin/gnome-settings-daemon &

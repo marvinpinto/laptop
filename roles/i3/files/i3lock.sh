@@ -1,17 +1,25 @@
 #!/bin/bash
-# /usr/bin/scrot /tmp/screen_locked.png
-# /usr/bin/convert /tmp/screen_locked.png -blur 2x2 /tmp/screen_locked2.png
-# /usr/bin/i3lock -i /tmp/screen_locked2.png
 
-# Take a screenshot
-/usr/bin/scrot /tmp/screen_locked.png
+LOCKFILE="/tmp/i3lock-lockfile.txt"
 
-# Pixellate it 10x
-mogrify -scale 10% -scale 1000% /tmp/screen_locked.png
+revert() {
+  xset dpms 0 0 0
+  rm -f ${LOCKFILE}
+}
 
-# Lock screen displaying this image.
-i3lock -i /tmp/screen_locked.png
+if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
+  msg="i3lock.sh already running"
+  echo $msg
+  logger -t i3lock $msg
+  exit
+fi
 
-# Turn the screen off after a delay.
-sleep 60; pgrep i3lock && xset dpms force off
+# make sure the lockfile is removed when we exit and then claim it
+trap revert SIGHUP SIGINT SIGTERM
 
+# echo our PID into the lockfile
+echo $$ > ${LOCKFILE}
+
+xset +dpms dpms 5 5 5
+i3lock --color=00001A --nofork
+revert
