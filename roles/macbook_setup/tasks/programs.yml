@@ -20,6 +20,7 @@
     - 'editorconfig'
     - 'simplestreams'
     - 'xclip'
+    - 'linux-generic-lts-vivid'
 
 - name: "Remove a few things I don't care for"
   sudo: yes
