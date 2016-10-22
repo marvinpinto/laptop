@@ -32,6 +32,8 @@
   cleanup = "!git branch --merged | grep  -v '\\*\\|master' | xargs -n 1 git branch -d"
   # Special grep -- include untracked files, case insensitive, no pager
   gr = "!f() { git --no-pager grep --untracked --ignore-case $1; }; f"
+  # Slightly more interesting log line (SHA, date, email, abbrev subject)
+  lol = log --graph --pretty=format:\"%C(yellow)%h%Creset%C(cyan)%C(bold)%d%Creset %C(cyan)(%ai)%Creset %C(green)%ce%Creset %<(70,trunc)%s\"
 
 [core]
   # Use custom `.gitignore` and `.gitattributes`
