@@ -34,6 +34,11 @@
   gr = "!f() { git --no-pager grep --untracked --ignore-case $1; }; f"
   # Slightly more interesting log line (SHA, date, email, abbrev subject)
   lol = log --graph --pretty=format:\"%C(yellow)%h%Creset%C(cyan)%C(bold)%d%Creset %C(cyan)(%ai)%Creset %C(green)%ce%Creset %<(70,trunc)%s\"
+  # Alias to modify the last commit date (e.g. `git cd now`)
+  cd = "!d=\"$(date -d \"$1\")\" && shift && \
+    git diff-index --cached --quiet HEAD --ignore-submodules -- && \
+    GIT_COMMITTER_DATE=\"$d\" git commit --amend -C HEAD --date \"$d\"" \
+    || echo >&2 "error: date change failed: index not clean!"
 
 [core]
   # Use custom `.gitignore` and `.gitattributes`
