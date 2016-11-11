@@ -125,9 +125,6 @@ alias tks='/usr/bin/tmux kill-session -t '
 # Alias git to g
 alias g="git"
 
-# APG alias for friendly passwords
-alias apgf='apg -a 0 -n 10 -m 10 -t -E lI10O -M NCSL'
-
 # Docker related aliases
 alias drm="docker rm -f"
 alias dps="docker ps"
@@ -464,4 +461,16 @@ function rfs() {
   fi
 
   curl -sIL "$url" | grep Content-Length | sed 's/[^0-9]//g' | numfmt --to=si
+}
+
+# APG alias for friendly passwords
+function apgf() {
+  local num="$1"
+
+  if [ -z "$num" ]; then
+    echo "usage: apgf <length>"
+    return 1
+  fi
+
+  apg -a 0 -n "$num" -m "$num" -t -E lI10O -M NCSL
 }
