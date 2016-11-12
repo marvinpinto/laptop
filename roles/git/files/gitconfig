@@ -9,7 +9,7 @@
   l = log --pretty=oneline --graph --abbrev-commit
   st = status -sb
   # Show the diff between the latest commit and the current state
-  d = !"git diff-index --quiet HEAD -- || clear; git --no-pager diff --patch-with-stat"
+  d = !"git diff-index --quiet HEAD -- || git --no-pager diff --color --patch-with-stat | diff-highlight"
   # Clone a repository including all submodules
   cl = clone --recursive
   # Show verbose output about tags, branches or remotes
