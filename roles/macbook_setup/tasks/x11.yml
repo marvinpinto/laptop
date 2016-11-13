@@ -26,6 +26,15 @@
     group: 'root'
     mode: '0644'
 
+- name: 'Put the 70-optical-mice.conf file in place'
+  sudo: yes
+  copy:
+    src: '70-optical-mice.conf'
+    dest: '/etc/X11/xorg.conf.d/70-optical-mice.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
 - name: 'Install gnome-settings-daemon'
   sudo: yes
   apt:
