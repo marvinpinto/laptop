@@ -330,6 +330,11 @@ function presentation-mode() {
   xrandr --output ${display} --same-as LVDS1
 }
 
+# Turn off the laptop display when connected to an external monitor
+function docked-mode() {
+  xrandr --output eDP1 --off
+}
+
 # Start my irssi im container
 function im() {
   docker run -it \
