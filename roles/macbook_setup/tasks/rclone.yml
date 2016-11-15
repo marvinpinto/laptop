@@ -1,0 +1,34 @@
+---
+- name: 'Check to see if the rclone binary exists'
+  stat:
+    path: '/usr/local/bin/rclone'
+  register: rclone_binary
+
+- name: 'Unzip the rclone package'
+  unarchive:
+    src: 'https://github.com/ncw/rclone/releases/download/v1.34/rclone-v1.34-linux-amd64.zip'
+    dest: '/tmp'
+    copy: no
+  when: rclone_binary.stat.exists == False
+
+- name: 'Install rclone to /usr/local/bin'
+  copy:
+    src: '/tmp/rclone-v1.34-linux-amd64/rclone'
+    dest: '/usr/local/bin/rclone'
+    mode: '0755'
+    owner: 'root'
+    group: 'root'
+    remote_src: true
+  become: 'yes'
+  when: rclone_binary.stat.exists == False
+
+- name: 'Check to see if the rclone binary exists'
+  stat:
+    path: '/usr/local/bin/rclone'
+  register: rclone_binary
+
+- name: 'Clean up unzipped rclone directory'
+  file:
+    path: '/tmp/rclone-v1.34-linux-amd64'
+    state: absent
+  when: rclone_binary.stat.exists == True

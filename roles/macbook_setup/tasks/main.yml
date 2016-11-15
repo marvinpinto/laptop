@@ -15,3 +15,4 @@
 - include: netextender.yml
 - include: yubikey.yml
 - include: emojione_picker.yml
+- include: rclone.yml
