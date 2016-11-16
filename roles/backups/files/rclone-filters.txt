@@ -1,0 +1,14 @@
+# Exclude all node_modules directories
+- node_modules/**
+
+# Exclude all python virtualenv directories named 'env'
+- env/**
+
+# Exclude any directories named 'tmp'
+- tmp/**
+
+# Exclude any directories named '.sass-cache'
+- .sass-cache/**
+
+# Exclude any files/directories starting with '.dropbox'
+- .dropbox**

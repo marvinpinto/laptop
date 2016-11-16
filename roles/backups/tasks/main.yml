@@ -1,0 +1,8 @@
+---
+- name: 'Put the ~/.rclone-filters.txt file in place'
+  copy:
+    src: 'rclone-filters.txt'
+    dest: "{{ home_directory }}/.rclone-filters"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'

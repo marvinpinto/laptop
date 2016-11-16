@@ -16,3 +16,12 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the acd-backup script file in place'
+  become: true
+  copy:
+    src: 'acd-backup.sh'
+    dest: '/usr/local/bin/acd-backup'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
