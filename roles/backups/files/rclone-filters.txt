@@ -12,3 +12,12 @@
 
 # Exclude any files/directories starting with '.dropbox'
 - .dropbox**
+
+# Include the ~/Dropbox directory in the backups
++ /Dropbox/**
+
+# Include the ~/Virtualbox VMs directory in the backups
++ /VirtualBox**
+
+# Exclude everything else from the root directory
+- /**

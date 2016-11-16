@@ -9,7 +9,7 @@ SYSLOG_TAG="${PROGRAM_NAME}"
 LOCKFILE="/tmp/${PROGRAM_NAME}-lockfile.txt"
 RCLONE="/usr/local/bin/rclone"
 RCLONE_FILTERS="${HOME}/.rclone-filters"
-BACKUP_SRC="${HOME}/Dropbox/"
+BACKUP_SRC="${HOME}/"
 BACKUP_DEST="amazon:files"
 TIMESTAMP="/tmp/backup-timestamp.txt"
 
