@@ -35,6 +35,7 @@
     - 'i3lock.sh'
     - 'gpg-agent.sh'
     - 'restore-layout.sh'
+    - 'wrapper.py'
 
 - name: 'Put the other X11 based files in place'
   copy:
