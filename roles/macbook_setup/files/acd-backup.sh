@@ -48,6 +48,8 @@ rm -f ${TIMESTAMP}
 ${RCLONE} \
   --filter-from ${RCLONE_FILTERS} \
   --transfers 10 \
+  --checkers 10 \
+  --size-only \
   sync ${BACKUP_SRC} ${BACKUP_DEST} \
   2>&1 | /usr/bin/logger --id \
   --priority 'local3.info' \
