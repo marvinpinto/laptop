@@ -129,6 +129,9 @@ let mapleader = ","
 " Re-hardwrap paragraphs of text
 nnoremap <leader>q gqip
 
+" Trick to replace multiple lines with the content of the default clipboard
+xnoremap p pgvy
+
 " Disable backup and swap files
 set nobackup
 set noswapfile
