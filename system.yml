@@ -61,3 +61,5 @@
         - 'debian_sur5r_net_i3.list'
         - 'packagecloud_io_github_git_lfs_ubuntu.list'
         - 'emojione-picker.list'
+        - 'ppa_yubico_stable_trusty.list'
+        - 'ppa_gertvdijk_ccid_backports_trusty.list'

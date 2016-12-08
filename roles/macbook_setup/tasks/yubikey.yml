@@ -1,9 +1,46 @@
 ---
 - name: 'Add the rules file needed for Yubikey'
-  sudo: yes
+  become: true
   copy:
     src: '70-u2f.rules'
     dest: '/etc/udev/rules.d/70-u2f.rules'
     owner: 'root'
     group: 'root'
     mode: '0644'
+  notify: 'restart-udev'
+
+- name: 'Add the yubikey ubuntu repo'
+  become: true
+  apt_repository:
+    repo: 'ppa:yubico/stable'
+    state: present
+    update_cache: yes
+    filename: 'ppa_yubico_stable_trusty'
+
+- name: 'Add the CCID Backports (libccid) ubuntu repo'
+  become: true
+  apt_repository:
+    repo: 'ppa:gertvdijk/ccid-backports'
+    state: present
+    update_cache: yes
+    filename: 'ppa_gertvdijk_ccid_backports_trusty'
+
+- name: 'Install a few requirements needed by the various yubikey tools'
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'python-usb'
+    - 'libccid'
+  notify: 'restart-pcscd'
+
+- name: 'Install the Yubikey personalization tools'
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'yubikey-personalization'
+    - 'yubikey-personalization-gui'
+    - 'yubioath-desktop'

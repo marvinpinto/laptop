@@ -6,3 +6,15 @@
 - name: 'Load the mba6x_bl module'
   sudo: yes
   command: '/sbin/modprobe mba6x_bl'
+
+- name: 'restart-udev'
+  sudo: yes
+  service:
+    name: 'udev'
+    state: 'restarted'
+
+- name: 'restart-pcscd'
+  sudo: yes
+  service:
+    name: 'pcscd'
+    state: 'restarted'
