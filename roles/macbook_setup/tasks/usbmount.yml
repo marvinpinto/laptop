@@ -1,0 +1,21 @@
+---
+- name: 'Install tools needed to format + mount USB flash drives'
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'usbmount'
+    - 'pmount'
+    - 'gparted'
+
+- name: 'Automount any USB flash drives as UID/GID 1000 (user marvin)'
+  become: true
+  lineinfile:
+    dest: '/etc/usbmount/usbmount.conf'
+    state: 'present'
+    line: 'FS_MOUNTOPTIONS="uid=1000,gid=1000"'
+    regexp: '^FS_MOUNTOPTIONS='
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
