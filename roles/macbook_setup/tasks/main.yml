@@ -17,3 +17,4 @@
 - include: emojione_picker.yml
 - include: rclone.yml
 - include: usbmount.yml
+- include: rng_tools.yml
