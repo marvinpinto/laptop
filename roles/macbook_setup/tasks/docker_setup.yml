@@ -1,0 +1,13 @@
+---
+- name: 'Allow the "marvin" user to comfortably mount volumes while using docker user namespacing'
+  become: true
+  copy:
+    content: "marvin:1000:2\nmarvin:100000:65535"
+    dest: '{{ item }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items:
+    - '/etc/subuid'
+    - '/etc/subgid'
+  notify: 'macbook_setup-restart-docker'

@@ -277,7 +277,7 @@ function drma() {
 function sink () {
   local boxname=$1
   local dockerargs=$2
-  local workdir="/home/marvin"
+  local workdir="/root"
 
   if [ -z "$boxname" ]; then
     echo "usage: sink <box name> [extra docker args]"
@@ -286,7 +286,7 @@ function sink () {
   fi
 
   if [ -e "${HOME}/projects/${boxname}" ]; then
-    workdir="/home/marvin/projects/${boxname}"
+    workdir="/root/projects/${boxname}"
   fi
 
   local dockerid=$(docker ps -aq --filter=name=$boxname)
@@ -339,11 +339,10 @@ function docked-mode() {
 function im() {
   docker run -it \
     -e TERM \
-    -u $(id -u):$(id -g) \
-    --read-only \
+    -u root:root \
     -v $HOME/.irssi:/home/user/.irssi \
     -v /etc/localtime:/etc/localtime \
-    irssi \
+    irssi:alpine \
     irssi --config=/home/user/.irssi/config-im --home=/home/user/.irssi
 }
 

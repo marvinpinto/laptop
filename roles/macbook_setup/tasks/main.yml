@@ -18,3 +18,4 @@
 - include: rclone.yml
 - include: usbmount.yml
 - include: rng_tools.yml
+- include: docker_setup.yml

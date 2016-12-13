@@ -18,3 +18,9 @@
   service:
     name: 'pcscd'
     state: 'restarted'
+
+- name: 'macbook_setup-restart-docker'
+  become: true
+  service:
+    name: 'docker'
+    state: 'restarted'
