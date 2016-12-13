@@ -296,6 +296,7 @@ function sink () {
     echo "Creating new docker container"
     dockerid=$(docker run -dit \
       -e "HOSTNAME=${boxname}" \
+      --log-driver=none \
       --name $boxname \
       --hostname ${boxname} \
       -v /home/marvin:/var/shared \
@@ -338,6 +339,7 @@ function docked-mode() {
 # Start my irssi im container
 function im() {
   docker run -it \
+    --log-driver=none \
     -e TERM \
     -u root:root \
     -v $HOME/.irssi:/home/user/.irssi \
@@ -350,6 +352,7 @@ function im() {
 function docker-gimp() {
   xhost local:root
   docker run -it \
+    --log-driver=none \
     --rm \
     -v /etc/localtime:/etc/localtime:ro \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -363,6 +366,7 @@ function docker-gimp() {
 function docker-chrome() {
   xhost local:root
   docker run -it \
+    --log-driver=none \
     --rm \
     --net host \
     --cpuset-cpus 0 \
@@ -379,6 +383,7 @@ function docker-chrome() {
 function docker-inkscape() {
   xhost local:root
   docker run -it \
+    --log-driver=none \
     --rm \
     -u inkscaper \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -397,6 +402,7 @@ function docker-bittorrent() {
   rm -f ${HOME}/bittorrent/.session/rtorrent.lock
   docker rm -f bittorrent || true
   docker run -it \
+    --log-driver=none \
     --rm \
     -p 45566:45566 \
     -p 9527:9527/udp \
@@ -411,6 +417,7 @@ function docker-bittorrent() {
 function docker-vlc() {
   mkdir -p ${HOME}/bittorrent
   docker run -it \
+    --log-driver=none \
     --rm \
     -v $HOME/bittorrent:/home/vlc/Documents:rw \
     -v /dev/snd:/dev/snd --privileged \
@@ -425,6 +432,7 @@ function docker-vlc() {
 # Launch a containerized letsencrypt client
 function docker-letsencrypt() {
   docker run -it \
+    --log-driver=none \
     --rm \
     --name letsencrypt \
     -v "${HOME}/Dropbox/lets-encrypt/etc:/etc/letsencrypt" \
