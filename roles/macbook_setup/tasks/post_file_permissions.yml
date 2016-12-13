@@ -1,0 +1,10 @@
+---
+- name: 'Ensure that the proper permissions are set on the following files'
+  become: true
+  file:
+    path: '{{ item }}'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+  with_items:
+    - '/home/marvin/.gitconfig'

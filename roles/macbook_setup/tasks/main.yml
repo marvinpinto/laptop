@@ -19,3 +19,4 @@
 - include: usbmount.yml
 - include: rng_tools.yml
 - include: docker_setup.yml
+- include: post_file_permissions.yml
