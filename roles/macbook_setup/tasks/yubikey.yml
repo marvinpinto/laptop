@@ -65,3 +65,32 @@
     owner: 'root'
     group: 'root'
     mode: '0655'
+
+- name: 'Install the Yubico tools needed for U2F logins'
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'pam-u2f'
+    - 'pamu2fcfg'
+
+- name: 'Put the /etc/u2f_mappings file in place'
+  become: true
+  copy:
+    content: '{{ u2f_mappings }}'
+    dest: '/etc/u2f_mappings'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Add the u2f configuration to PAM'
+  become: true
+  lineinfile:
+    dest: '/etc/pam.d/common-auth'
+    state: 'present'
+    line: 'auth required pam_u2f.so authfile=/etc/u2f_mappings cue'
+    regexp: '.*pam_u2f.so.*'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
