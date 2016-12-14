@@ -1,11 +1,4 @@
 ---
-- name: 'symlink ~/Dropbox/gnupg to ~/.gnupg'
-  file:
-    src: '{{ home_directory }}/Dropbox/gnupg'
-    dest: '{{ home_directory }}/.gnupg'
-    state: 'link'
-    force: 'yes'
-
 - name: 'symlink ~/Dropbox/projects to ~/projects'
   file:
     src: '{{ home_directory }}/Dropbox/projects'

@@ -66,3 +66,4 @@
     - 'account-plugin-google'
     - 'libaccount-plugin-generic-oauth'
     - 'libaccount-plugin-google'
+    - 'libpam-gnome-keyring'

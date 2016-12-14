@@ -14,6 +14,7 @@
     - 'symlinks'
     - 'ssh_config'
     - 'irssi'
+    - 'gpg'
     - 'backups'
 
     - role: 'set_gsettings_value'

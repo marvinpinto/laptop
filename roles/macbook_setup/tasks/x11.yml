@@ -40,3 +40,15 @@
   apt:
     name: 'gnome-settings-daemon'
     state: latest
+
+- name: 'Ensure that X11 does not attempt to start gpg-agent automatically'
+  become: true
+  file:
+    path: '/etc/X11/Xsession.d/90gpg-agent'
+    state: 'absent'
+
+- name: 'Ensure that X11 does not attempt to start ssh-agent automatically'
+  become: true
+  file:
+    path: '/etc/X11/Xsession.d/90x11-common_ssh-agent'
+    state: 'absent'

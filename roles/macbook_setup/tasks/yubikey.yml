@@ -33,6 +33,11 @@
   with_items:
     - 'python-usb'
     - 'libccid'
+    - 'gnupg2'
+    - 'pinentry-curses'
+    - 'pcscd'
+    - 'scdaemon'
+    - 'pcsc-tools'
   notify: 'restart-pcscd'
 
 - name: 'Install the Yubikey personalization tools'
@@ -44,3 +49,19 @@
     - 'yubikey-personalization'
     - 'yubikey-personalization-gui'
     - 'yubioath-desktop'
+
+- name: 'Symlink /usr/bin/gpg2 to /usr/local/bin/gpg'
+  become: true
+  file:
+    src: '/usr/bin/gpg2'
+    dest: '/usr/local/bin/gpg'
+    state: 'link'
+
+- name: 'Put the yubitouch.sh script in place'
+  become: true
+  copy:
+    src: 'yubitouch.sh'
+    dest: '/usr/local/bin/yubitouch.sh'
+    owner: 'root'
+    group: 'root'
+    mode: '0655'

@@ -102,6 +102,11 @@ export GIT_PS1_SHOWDIRTYSTATE='yes'
 export GIT_PS1_SHOWSTASHSTATE='yes'
 export GIT_PS1_SHOWUNTRACKEDFILES='yes'
 
+# Needed for pinentry-curses + friends
+export GPG_TTY=`tty`
+gpg-connect-agent updatestartuptty /bye >/dev/null
+
+
 #***************
 # Bash Aliases
 #***************
@@ -147,6 +152,7 @@ if [ -f "${HOME}/.gnupg/gpg-agent-info" ]; then
   . "${HOME}/.gnupg/gpg-agent-info"
   export GPG_AGENT_INFO
   export SSH_AUTH_SOCK
+  export SSH_AGENT_PID
 fi
 
 #*****************
@@ -485,4 +491,15 @@ function apgf() {
   fi
 
   apg -a 0 -n "$num" -m "$num" -t -E lI10O -M NCSL
+}
+
+# Launch a container to manage gpg tasks
+function docker-gpg() {
+  docker run -it \
+    --rm \
+    --log-driver=none \
+    --name gpg \
+    -v "/media/usb0:/media/usb" \
+    -w /media/usb \
+    "quay.io/marvin/kitchensink"
 }
