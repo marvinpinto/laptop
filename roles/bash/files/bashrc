@@ -151,6 +151,10 @@ alias dc="docker-compose"
 if [ -f "${HOME}/.gnupg/gpg-agent-info" ]; then
   . "${HOME}/.gnupg/gpg-agent-info"
   export GPG_AGENT_INFO
+  if [ -f '/.dockerenv' ]; then
+    # We're inside a docker environment
+    SSH_AUTH_SOCK=/ssh-agent
+  fi
   export SSH_AUTH_SOCK
   export SSH_AGENT_PID
 fi
@@ -306,9 +310,8 @@ function sink () {
       --name $boxname \
       --hostname ${boxname} \
       -v /home/marvin:/var/shared \
-      -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
-      -v /var/run/docker.sock:/var/run/docker.sock \
-      -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+      -v $SSH_AUTH_SOCK:/ssh-agent \
+      -e SSH_AUTH_SOCK=/ssh-agent \
       $dockerargs \
       -w $workdir \
       "quay.io/marvin/kitchensink")
