@@ -1,10 +1,14 @@
 ---
-- name: 'Ensure that the proper permissions are set on the following files'
+- name: 'Check to see if /home/marvin/.gitconfig exists'
+  stat:
+    path: '/home/marvin/.gitconfig'
+  register: gc
+
+- name: 'Ensure that the proper permissions are set on /home/marvin/.gitconfig'
   become: true
   file:
-    path: '{{ item }}'
+    path: '/home/marvin/.gitconfig'
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
-  with_items:
-    - '/home/marvin/.gitconfig'
+  when: gc.stat.isreg is defined and gc.stat.isreg
