@@ -32,3 +32,4 @@
 
 - name: 'Install the Vundle plugins'
   shell: vim +PluginInstall +qall > /dev/null
+  changed_when: False
