@@ -5,9 +5,10 @@
   co = checkout
   dc = diff --cached
   ci = commit -v
-  # View abbreviated SHA, description, and history graph of the latest 20 commits
-  l = log --pretty=oneline --graph --abbrev-commit
+  cis = commit -v -S -s
+  l = log --graph --pretty=format:\"%C(yellow)%h %Creset%C(cyan)%G?%Creset %C(green)%ae%Creset %<(80,trunc)%s\"
   st = status -sb
+  sho = show --show-signature
   # Show the diff between the latest commit and the current state
   d = !"git diff-index --quiet HEAD -- || git --no-pager diff --color --patch-with-stat | diff-highlight"
   # Clone a repository including all submodules
@@ -117,5 +118,6 @@
 [user]
   email = git@pinto.im
   name = Marvin Pinto
+  signingkey = 52654E6EB0BB564B
 [fetch]
   prune = true
