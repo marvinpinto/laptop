@@ -12,11 +12,9 @@
     name: "sur5r-keyring"
     state: latest
     force: yes
+  notify: 'macbook_setup-apt-get-update'
 
-- name: 'Perform an apt-get update'
-  sudo: yes
-  apt:
-    update_cache: yes
+- meta: flush_handlers
 
 - name: 'Install i3wm + friends'
   sudo: yes

@@ -17,11 +17,9 @@
   apt_key:
     url: 'https://packagecloud.io/github/git-lfs/gpgkey'
     state: present
+  notify: 'macbook_setup-apt-get-update'
 
-- name: 'Perform an apt-get update'
-  sudo: yes
-  apt:
-    update_cache: yes
+- meta: flush_handlers
 
 - name: 'Install apt-transport-https'
   sudo: yes

@@ -24,3 +24,8 @@
   service:
     name: 'docker'
     state: 'restarted'
+
+- name: 'macbook_setup-apt-get-update'
+  become: true
+  apt:
+    update_cache: yes
