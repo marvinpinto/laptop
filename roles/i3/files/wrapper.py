@@ -19,13 +19,23 @@ import time
 from datetime import datetime
 
 TWO_DAYS = 172800  # seconds
+SEVEN_DAYS = 604800  # seconds
 COLORS = {
   'GOOD': '#00FF00',
   'DEGRADED': '#FFFF00',
   'BAD': '#FF0000'
 }
 
-backup_status_file = "/tmp/backup-timestamp.txt"
+backup_status_file = "%s/tmp/backup-timestamp.txt" % os.environ['HOME']
+backup_pid_file = "%s/tmp/acd-backup-lockfile.txt" % os.environ['HOME']
+
+def checkPidRunning(pid):
+    """Check For the existence of a unix pid."""
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
 
 def get_backup_status():
     """ Get the status of the Amazon Cloud Drive backup status. """
@@ -33,24 +43,30 @@ def get_backup_status():
       'name': 'backups'
     }
 
-    try:
-      last_backup_time = os.path.getmtime(backup_status_file)
-    except OSError:
-      backup_status['full_text'] = "Backups: ERROR"
+    if os.path.isfile(backup_status_file):
+        last_backup_time = os.path.getmtime(backup_status_file)
+    elif os.path.isfile(backup_pid_file) and checkPidRunning(int(file(backup_pid_file, 'r').readlines()[0])):
+        backup_status['full_text'] = "Backups IN PROGRESS"
+        backup_status['color'] = COLORS['DEGRADED']
+        return backup_status;
+    else:
+        backup_status['full_text'] = "Last Backup: ERROR"
+        backup_status['color'] = COLORS['BAD']
+        return backup_status
+
+    backup_str = "Last Backup: %s" % datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
+    current_time = int(time.time())
+    datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
+    backup_status['full_text'] = backup_str
+    backup_time_seconds = current_time - last_backup_time
+
+    if (backup_time_seconds >= TWO_DAYS) and (backup_time_seconds < SEVEN_DAYS):
+      backup_status['color'] = COLORS['DEGRADED']
+      return backup_status
+    elif (backup_time_seconds >= SEVEN_DAYS):
       backup_status['color'] = COLORS['BAD']
       return backup_status
 
-    backup_str = "Backups: %s" % datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
-    current_time = int(time.time())
-    datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
-
-    if ((current_time - last_backup_time) >= TWO_DAYS):
-      backup_status['full_text'] = backup_str
-      backup_status['color'] = COLORS['DEGRADED']
-      return backup_status
-
-    backup_status['full_text'] = backup_str
-    backup_status['color'] = COLORS['GOOD']
     return backup_status
 
 

@@ -6,12 +6,12 @@ set -o pipefail
 # Global variables
 PROGRAM_NAME="acd-backup"
 SYSLOG_TAG="${PROGRAM_NAME}"
-LOCKFILE="/tmp/${PROGRAM_NAME}-lockfile.txt"
+LOCKFILE="${HOME}/tmp/${PROGRAM_NAME}-lockfile.txt"
 RCLONE="/usr/local/bin/rclone"
 RCLONE_FILTERS="${HOME}/.rclone-filters"
 BACKUP_SRC="${HOME}/"
 BACKUP_DEST="amazon:files"
-TIMESTAMP="/tmp/backup-timestamp.txt"
+TIMESTAMP="${HOME}/tmp/backup-timestamp.txt"
 
 info() {
   /usr/bin/logger --id --priority local3.info --tag ${SYSLOG_TAG} "INFO: $@"
