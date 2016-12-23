@@ -22,6 +22,7 @@
     - 'xclip'
     - 'fonts-noto'
     - 'linux-generic-lts-vivid'
+    - 'xournal'
 
 - name: "Remove a few things I don't care for"
   sudo: yes
