@@ -23,6 +23,7 @@
     - 'fonts-noto'
     - 'linux-generic-lts-vivid'
     - 'xournal'
+    - 'fonts-font-awesome'
 
 - name: "Remove a few things I don't care for"
   sudo: yes

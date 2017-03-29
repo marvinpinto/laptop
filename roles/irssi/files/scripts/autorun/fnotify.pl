@@ -72,7 +72,17 @@ sub priv_msg {
   my ($server, $msg, $nick, $address, $target) = @_;
   my $msg_stripped = Irssi::strip_codes($msg);
   my $network = $server->{tag};
-  filewrite('' . $network . ' ' . $nick . ' ' . $msg_stripped);
+  filewrite('priv_hilight.txt', '' . $network . ' ' . $nick . ' ' . $msg_stripped);
+}
+
+#
+# catch public messages
+#
+sub pub_msg {
+  my ($server, $msg, $nick, $address, $target) = @_;
+  my $msg_stripped = Irssi::strip_codes($msg);
+  my $network = $server->{tag};
+  filewrite('pub_channels.txt', '' . $network . ' ' . $nick . ' ' . $msg_stripped);
 }
 
 #
@@ -84,7 +94,7 @@ sub hilight {
   if ($dest->{level} & MSGLEVEL_HILIGHT && $dest->{hilight_priority} != $ihl) {
     my $server = $dest->{server};
     my $network = $server->{tag};
-    filewrite($network . ' ' . $dest->{target} . ' ' . $stripped);
+    filewrite('priv_hilight.txt', $network . ' ' . $dest->{target} . ' ' . $stripped);
   }
 }
 
@@ -92,8 +102,8 @@ sub hilight {
 # write to file
 #
 sub filewrite {
-  my ($text) = @_;
-  my $fnfile = Irssi::get_irssi_dir() . "/fnotify";
+  my ($destination, $text) = @_;
+  my $fnfile = Irssi::get_irssi_dir() . "/" . $destination;
   if (!open(FILE, ">>", $fnfile)) {
     print CLIENTCRAP "Error: cannot open $fnfile: $!";
   } else {
@@ -105,7 +115,31 @@ sub filewrite {
 }
 
 #
+# Truncate the contents of the log files
+#
+sub truncate_log_files {
+  my $priv_file = Irssi::get_irssi_dir() . "/priv_hilight.txt";
+  my $pub_file = Irssi::get_irssi_dir() . "/pub_channels.txt";
+
+  # Truncate both the files
+  open(FILE, ">" . $priv_file) or print CLIENTCRAP "Error: cannot truncate file $priv_file: $!";
+  open(FILE, ">" . $pub_file) or print CLIENTCRAP "Error: cannot truncate file $pub_file: $!";
+}
+
+sub cleanup_log_files {
+  my $priv_file = Irssi::get_irssi_dir() . "/priv_hilight.txt";
+  my $pub_file = Irssi::get_irssi_dir() . "/pub_channels.txt";
+
+  # Truncate both the files
+  unlink $priv_file;
+  unlink $pub_file;
+}
+
+#
 # irssi signals
 #
 Irssi::signal_add_last("message private", "priv_msg");
+Irssi::signal_add_last("message public", "pub_msg");
 Irssi::signal_add_last("print text", "hilight");
+Irssi::signal_add_last("window changed", "truncate_log_files");
+Irssi::signal_add_last("gui exit", "cleanup_log_files");

@@ -195,6 +195,7 @@ client.urgent               $rd        $rd         $tx
 # finds out, if available)
 bar {
     status_command i3status -c ~/.i3/i3status.conf | ~/.i3/wrapper.py
+    font pango: FontAwesome 8, Monospace 8
 
      colors {
          background          $bg

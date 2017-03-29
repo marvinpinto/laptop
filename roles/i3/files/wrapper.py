@@ -28,6 +28,8 @@ COLORS = {
 
 backup_status_file = "%s/tmp/backup-timestamp.txt" % os.environ['HOME']
 backup_pid_file = "%s/tmp/acd-backup-lockfile.txt" % os.environ['HOME']
+irssi_priv_msgs_file = "%s/.irssi/priv_hilight.txt" % os.environ['HOME']
+irssi_pub_msgs_file = "%s/.irssi/pub_channels.txt" % os.environ['HOME']
 
 def checkPidRunning(pid):
     """Check For the existence of a unix pid."""
@@ -70,6 +72,53 @@ def get_backup_status():
     return backup_status
 
 
+def get_file_line_count(filename):
+    """ Get the line count for the specified file """
+    with open(filename) as f:
+        return sum(1 for _ in f)
+
+
+def get_irssi_public_msg_count():
+    """ Get the Irssi public channel unread message count. """
+    irssi = {
+        'name': 'irssi_public_unread'
+    }
+
+    unread_msg_count = 0
+    try:
+        unread_msg_count = get_file_line_count(irssi_pub_msgs_file)
+    except:
+        irssi['full_text'] = " IRC public messages: ERROR"
+        irssi['color'] = COLORS['BAD']
+        return irssi
+
+    if unread_msg_count:
+        irssi['full_text'] = " %s" % unread_msg_count
+        return irssi
+    return None
+
+
+def get_irssi_private_msg_count():
+    """ Get the Irssi private DM/hilight unread message count. """
+    irssi = {
+        'name': 'irssi_private_unread'
+    }
+
+    unread_msg_count = 0
+    try:
+        unread_msg_count = get_file_line_count(irssi_priv_msgs_file)
+    except:
+        irssi['full_text'] = " IRC private messages: ERROR"
+        irssi['color'] = COLORS['BAD']
+        return irssi
+
+    if unread_msg_count:
+        irssi['full_text'] = " %s" % get_file_line_count(irssi_priv_msgs_file)
+        irssi['color'] = COLORS['DEGRADED']
+        return irssi
+    return None
+
+
 def print_line(message):
     """ Non-buffered printing to stdout. """
     sys.stdout.write(message + '\n')
@@ -105,4 +154,6 @@ if __name__ == '__main__':
 
         j = json.loads(line)
         j.insert(1, get_backup_status())
+        j.insert(2, get_irssi_private_msg_count())
+        j.insert(3, get_irssi_public_msg_count())
         print_line(prefix+json.dumps(j))
