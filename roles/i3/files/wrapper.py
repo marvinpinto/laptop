@@ -48,28 +48,28 @@ def get_backup_status():
     if os.path.isfile(backup_status_file):
         last_backup_time = os.path.getmtime(backup_status_file)
     elif os.path.isfile(backup_pid_file) and checkPidRunning(int(file(backup_pid_file, 'r').readlines()[0])):
-        backup_status['full_text'] = "Backups IN PROGRESS"
+        backup_status['full_text'] = " Backups IN PROGRESS"
         backup_status['color'] = COLORS['DEGRADED']
         return backup_status;
     else:
-        backup_status['full_text'] = "Last Backup: ERROR"
+        backup_status['full_text'] = " Last Backup: ERROR"
         backup_status['color'] = COLORS['BAD']
         return backup_status
 
-    backup_str = "Last Backup: %s" % datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
+    backup_str = " Last Backup: %s" % datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
     current_time = int(time.time())
     datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
     backup_status['full_text'] = backup_str
     backup_time_seconds = current_time - last_backup_time
 
     if (backup_time_seconds >= TWO_DAYS) and (backup_time_seconds < SEVEN_DAYS):
-      backup_status['color'] = COLORS['DEGRADED']
-      return backup_status
+        backup_status['color'] = COLORS['DEGRADED']
+        return backup_status
     elif (backup_time_seconds >= SEVEN_DAYS):
-      backup_status['color'] = COLORS['BAD']
-      return backup_status
+        backup_status['color'] = COLORS['BAD']
+        return backup_status
 
-    return backup_status
+    return None
 
 
 def get_file_line_count(filename):
