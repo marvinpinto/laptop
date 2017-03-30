@@ -10,7 +10,7 @@ import sys
 
 USERNAME_FILE = "%s/.i3/fastmail_username.gpg" % os.environ['HOME']
 PASSWORD_FILE = "%s/.i3/fastmail_password.gpg" % os.environ['HOME']
-REFRESH_INTERVAL = 60*10  # 10 minutes
+REFRESH_INTERVAL = 60*2  # 2 minutes
 OUTPUT_FILENAME = "/tmp/unread-mail-count.txt"
 LOCKFILE = "/tmp/fastmail-unread-count-lock.pid"
 
