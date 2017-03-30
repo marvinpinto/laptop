@@ -18,6 +18,7 @@ import os
 import time
 from datetime import datetime
 
+TWO_HOURS = 60*60*2  # seconds
 TWO_DAYS = 172800  # seconds
 SEVEN_DAYS = 604800  # seconds
 COLORS = {
@@ -30,6 +31,7 @@ backup_status_file = "%s/tmp/backup-timestamp.txt" % os.environ['HOME']
 backup_pid_file = "%s/tmp/acd-backup-lockfile.txt" % os.environ['HOME']
 irssi_priv_msgs_file = "%s/.irssi/priv_hilight.txt" % os.environ['HOME']
 irssi_pub_msgs_file = "%s/.irssi/pub_channels.txt" % os.environ['HOME']
+unread_mail_count_file = "/tmp/unread-mail-count.txt"
 
 def checkPidRunning(pid):
     """Check For the existence of a unix pid."""
@@ -58,7 +60,6 @@ def get_backup_status():
 
     backup_str = " Last Backup: %s" % datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
     current_time = int(time.time())
-    datetime.fromtimestamp(last_backup_time).strftime("%Y-%m-%d")
     backup_status['full_text'] = backup_str
     backup_time_seconds = current_time - last_backup_time
 
@@ -68,6 +69,43 @@ def get_backup_status():
     elif (backup_time_seconds >= SEVEN_DAYS):
         backup_status['color'] = COLORS['BAD']
         return backup_status
+
+    return None
+
+
+def get_unread_mail_count():
+    """ Get the fastmail unread email count. """
+    email = {
+      'name': 'emails'
+    }
+
+    if os.path.isfile(unread_mail_count_file):
+        last_checked_time = os.path.getmtime(unread_mail_count_file)
+    else:
+        email['full_text'] = " ERROR"
+        email['color'] = COLORS['BAD']
+        return email
+
+    current_time = int(time.time())
+    last_checked_time_seconds = current_time - last_checked_time
+    last_checked_str = " Last checked: %s" % datetime.fromtimestamp(last_checked_time).strftime("%Y-%m-%d")
+
+    if last_checked_time_seconds >= TWO_HOURS:
+        email['full_text'] = last_checked_str
+        email['color'] = COLORS['BAD']
+        return email
+
+    try:
+      unread_count = int(file(unread_mail_count_file, 'r').readlines()[0])
+    except:
+        email['full_text'] = " ERROR"
+        email['color'] = COLORS['BAD']
+        return email
+
+    if unread_count:
+        email['full_text'] = " %s" % unread_count
+        email['color'] = COLORS['DEGRADED']
+        return email
 
     return None
 
@@ -156,4 +194,5 @@ if __name__ == '__main__':
         j.insert(1, get_backup_status())
         j.insert(2, get_irssi_private_msg_count())
         j.insert(3, get_irssi_public_msg_count())
+        j.insert(4, get_unread_mail_count())
         print_line(prefix+json.dumps(j))
