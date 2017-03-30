@@ -43,12 +43,14 @@ def main():
         sys.exit(1)
 
     while True:
+        refresh_interval = REFRESH_INTERVAL
         try:
             unread_count = get_unread_mail_count()
             write_to_file(OUTPUT_FILENAME, unread_count)
         except Exception as e:
             write_to_file(OUTPUT_FILENAME, "ERROR: %s" % e)
-        time.sleep(REFRESH_INTERVAL)
+            refresh_interval = 10  # try again in 10 seconds
+        time.sleep(refresh_interval)
 
 
 if __name__ == "__main__":
