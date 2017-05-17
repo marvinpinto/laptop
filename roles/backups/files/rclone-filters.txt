@@ -13,6 +13,12 @@
 # Exclude any files/directories starting with '.dropbox'
 - .dropbox**
 
+# Exclude any directories named 'dist'
+- dist/**
+
+# Exclude the generated static website files
+- website/static/**
+
 # Include the ~/Dropbox directory in the backups
 + /Dropbox/**
 
