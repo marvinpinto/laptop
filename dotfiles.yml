@@ -16,6 +16,7 @@
     - 'irssi'
     - 'gpg'
     - 'backups'
+    - 'ngrok'
 
     - role: 'set_gsettings_value'
       schema: 'org.gnome.settings-daemon.plugins.keyboard'

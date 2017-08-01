@@ -1,0 +1,15 @@
+---
+- name: 'Create the ~/.ngrok2 directory'
+  file:
+    path: '{{ home_directory }}/.ngrok2'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Put the ~/.ngrok2/ngrok.yml file in place'
+  template:
+    src: 'ngrok.yml.j2'
+    dest: '{{ home_directory }}/.ngrok2/ngrok.yml'
+    mode: '0600'
+    force: 'yes'
