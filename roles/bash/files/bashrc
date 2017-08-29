@@ -159,6 +159,7 @@ if [ -f "${HOME}/.gnupg/gpg-agent-info" ]; then
   export SSH_AGENT_PID
 fi
 
+
 #*****************
 # Tab Completion
 #*****************
@@ -172,6 +173,15 @@ fi
 if [ -f /etc/bash_completion ]; then
   source /etc/bash_completion
 fi
+
+
+#************
+# NVM setup
+#************
+export NVM_DIR="/usr/local/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+
 
 #**************
 # Bash Prompt
