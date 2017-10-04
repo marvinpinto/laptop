@@ -9,6 +9,8 @@
   l = log --graph --pretty=format:\"%C(yellow)%h %Creset%C(cyan)%G?%Creset %C(green)%ae%Creset %<(80,trunc)%s\"
   st = status -sb
   sho = show --show-signature
+  # starting from the most recent, gpg-sign all commits upto and including $1
+  signall = "!f() { git rebase --exec 'git commit --amend --no-edit -S -s' $1; }; f"
   # Show the diff between the latest commit and the current state
   d = !"git diff-index --quiet HEAD -- || git --no-pager diff --color --patch-with-stat | diff-highlight"
   # Clone a repository including all submodules
