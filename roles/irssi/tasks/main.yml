@@ -32,3 +32,13 @@
     owner: 'marvin'
     group: 'marvin'
     mode: '0600'
+
+- name: 'Put the triggers save file in place'
+  copy:
+    content: |
+      #Triggers file version 1.1
+      -all -masks '*!gitter@*' -tags 'gitter-im' -regexp '(mar)(vin)' -replace '$1\x02\x02$2'
+    dest: "{{ home_directory }}/.irssi/triggers"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0600'
