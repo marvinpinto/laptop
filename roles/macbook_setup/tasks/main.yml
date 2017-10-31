@@ -3,7 +3,7 @@
 - include: programs.yml
 - include: i3wm.yml
 - include: google_chrome.yml
-- include: dropbox.yml
+- include: chromium_browser.yml
 - include: vagrant.yml
 - include: virtualbox.yml
 - include: git.yml
@@ -12,7 +12,6 @@
 - include: function_keys.yml
 - include: scripts.yml
 - include: sounds.yml
-- include: netextender.yml
 - include: yubikey.yml
 - include: emojione_picker.yml
 - include: rclone.yml

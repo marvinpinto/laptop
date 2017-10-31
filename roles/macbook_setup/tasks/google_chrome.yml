@@ -18,3 +18,9 @@
   apt:
     name: "google-chrome-stable"
     state: latest
+
+- name: 'Install Google Chrome Beta'
+  sudo: yes
+  apt:
+    name: "google-chrome-beta"
+    state: latest
