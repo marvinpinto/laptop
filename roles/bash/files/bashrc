@@ -404,13 +404,13 @@ function docker-inkscape() {
   docker run -it \
     --log-driver=none \
     --rm \
-    -u inkscaper \
+    -u root \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v $HOME/.Xauthority:/home/inkscaper/.Xauthority \
     -e DISPLAY=$DISPLAY \
     -v $HOME/crap:/home/inkscaper/Downloads \
     --name inkscape \
-    rasch/inkscape
+    andressrg/inkscape-fonts
 }
 
 # Launch a containerized bittorrent client
