@@ -4,6 +4,7 @@
 - include: i3wm.yml
 - include: google_chrome.yml
 - include: dropbox.yml
+- include: chromium_browser.yml
 - include: vagrant.yml
 - include: virtualbox.yml
 - include: git.yml

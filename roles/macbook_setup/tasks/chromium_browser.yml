@@ -1,0 +1,6 @@
+---
+- name: 'Install Chromium Browser'
+  sudo: yes
+  apt:
+    name: "chromium-browser"
+    state: latest
