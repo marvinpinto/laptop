@@ -1,0 +1,5 @@
+---
+virtualbox_major_version: '5'
+virtualbox_minor_version: '1'
+virtualbox_patch_version: '12'
+virtualbox_build_id: '112440'
