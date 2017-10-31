@@ -45,7 +45,7 @@
 
 - name: 'Install the extension pack'
   sudo: yes
-  command: '/usr/bin/VBoxManage extpack install --replace /usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-{{virtualbox_major_version}}.{{virtualbox_minor_version}}.{{virtualbox_patch_version}}-{{virtualbox_build_id}}.vbox-extpack'
+  shell: 'echo y | /usr/bin/VBoxManage extpack install --replace /usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-{{virtualbox_major_version}}.{{virtualbox_minor_version}}.{{virtualbox_patch_version}}-{{virtualbox_build_id}}.vbox-extpack'
   when: extension_pack_binary.stat.exists == False
 
 - name: 'Add marvin to the vboxusers group'
