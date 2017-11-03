@@ -56,7 +56,6 @@
         - 'ppa_git_core_ppa_trusty.list'
         - 'dl_google_com_linux_chrome_deb.list'
         - 'security_ubuntu_com_ubuntu.list'
-        - 'vagrant_deb_linestarve_com.list'
         - 'download_virtualbox_org_virtualbox_debian.list'
         - 'apt_dockerproject_org_repo.list'
         - 'debian_sur5r_net_i3.list'
