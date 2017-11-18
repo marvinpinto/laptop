@@ -25,3 +25,12 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the 2fa script file in place'
+  become: true
+  copy:
+    src: '2fa.sh'
+    dest: '/usr/local/bin/2fa'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
