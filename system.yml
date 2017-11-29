@@ -57,9 +57,11 @@
       managed_files:
         - 'archive_canonical_com_ubuntu.list'
         - 'ppa_ansible_ansible_{{ ansible_distribution_release }}.list'
+        - 'ansible-ubuntu-ansible-{{ ansible_distribution_release }}.list'
         - 'archive_ubuntu_com_ubuntu.list'
         - 'extras_ubuntu_com_ubuntu.list'
         - 'ppa_git_core_ppa_{{ ansible_distribution_release }}.list'
+        - 'git-core-ubuntu-ppa-{{ ansible_distribution_release }}.list'
         - 'dl_google_com_linux_chrome_deb.list'
         - 'security_ubuntu_com_ubuntu.list'
         - 'download_virtualbox_org_virtualbox_debian.list'
