@@ -15,7 +15,7 @@
     repo: 'ppa:yubico/stable'
     state: present
     update_cache: yes
-    filename: 'ppa_yubico_stable_trusty'
+    filename: 'ppa_yubico_stable_{{ ansible_distribution_release }}'
 
 - name: 'Install a few requirements needed by the various yubikey tools'
   become: true
