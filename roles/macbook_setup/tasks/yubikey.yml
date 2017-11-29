@@ -78,7 +78,7 @@
     group: 'root'
     mode: '0655'
 
-- name: 'Install the Yubico tools needed for U2F logins'
+- name: 'Install the Yubico tools needed for U2F logins (14.04)'
   become: true
   apt:
     name: "{{ item }}"
@@ -86,6 +86,21 @@
   with_items:
     - 'pam-u2f'
     - 'pamu2fcfg'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version == "14.04"
+
+- name: 'Install the Yubico tools needed for U2F logins (16.04)'
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'libpam-u2f'
+    - 'pamu2fcfg'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_major_version == "16.04"
 
 - name: 'Put the /etc/u2f_mappings file in place'
   become: true
