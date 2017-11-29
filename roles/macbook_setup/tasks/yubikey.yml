@@ -15,15 +15,7 @@
     repo: 'ppa:yubico/stable'
     state: present
     update_cache: yes
-    filename: 'ppa_yubico_stable_trusty'
-
-- name: 'Add the CCID Backports (libccid) ubuntu repo'
-  become: true
-  apt_repository:
-    repo: 'ppa:gertvdijk/ccid-backports'
-    state: present
-    update_cache: yes
-    filename: 'ppa_gertvdijk_ccid_backports_trusty'
+    filename: 'ppa_yubico_stable_{{ ansible_distribution_release }}'
 
 - name: 'Install a few requirements needed by the various yubikey tools'
   become: true
@@ -32,13 +24,33 @@
     state: latest
   with_items:
     - 'python-usb'
-    - 'libccid'
     - 'gnupg2'
     - 'pinentry-curses'
     - 'pcscd'
     - 'scdaemon'
     - 'pcsc-tools'
   notify: 'restart-pcscd'
+
+- name: 'Add the CCID Backports (libccid) ubuntu repo'
+  become: true
+  apt_repository:
+    repo: 'ppa:gertvdijk/ccid-backports'
+    state: present
+    update_cache: yes
+    filename: 'ppa_gertvdijk_ccid_backports_trusty'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "14.04"
+
+- name: 'Patch the /etc/libccid_Info.plist file - see https://github.com/Yubico/yubioath-desktop/issues/86'
+  become: true
+  apt:
+    name: 'libccid'
+    state: latest
+  notify: 'restart-pcscd'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "14.04"
 
 - name: 'Install the Yubikey personalization tools'
   become: true
@@ -66,7 +78,7 @@
     group: 'root'
     mode: '0655'
 
-- name: 'Install the Yubico tools needed for U2F logins'
+- name: 'Install the Yubico tools needed for U2F logins (14.04)'
   become: true
   apt:
     name: "{{ item }}"
@@ -74,6 +86,21 @@
   with_items:
     - 'pam-u2f'
     - 'pamu2fcfg'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "14.04"
+
+- name: 'Install the Yubico tools needed for U2F logins (16.04)'
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'libpam-u2f'
+    - 'pamu2fcfg'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "16.04"
 
 - name: 'Put the /etc/u2f_mappings file in place'
   become: true

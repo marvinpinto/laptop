@@ -1,0 +1,20 @@
+---
+- name: 'Add the nvidia drivers repository'
+  become: true
+  apt_repository:
+    repo: 'ppa:graphics-drivers/ppa'
+    state: present
+    update_cache: yes
+    filename: 'ppa_nvidia_graphics_drivers'
+  when:
+    - ansible_system_vendor == "Dell Inc."
+    - ansible_product_name == "Precision T1700"
+
+- name: 'Install the updated nvidia graphics drivers'
+  become: true
+  apt:
+    name: 'nvidia-387'
+    state: latest
+  when:
+    - ansible_system_vendor == "Dell Inc."
+    - ansible_product_name == "Precision T1700"

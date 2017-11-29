@@ -3,6 +3,8 @@
 export DEBIAN_FRONTEND=noninteractive
 SUDO="sudo -E"
 
+$SUDO apt-get install -qq -y software-properties-common build-essential
+
 if [ "$TRAVIS" == "true" ]; then
   echo "Bootstrapping Travis CI"
   $SUDO useradd marvin

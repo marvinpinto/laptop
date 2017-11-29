@@ -7,11 +7,19 @@
     mode: '0755'
 
 - name: 'Add the virtualbox apt signing key'
-  sudo: yes
+  become: true
   apt_key:
-    keyserver: 'keyserver.ubuntu.com'
-    id: '98AB5139'
+    url: 'https://www.virtualbox.org/download/oracle_vbox_2016.asc'
     state: present
+
+- name: 'Add the virtualbox apt signing key (14.04)'
+  become: true
+  apt_key:
+    url: 'https://www.virtualbox.org/download/oracle_vbox.asc'
+    state: present
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "14.04"
 
 - name: 'Add the Virtualbox ubuntu repo'
   sudo: yes

@@ -5,11 +5,21 @@
     name: "{{ item }}"
     state: latest
   with_items:
-    - 'bcmwl-kernel-source'
     - 'wicd'
     - 'wicd-cli'
     - 'wicd-curses'
+
+- name: 'Install a few networking things related to the X1 Carbon'
+  sudo: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'bcmwl-kernel-source'
     - 'linux-firmware-nonfree'
+  when:
+    - ansible_system_vendor == "LENOVO"
+    - ansible_product_name == "20BS0032US"
 
 - name: 'Stop the network-manager service'
   sudo: yes
