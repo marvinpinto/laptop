@@ -19,7 +19,7 @@
     state: present
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version == "14.04"
+    - ansible_distribution_version == "14.04"
 
 - name: 'Add the Virtualbox ubuntu repo'
   sudo: yes

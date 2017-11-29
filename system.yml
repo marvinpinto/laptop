@@ -41,7 +41,7 @@
         - 'deb http://extras.ubuntu.com/ubuntu {{ ansible_distribution_release }} main'
       when:
         - ansible_distribution == "Ubuntu"
-        - ansible_distribution_major_version == "14.04"
+        - ansible_distribution_version == "14.04"
 
     - 'macbook_setup'
 

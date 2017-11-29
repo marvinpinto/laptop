@@ -40,7 +40,7 @@
     filename: 'ppa_gertvdijk_ccid_backports_trusty'
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version == "14.04"
+    - ansible_distribution_version == "14.04"
 
 - name: 'Patch the /etc/libccid_Info.plist file - see https://github.com/Yubico/yubioath-desktop/issues/86'
   become: true
@@ -50,7 +50,7 @@
   notify: 'restart-pcscd'
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version == "14.04"
+    - ansible_distribution_version == "14.04"
 
 - name: 'Install the Yubikey personalization tools'
   become: true
@@ -88,7 +88,7 @@
     - 'pamu2fcfg'
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version == "14.04"
+    - ansible_distribution_version == "14.04"
 
 - name: 'Install the Yubico tools needed for U2F logins (16.04)'
   become: true
@@ -100,7 +100,7 @@
     - 'pamu2fcfg'
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version == "16.04"
+    - ansible_distribution_version == "16.04"
 
 - name: 'Put the /etc/u2f_mappings file in place'
   become: true
