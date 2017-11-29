@@ -1,26 +1,25 @@
 ---
 - name: 'Add the Google apt signing key'
-  sudo: yes
+  become: true
   apt_key:
-    keyserver: 'keyserver.ubuntu.com'
-    id: '7FAC5991'
+    url: 'https://dl.google.com/linux/linux_signing_key.pub'
     state: present
 
 - name: 'Add the Google ubuntu repo'
-  sudo: yes
+  become: true
   apt_repository:
     repo: 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main'
     state: present
     update_cache: yes
 
 - name: 'Install Google Chrome'
-  sudo: yes
+  become: true
   apt:
     name: "google-chrome-stable"
     state: latest
 
 - name: 'Install Google Chrome Beta'
-  sudo: yes
+  become: true
   apt:
     name: "google-chrome-beta"
     state: latest
