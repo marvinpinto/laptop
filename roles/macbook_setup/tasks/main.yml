@@ -12,10 +12,10 @@
 - include: function_keys.yml
 - include: scripts.yml
 - include: sounds.yml
-- include: yubikey.yml
 - include: emojione_picker.yml
 - include: rclone.yml
 - include: usbmount.yml
 - include: rng_tools.yml
 - include: docker_setup.yml
+- include: yubikey.yml
 - include: post_file_permissions.yml
