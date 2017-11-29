@@ -1,5 +1,6 @@
 ---
 - include: networking.yml
+- include: nvidia.yml
 - include: programs.yml
 - include: i3wm.yml
 - include: google_chrome.yml

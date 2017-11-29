@@ -63,3 +63,4 @@
         - 'emojione-picker.list'
         - 'ppa_yubico_stable_trusty.list'
         - 'ppa_gertvdijk_ccid_backports_trusty.list'
+        - 'ppa_nvidia_graphics_drivers.list'
