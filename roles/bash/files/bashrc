@@ -111,6 +111,9 @@ gpg-connect-agent updatestartuptty /bye >/dev/null
 # Colored grep
 alias grep="grep --color=auto"
 
+# Use gpg2 by default
+alias gpg="/usr/bin/gpg2"
+
 # List all files colorized in long format
 alias l="ls -lF --color"
 
