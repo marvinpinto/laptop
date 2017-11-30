@@ -7,7 +7,7 @@
     mode: '0700'
     state: directory
 
-- name: 'Put the i3 config files in place'
+- name: 'Put the base i3 config files in place'
   copy:
     src: "{{ item }}"
     dest: "{{ home_directory }}/.i3/{{ item }}"
@@ -16,7 +16,6 @@
     mode: '0644'
   with_items:
     - 'config'
-    - 'i3status.conf'
     - 'workspace-1-laptop.json'
     - 'workspace-2-laptop.json'
     - 'workspace-3-laptop.json'
@@ -24,6 +23,28 @@
     - 'workspace-3-monitor.json'
     - 'fastmail_username.gpg'
     - 'fastmail_password.gpg'
+
+- name: 'Put the X1 Carbon i3 statusbar config file in place'
+  copy:
+    src: "i3status-lenovo.conf"
+    dest: "{{ home_directory }}/.i3/i3status.conf"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+  when:
+    - ansible_system_vendor == "LENOVO"
+    - ansible_product_name == "20BS0032US"
+
+- name: 'Put the Dell T1700 i3 statusbar config file in place'
+  copy:
+    src: "i3status-dell.conf"
+    dest: "{{ home_directory }}/.i3/i3status.conf"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+  when:
+    - ansible_system_vendor == "Dell Inc."
+    - ansible_product_name == "Precision T1700"
 
 - name: 'Put the i3 executable files in place'
   copy:
