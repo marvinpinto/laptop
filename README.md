@@ -50,6 +50,7 @@ done in the bios.
     ```
 1. Reboot the machine after everything installs correctly.
 1. Follow the instructions to restore the GPG keys.
+1. Follow the instructions to restore all the data files.
 
 
 
@@ -73,6 +74,16 @@ To be updated..
     Do you really want to set this key to ultimate trust? (y/N) y
     gpg> quit
     ```
+
+
+
+## Restoring files
+
+Use the rclone wrapper to copy/sync all the data files:
+
+``` bash
+$ acd-backup
+```
 
 
 

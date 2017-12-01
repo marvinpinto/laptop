@@ -19,8 +19,8 @@
 
 - name: 'Put the acd-backup script file in place'
   become: true
-  copy:
-    src: 'acd-backup.sh'
+  template:
+    src: 'acd-backup.sh.j2'
     dest: '/usr/local/bin/acd-backup'
     owner: 'root'
     group: 'root'

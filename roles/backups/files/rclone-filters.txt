@@ -1,29 +1,5 @@
-# Exclude all node_modules directories
-- node_modules/**
-
-# Exclude all python virtualenv directories named 'env'
-- env/**
-
-# Exclude any directories named 'tmp'
-- tmp/**
-
-# Exclude any directories named '.sass-cache'
-- .sass-cache/**
+# Exclude the projects directory
+- projects/**
 
 # Exclude any files/directories starting with '.dropbox'
 - .dropbox**
-
-# Exclude any directories named 'dist'
-- dist/**
-
-# Exclude the generated static website files
-- website/static/**
-
-# Include the ~/Dropbox directory in the backups
-+ /Dropbox/**
-
-# Include the ~/Virtualbox VMs directory in the backups
-+ /VirtualBox**
-
-# Exclude everything else from the root directory
-- /**
