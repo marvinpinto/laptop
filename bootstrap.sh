@@ -35,6 +35,7 @@ fi
 echo "Bootstrapping system"
 if [ -z "$TRAVIS" ]; then
   cd laptop
+  git checkout origin/master
 fi
 $SUDO make system
 
