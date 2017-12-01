@@ -44,17 +44,35 @@ done in the bios.
    as the preseed URL.
 1. After the reboot, hit Ctrl + Alt + F1 to get to terminal.
 1. Run the following curl/bash incantation to get everything going:
-  ```bash
-  export ANSIBLE_VAULT_PASSWORD=sekrit
-  bash -xec "$(curl -L https://raw.githubusercontent.com/marvinpinto/laptop/master/bootstrap.sh)"
-  ```
+    ```bash
+    export ANSIBLE_VAULT_PASSWORD=sekrit
+    bash -xec "$(curl -L https://raw.githubusercontent.com/marvinpinto/laptop/master/bootstrap.sh)"
+    ```
 1. Reboot the machine after everything installs correctly.
+1. Follow the instructions to restore the GPG keys.
 
 
 
 ## Bootstrap the Lenovo X1 Carbon from scratch
 
 To be updated..
+
+
+
+## Restoring GPG keys
+
+1. Import the public master key into the local keyring
+    ``` bash
+    $ curl -sS https://keybase.io/marvinpinto/pgp_keys.asc?fingerprint=00cdbd49d9b8767db8a43eed52654e6eb0bb564b | gpg --import -
+    ```
+1. Mark the key as ultimately trusted
+    ``` bash
+    $ gpg --edit-key B0BB564B
+    gpg> trust
+    Your decision? 5 (Ultimate trust)
+    Do you really want to set this key to ultimate trust? (y/N) y
+    gpg> quit
+    ```
 
 
 
