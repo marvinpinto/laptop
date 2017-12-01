@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import errno
+import commands
+import subprocess
+
+def make_sure_path_exists(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
+
+def clone_project_if_not_exists(name, remote, projects_path):
+    git_command = ['/usr/bin/git', 'clone', remote, name]
+    if not os.path.exists("%s/%s" % (projects_path, name)):
+        print("Creating: %s" % name)
+        pr = subprocess.Popen(git_command, cwd=os.path.dirname("%s/" % projects_path), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        (out, error) = pr.communicate()
+
+        if pr.poll() != 0:
+            print("Error while cloning %s: %s" % (name, str(error)))
+            sys.exit(1)
+
+
+def main():
+    # Create the 'projects' directory
+    projects_path = "%s/Dropbox/projects" % os.environ['HOME']
+    make_sure_path_exists(projects_path)
+
+    project_list = [
+        {{ bootstrap_project_list }}
+    ]
+
+    # Loop over the dictionary and clone/create all the needed project
+    # repositories
+    for proj in project_list:
+        clone_project_if_not_exists(proj['name'], proj['remote'], projects_path=projects_path)
+
+
+if __name__ == "__main__":
+    main()
+

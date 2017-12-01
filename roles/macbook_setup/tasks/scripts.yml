@@ -34,3 +34,12 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the bootstrap-projects script file in place'
+  become: true
+  template:
+    src: 'bootstrap-projects.py.j2'
+    dest: '/usr/local/bin/bootstrap-projects'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'

@@ -51,6 +51,7 @@ done in the bios.
 1. Reboot the machine after everything installs correctly.
 1. Follow the instructions to restore the GPG keys.
 1. Follow the instructions to restore all the data files.
+1. Follow the instructions to restore all the base project directories.
 
 
 
@@ -83,6 +84,16 @@ Use the rclone wrapper to copy/sync all the data files:
 
 ``` bash
 $ acd-backup
+```
+
+
+
+## Restoring project directories
+
+Use the git wrapper script to restore all the base project directories:
+
+``` bash
+$ bootstrap-projects
 ```
 
 
