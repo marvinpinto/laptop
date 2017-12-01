@@ -6,3 +6,13 @@
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
+
+- name: 'Put the ~/.rclone.conf file in place'
+  copy:
+    content: |
+      {{ rclone_conf }}
+      
+    dest: '{{ home_directory }}/.rclone.conf'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0600'
