@@ -63,18 +63,12 @@ To be updated..
 
 ## Restoring GPG keys
 
-1. Import the public master key into the local keyring
-    ``` bash
-    $ curl -sS https://keybase.io/marvinpinto/pgp_keys.asc?fingerprint=00cdbd49d9b8767db8a43eed52654e6eb0bb564b | gpg --import -
-    ```
-1. Mark the key as ultimately trusted
-    ``` bash
-    $ gpg --edit-key B0BB564B
-    gpg> trust
-    Your decision? 5 (Ultimate trust)
-    Do you really want to set this key to ultimate trust? (y/N) y
-    gpg> quit
-    ```
+Configure the yubikey to work on the new machine:
+``` bash
+$ gpg --card-edit
+gpg/card> fetch
+gpg/card> quit
+```
 
 
 
