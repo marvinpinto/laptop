@@ -44,6 +44,7 @@
         - ansible_distribution_version == "14.04"
 
     - 'macbook_setup'
+    - 'locale'
 
     - role: 'delete_unmanaged_files'
       managed_files_directory: '/etc/X11/xorg.conf.d'
