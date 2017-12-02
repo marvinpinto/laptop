@@ -26,14 +26,33 @@
     group: 'root'
     mode: '0755'
 
-- name: 'Put the 2fa script file in place'
+- name: 'Put the 2fa script file in place (14.04)'
   become: true
   copy:
-    src: '2fa.sh'
+    content: |
+      #!/bin/bash
+      pkill -9 scdaemon; /usr/bin/yubioath-cli
     dest: '/usr/local/bin/2fa'
     owner: 'root'
     group: 'root'
     mode: '0755'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "14.04"
+
+- name: 'Put the 2fa script file in place (16.04)'
+  become: true
+  copy:
+    content: |
+      #!/bin/bash
+      /usr/bin/ykman oath code
+    dest: '/usr/local/bin/2fa'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "16.04"
 
 - name: 'Put the bootstrap-projects script file in place'
   become: true

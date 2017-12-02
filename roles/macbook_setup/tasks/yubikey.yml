@@ -60,3 +60,14 @@
     owner: 'root'
     group: 'root'
     mode: '0655'
+
+- name: 'Install the yubikey-manager package for 16.04'
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - 'yubikey-manager'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "16.04"
