@@ -16,7 +16,7 @@ LOCKFILE = "/tmp/fastmail-unread-count-lock.pid"
 
 
 def get_gpg_info(filename):
-    return subprocess.check_output(['gpg', '--batch', '--use-agent', '--decrypt', filename])
+    return subprocess.check_output(['gpg2', '--batch', '--use-agent', '--decrypt', filename])
 
 
 def get_unread_mail_count():
