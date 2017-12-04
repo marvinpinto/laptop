@@ -42,10 +42,6 @@ set noerrorbells
 " Use the OS clipboard by default (on versions compiled with `+clipboard`)
 set clipboard=unnamedplus
 
-" Sometimes it is helpful if your working directory is always the same as the
-" file you are editing
-set autochdir
-
 """" Start of Vundle related items
 
 " set the runtime path to include Vundle and initialize
