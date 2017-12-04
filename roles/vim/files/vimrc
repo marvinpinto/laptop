@@ -180,3 +180,7 @@ autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 
 " Do not use tabs when in python mode
 autocmd filetype python set expandtab
+
+" Define a custom `:Scratchpad` command that opens the scratch notepad in the
+" current buffer
+:command Scratchpad edit ~/scratchpad.md

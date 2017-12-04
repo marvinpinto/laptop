@@ -31,3 +31,10 @@
   file:
     dest: '{{ home_directory }}/tmp'
     state: 'directory'
+
+- name: 'symlink ~/Dropbox/scratchpad.md to ~/scratchpad.md'
+  file:
+    src: '{{ home_directory }}/Dropbox/scratchpad.md'
+    dest: '{{ home_directory }}/scratchpad.md'
+    state: 'link'
+    force: 'yes'
