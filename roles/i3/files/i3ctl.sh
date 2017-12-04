@@ -25,8 +25,14 @@ case "$1" in
     shutdown)
   dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
         ;;
+    enable-screensaver)
+  xautolock -detectsleep -time 3 -locker '~/.i3/i3lock.sh' -notify 30 -notifier "notify-send -i info -u normal -t 1000 -- 'Locking screen in 30 seconds'" &
+        ;;
+    disable-screensaver)
+  killall xautolock
+        ;;
     *)
-        echo "Usage: $0 <lock|logout|suspend|hibernate|reboot|shutdown>"
+        echo "Usage: $0 <lock|logout|suspend|hibernate|reboot|shutdown|enable-screensaver|disable-screensaver>"
         exit 2
 esac
 

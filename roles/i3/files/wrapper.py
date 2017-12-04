@@ -17,6 +17,7 @@ import json
 import os
 import time
 from datetime import datetime
+from subprocess import check_output
 
 TWO_HOURS = 60*60*2  # seconds
 TWO_DAYS = 172800  # seconds
@@ -32,6 +33,9 @@ backup_pid_file = "%s/tmp/acd-backup-lockfile.txt" % os.environ['HOME']
 irssi_priv_msgs_file = "%s/.irssi/priv_hilight.txt" % os.environ['HOME']
 irssi_pub_msgs_file = "%s/.irssi/pub_channels.txt" % os.environ['HOME']
 unread_mail_count_file = "/tmp/unread-mail-count.txt"
+
+def get_pid(name):
+    return check_output(["pidof", name]).strip()
 
 def checkPidRunning(pid):
     """Check For the existence of a unix pid."""
@@ -157,6 +161,27 @@ def get_irssi_private_msg_count():
     return None
 
 
+def get_screensaver_running_status():
+    """ Get the status of the running screensaver. """
+    screensaver = {
+        'name': 'screensaver_status'
+    }
+
+    is_screensaver_running = False
+    try:
+        is_screensaver_running = checkPidRunning(int(get_pid("xautolock")))
+    except:
+        screensaver['full_text'] = "Screensaver: DISABLED"
+        screensaver['color'] = COLORS['BAD']
+        return screensaver
+
+    if not is_screensaver_running:
+        screensaver['full_text'] = "Screensaver: DISABLED"
+        screensaver['color'] = COLORS['BAD']
+        return screensaver
+    return None
+
+
 def print_line(message):
     """ Non-buffered printing to stdout. """
     sys.stdout.write(message + '\n')
@@ -195,4 +220,5 @@ if __name__ == '__main__':
         j.insert(2, get_irssi_private_msg_count())
         j.insert(3, get_irssi_public_msg_count())
         j.insert(4, get_unread_mail_count())
+        j.insert(5, get_screensaver_running_status())
         print_line(prefix+json.dumps(j))
