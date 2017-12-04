@@ -6,7 +6,10 @@
   connection: local
   roles:
     - role: 'marvinpinto.docker'
-      docker_additional_service_opts: '--userns-remap=marvin'
+      docker_additional_service_opts: |
+        {
+          "userns-remap": "marvin"
+        }
     - role: 'user_account_wrapper'
       account_username: 'marvin'
       account_fullname: 'Marvin Pinto'
