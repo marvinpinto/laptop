@@ -70,3 +70,5 @@
     - 'libaccount-plugin-google'
     - 'libpam-gnome-keyring'
     - 'flashplugin-installer'
+    - 'evince'
+    - 'evince-common'
