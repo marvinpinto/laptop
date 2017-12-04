@@ -60,7 +60,6 @@ Plugin 'rodjek/vim-puppet'
 Plugin 'flazz/vim-colorschemes'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
-Plugin 'fatih/vim-go'
 Plugin 'ledger/vim-ledger'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'mustache/vim-mustache-handlebars'
@@ -167,16 +166,6 @@ silent! colorscheme railscasts
 
 " Disable the background color erase facility
 set t_ut=
-
-" Disable some misc vim-go defaults
-let g:go_play_open_browser = 0
-let g:go_fmt_fail_silently = 1
-let g:go_fmt_autosave = 0
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
 
 " Set some filetypes depending on the file extension
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
