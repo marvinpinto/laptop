@@ -31,7 +31,7 @@ cleanup() {
   rm -f ${LOCKFILE}
 }
 
-if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
+if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}` 2>/dev/null; then
   warn "${PROGRAM_NAME} already running"
   exit
 fi
@@ -44,41 +44,49 @@ echo $$ > ${LOCKFILE}
 
 rm -f ${TIMESTAMP}
 
-# Sync all the files locally using the upstream as the source
-${RCLONE} \
-  --filter-from ${RCLONE_FILTERS} \
-  --transfers 10 \
-  --checkers 10 \
-  --update \
-  sync ${BACKUP_UPSTREAM} ${BACKUP_LOCAL} \
-  2>&1 | /usr/bin/logger --id \
-  --priority 'local3.info' \
-  --tag "${SYSLOG_TAG}"
+case "$1" in
+  up)
+    # Sync all the upstream files using the local files as the source
+    ${RCLONE} \
+      --filter-from ${RCLONE_FILTERS} \
+      --transfers 10 \
+      --checkers 10 \
+      --update \
+      sync ${BACKUP_LOCAL} ${BACKUP_UPSTREAM} \
+      2>&1 | /usr/bin/logger --id \
+      --priority 'local3.info' \
+      --tag "${SYSLOG_TAG}"
 
-if [ $? -eq 0 ]; then
-  info "Remote to local sync completed successfully"
-else
-  cleanup
-  error "Error completing backup"
-fi
+    if [ $? -eq 0 ]; then
+      info "Local to remote sync completed successfully"
+      echo `date` > ${TIMESTAMP}
+    else
+      warn "Error completing backup"
+    fi
+    ;;
+  down)
+    # Sync all the files locally using the upstream as the source
+    ${RCLONE} \
+      --filter-from ${RCLONE_FILTERS} \
+      --transfers 10 \
+      --checkers 10 \
+      --update \
+      sync ${BACKUP_UPSTREAM} ${BACKUP_LOCAL} \
+      2>&1 | /usr/bin/logger --id \
+      --priority 'local3.info' \
+      --tag "${SYSLOG_TAG}"
 
-# Sync all the upstream files using the local files as the source
-${RCLONE} \
-  --filter-from ${RCLONE_FILTERS} \
-  --transfers 10 \
-  --checkers 10 \
-  --update \
-  sync ${BACKUP_LOCAL} ${BACKUP_UPSTREAM} \
-  2>&1 | /usr/bin/logger --id \
-  --priority 'local3.info' \
-  --tag "${SYSLOG_TAG}"
-
-if [ $? -eq 0 ]; then
-  info "Local to remote sync completed successfully"
-  echo `date` > ${TIMESTAMP}
-else
-  warn "Error completing backup"
-fi
+    if [ $? -eq 0 ]; then
+      info "Remote to local sync completed successfully"
+      echo `date` > ${TIMESTAMP}
+    else
+      warn "Error completing backup"
+    fi
+    ;;
+  *)
+    error "Usage: ${PROGRAM_NAME} <up | down> (you supplied $1)"
+    ;;
+esac
 
 # Cleanup
 cleanup
