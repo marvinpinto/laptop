@@ -45,7 +45,7 @@
   copy:
     content: |
       #!/bin/bash
-      /usr/bin/ykman oath code
+      pkill -9 scdaemon; /usr/bin/ykman oath code
     dest: '/usr/local/bin/2fa'
     owner: 'root'
     group: 'root'
