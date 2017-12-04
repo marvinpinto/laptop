@@ -332,6 +332,8 @@ function sink () {
       -v /home/marvin:/var/shared \
       -v $SSH_AUTH_SOCK:/ssh-agent \
       -e SSH_AUTH_SOCK=/ssh-agent \
+      -e DISPLAY \
+      -v /tmp/.X11-unix:/tmp/.X11-unix \
       $dockerargs \
       -w $workdir \
       "quay.io/marvin/kitchensink")
