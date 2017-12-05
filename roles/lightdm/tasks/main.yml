@@ -1,4 +1,22 @@
 ---
+- name: 'Create the /etc/lightdm directory'
+  become: true
+  file:
+    path: '/etc/lightdm'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: directory
+
+- name: 'Create the /etc/lightdm/lightdm.conf.d directory'
+  become: true
+  file:
+    path: '/etc/lightdm/lightdm.conf.d'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: directory
+
 - name: 'Put the lightdm customization file in place'
   become: true
   copy:
