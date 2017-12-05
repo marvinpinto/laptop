@@ -1,0 +1,9 @@
+---
+- name: 'Put the lightdm customization file in place'
+  become: true
+  copy:
+    src: '40-mpcustomizations.conf'
+    dest: '/etc/lightdm/lightdm.conf.d/40-mpcustomizations.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'

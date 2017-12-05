@@ -48,6 +48,7 @@
 
     - 'macbook_setup'
     - 'locale'
+    - 'lightdm'
 
     - role: 'delete_unmanaged_files'
       managed_files_directory: '/etc/X11/xorg.conf.d'
