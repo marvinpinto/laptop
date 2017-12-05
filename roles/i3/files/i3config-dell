@@ -144,14 +144,14 @@ exec --no-startup-id /usr/bin/emojione-picker
 exec_always --no-startup-id xrandr --output DP-0 --left-of DVI-I-1
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
-bindsym $mod+Control+Left workspace prev
-bindsym $mod+Control+Right workspace next
+bindsym $mod+Control+Left workspace prev_on_output
+bindsym $mod+Control+Right workspace next_on_output
 
 # Use mod-Shift-Control-Left and Right to move the selected window to an
 # adjacent workspace. (This does *not* change your view to that workspace,
 # it just "zaps" the window there.)
-bindsym $mod+Shift+Control+Left move workspace prev
-bindsym $mod+Shift+Control+Right move workspace next
+bindsym $mod+Shift+Control+Left move workspace prev_on_output
+bindsym $mod+Shift+Control+Right move workspace next_on_output
 
 # Move the current workspace to another monitor
 bindsym $mod+m move workspace to output left
