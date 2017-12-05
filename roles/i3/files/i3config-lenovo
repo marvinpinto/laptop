@@ -74,9 +74,9 @@ bindsym $mod+space focus mode_toggle
 
 # switch to workspace
 bindsym $mod+1 workspace 1: scratch
-bindsym $mod+2 workspace 2
-bindsym $mod+3 workspace 3
-bindsym $mod+4 workspace 4
+bindsym $mod+2 workspace 2: code
+bindsym $mod+3 workspace 3: code-b
+bindsym $mod+4 workspace 4: research
 bindsym $mod+5 workspace 5
 bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
