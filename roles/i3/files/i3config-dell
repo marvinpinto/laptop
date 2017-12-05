@@ -96,6 +96,9 @@ bindsym $mod+Shift+0 move container to workspace 10
 # switch to the previously used workspace
 bindsym $mod+b workspace back_and_forth
 
+# create a new workspace in the current window
+bindsym $mod+n exec --no-startup-id ~/.i3/i3-new-workspace.sh
+
 # Volume controls for the Dell T1700
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q -D pulse sset Master 5%+ unmute
 bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q -D pulse sset Master 5%- unmute
