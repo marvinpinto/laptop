@@ -223,7 +223,7 @@ bar {
          statusline          $fg
          separator           $hi
          focused_workspace   $gn        $bg        $ac
-         active_workspace    $gn        $ac        $tx
+         active_workspace    $bg        $bg        $ia
          inactive_workspace  $bg        $bg        $ia
          urgent_workspace    $rd        $bg        $ac
      }
