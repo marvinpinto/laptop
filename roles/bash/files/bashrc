@@ -336,7 +336,7 @@ function sink () {
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       $dockerargs \
       -w $workdir \
-      "quay.io/marvin/kitchensink")
+      "quay.io/marvin/kitchensink:$(lsb_release --release --short)")
   fi
   docker exec -it $dockerid /bin/bash
 }
@@ -526,5 +526,5 @@ function docker-gpg() {
     --name gpg \
     -v "/media/usb0:/media/usb" \
     -w /media/usb \
-    "quay.io/marvin/kitchensink"
+    "quay.io/marvin/kitchensink:$(lsb_release --release --short)"
 }
