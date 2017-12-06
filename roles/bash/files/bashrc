@@ -152,13 +152,7 @@ alias dc="docker-compose"
 # GPG agent
 #************
 if [ "$(lsb_release --release --short)" == "16.04" ]; then
-  if [ -f '/.dockerenv' ]; then
-    # We're inside a docker environment
-    SSH_AUTH_SOCK=/ssh-agent
-  else
-    SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh
-  fi
-  export SSH_AUTH_SOCK
+  export SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh
 elif [ -f "${HOME}/.gnupg/gpg-agent-info" ]; then
   . "${HOME}/.gnupg/gpg-agent-info"
   export GPG_AGENT_INFO
