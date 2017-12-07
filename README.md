@@ -37,7 +37,7 @@ done in the bios.
 ## Bootstrap the Dell T1700 from scratch
 
 1. Boot up the Dell T1700 with the [netboot.xyz](https://netboot.xyz) USB key
-   in place.
+   in place. Ensure that an ethernet cable is connected.
 1. At the boot screen, hit F12 and select `USB Storage Device`.
 1. Install Ubuntu 16.04. When prompted, supply
    `http://cdn.rawgit.com/marvinpinto/laptop/master/ubuntu-mp-desktop-preseed.cfg`
@@ -52,6 +52,8 @@ done in the bios.
 1. Follow the instructions to restore the GPG keys.
 1. Follow the instructions to restore all the data files.
 1. Follow the instructions to restore all the base project directories.
+1. Configure `wicd-curses` to connect to the WiFi network.
+1. Reboot the machine one last time.
 
 
 
@@ -64,10 +66,20 @@ To be updated..
 ## Restoring GPG keys
 
 Configure the yubikey to work on the new machine:
-``` bash
+``` text
 $ gpg --card-edit
 gpg/card> fetch
 gpg/card> quit
+```
+
+Mark the GPG key as ultimately trusted:
+
+``` text
+$ gpg --edit-key 52654E6EB0BB564B
+gpg> trust
+Your decision? 5
+Do you really want to set this key to ultimate trust? (y/N) y
+gpg> quit
 ```
 
 
@@ -77,7 +89,7 @@ gpg/card> quit
 Use the rclone wrapper to copy/sync all the data files:
 
 ``` bash
-$ acd-backup
+$ acd-backup "down"
 ```
 
 
