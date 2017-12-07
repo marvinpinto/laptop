@@ -185,6 +185,11 @@ fi
 export NVM_DIR="/usr/local/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+if [ -f '/.dockerenv' ] && [ -f '.nvmrc' ]; then
+  # If we're inside a docker container and there is a .nvmrc file present,
+  # issue an `nvm use` and automatically use that nodejs version.
+  nvm use
+fi
 
 
 #**************
