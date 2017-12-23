@@ -140,7 +140,7 @@ bindsym $mod+r mode "resize"
 focus_follows_mouse no
 
 # Startup programs
-exec_always --no-startup-id xsetroot -solid "#00001A"
+exec_always --no-startup-id hsetroot -solid "#00001A"
 exec_always --no-startup-id ~/.i3/i3ctl.sh enable-screensaver
 exec_always --no-startup-id xautolock -enable
 exec_always --no-startup-id /usr/bin/xmodmap ~/.xmodmap
