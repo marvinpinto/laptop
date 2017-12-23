@@ -21,7 +21,7 @@
     - 'simplestreams'
     - 'xclip'
     - 'fonts-noto'
-    - 'linux-generic-lts-vivid'
+    - 'linux-generic-lts-{{ ansible_distribution_release }}'
     - 'xournal'
     - 'fonts-font-awesome'
 
