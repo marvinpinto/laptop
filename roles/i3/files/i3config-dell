@@ -151,7 +151,7 @@ exec_always --no-startup-id /usr/bin/xset r rate 250 50
 exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec --no-startup-id /usr/bin/emojione-picker
-exec_always --no-startup-id xrandr --output DP-0 --primary --left-of DVI-I-1
+exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
 bindsym $mod+Control+Left workspace prev_on_output
