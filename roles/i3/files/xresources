@@ -34,12 +34,13 @@ XTerm*on3Clicks: regex ([[:alpha:]]+://)?([[:alnum:]!#+,./=?@_~-]|(%[[:xdigit:]]
 XTerm*selectToClipboard: true
 XTerm*fullscreen: never
 
-! Font setup - size corresponds to "small"
+! Font setup
 xterm*faceName: Terminus
-xterm*faceSize: 10
+xterm*faceSize: 11
 
 ! Only select text
 xterm*highlightSelection: true
+
 ! Remove trailing spaces
 xterm*trimSelection: true
 
