@@ -48,6 +48,3 @@ xterm*saveLines: 2000
 
 ! Turn the scrollbar off
 xterm*scrollBar: false
-
-! Do not scroll when there is new input e.g. tail -f /var/syslog
-xterm*scrollTtyOutput: false
