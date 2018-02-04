@@ -527,3 +527,25 @@ function docker-gpg() {
     -w /media/usb \
     "quay.io/marvin/kitchensink:$(lsb_release --release --short)"
 }
+
+# Bash function to export the environment variables in the specified .env file
+function dotenv () {
+  local dotenvfile=$1
+
+  if [ -z "$dotenvfile" ]; then
+    dotenvfile=".env"
+  fi
+
+  export $(cat ${dotenvfile} | grep -v ^# | xargs)
+}
+
+# Bash function to unset the environment variables in the specified .env file
+function undotenv () {
+  local dotenvfile=$1
+
+  if [ -z "$dotenvfile" ]; then
+    dotenvfile=".env"
+  fi
+
+  unset $(cat ${dotenvfile} | grep -v ^# | sed -E 's/(.*)=.*/\1/' | xargs)
+}
