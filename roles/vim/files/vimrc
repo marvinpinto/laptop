@@ -184,3 +184,6 @@ autocmd filetype python set expandtab
 " Define a custom `:Scratchpad` command that opens the scratch notepad in the
 " current buffer
 :command Scratchpad edit ~/scratchpad.md
+
+" Use hashes (#) for comments in .env files
+call tcomment#DefineType('dosini', '# %s')
