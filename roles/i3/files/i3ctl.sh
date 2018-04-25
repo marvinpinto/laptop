@@ -1,6 +1,7 @@
 #!/bin/sh
 
 I3LOCK='/usr/bin/i3lock --color 333333'
+DND_FILE="${HOME}/.irssi/do_not_disturb.txt"
 
 lock() {
     ~/.i3/i3lock.sh
@@ -30,6 +31,9 @@ case "$1" in
         ;;
     disable-screensaver)
   killall xautolock
+        ;;
+    toggle-dnd)
+  [ -e ${DND_FILE} ] && rm ${DND_FILE} || touch ${DND_FILE}
         ;;
     *)
         echo "Usage: $0 <lock|logout|suspend|hibernate|reboot|shutdown|enable-screensaver|disable-screensaver>"

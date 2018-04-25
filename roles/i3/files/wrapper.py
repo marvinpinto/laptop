@@ -33,6 +33,7 @@ backup_pid_file = "%s/tmp/acd-backup-lockfile.txt" % os.environ['HOME']
 irssi_priv_msgs_file = "%s/.irssi/priv_hilight.txt" % os.environ['HOME']
 irssi_pub_msgs_file = "%s/.irssi/pub_channels.txt" % os.environ['HOME']
 unread_mail_count_file = "/tmp/unread-mail-count.txt"
+do_not_disturb_file = "%s/.irssi/do_not_disturb.txt" % os.environ['HOME']
 
 def get_pid(name):
     return check_output(["pidof", name]).strip()
@@ -50,6 +51,10 @@ def get_backup_status():
     backup_status = {
       'name': 'backups'
     }
+
+    if os.path.isfile(do_not_disturb_file):
+        backup_status['full_text'] = "DND"
+        return backup_status;
 
     if os.path.isfile(backup_status_file):
         last_backup_time = os.path.getmtime(backup_status_file)
@@ -82,6 +87,10 @@ def get_unread_mail_count():
     email = {
       'name': 'emails'
     }
+
+    if os.path.isfile(do_not_disturb_file):
+        email['full_text'] = "DND"
+        return email
 
     if os.path.isfile(unread_mail_count_file):
         last_checked_time = os.path.getmtime(unread_mail_count_file)
@@ -125,6 +134,10 @@ def get_irssi_public_msg_count():
     irssi = {
         'name': 'irssi_public_unread'
     }
+
+    if os.path.isfile(do_not_disturb_file):
+        irssi['full_text'] = "DND"
+        return irssi
 
     unread_msg_count = 0
     try:
