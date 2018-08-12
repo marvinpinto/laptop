@@ -6,9 +6,15 @@
     state: present
     update_cache: yes
     filename: 'ppa_peek_{{ ansible_distribution_release }}'
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "16.04"
 
 - name: 'Install peek'
   become: true
   apt:
     name: 'peek'
     state: latest
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "16.04"
