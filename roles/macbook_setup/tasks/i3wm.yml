@@ -1,18 +1,16 @@
 ---
+- name: 'Install the needed sur5r-keyring package'
+  become: true
+  apt:
+    deb: 'http://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2018.01.30_all.deb'
+  notify: 'macbook_setup-apt-get-update'
+
 - name: 'Add the i3wm ubuntu repo'
   sudo: yes
   apt_repository:
     repo: "deb http://debian.sur5r.net/i3/ {{ ansible_distribution_release }} universe"
     state: present
     update_cache: yes
-
-- name: 'Install the needed sur5r-keyring package'
-  sudo: yes
-  apt:
-    name: "sur5r-keyring"
-    state: latest
-    force: yes
-  notify: 'macbook_setup-apt-get-update'
 
 - meta: flush_handlers
 
