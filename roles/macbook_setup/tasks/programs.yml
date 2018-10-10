@@ -24,6 +24,7 @@
     - 'linux-generic-lts-{{ ansible_distribution_release }}'
     - 'xournal'
     - 'fonts-font-awesome'
+    - 'jq'
 
 - name: "Remove a few things I don't care for"
   sudo: yes

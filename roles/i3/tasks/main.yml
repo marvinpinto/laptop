@@ -82,6 +82,7 @@
     - 'wrapper.py'
     - 'fastmail_unread_count.py'
     - 'i3-new-workspace.sh'
+    - 'rename_workspace.sh'
 
 - name: 'Put the other X11 based files in place'
   copy:

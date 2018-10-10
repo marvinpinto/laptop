@@ -128,6 +128,9 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 focus_follows_mouse no
 
+# Rename the current workspace
+bindsym $mod+t exec --no-startup-id ~/.i3/rename_workspace.sh
+
 # Startup programs
 exec --no-startup-id compton -CGb
 exec_always --no-startup-id hsetroot -solid "#00001A"
