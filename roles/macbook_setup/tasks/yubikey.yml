@@ -68,6 +68,7 @@
     state: latest
   with_items:
     - 'yubikey-manager'
+    - 'python3-yubikey-manager'
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_version == "16.04"
