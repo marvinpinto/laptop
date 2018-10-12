@@ -31,7 +31,7 @@ bindsym $mod+Return exec xterm -en utf-8
 bindsym $mod+Shift+q kill
 
 # rofi launcher
-bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,run,calc:rofi-calc,2FA:rofi-2fa' -show run"
+bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,run,calc:rofi-calc,2FA:rofi-2fa,clipboard:greenclip print' -show run"
 
 # change focus
 bindsym $mod+h focus left
@@ -148,6 +148,7 @@ exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec --no-startup-id /usr/bin/emojione-picker
 exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
+exec_always --no-startup-id pkill -9 greenclip; greenclip clear && greenclip daemon &
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
 bindsym $mod+Control+Left workspace prev_on_output
