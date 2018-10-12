@@ -11,7 +11,7 @@ env:
 
 script:
   - 'set -e'
-  - 'sudo apt-get remove --purge postgresql*'
+  - 'sudo apt-get remove --purge postgresql* || true'
   - './bootstrap.sh'
   - 'set +e'
 
