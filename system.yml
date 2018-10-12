@@ -78,3 +78,4 @@
         - 'ppa_gertvdijk_ccid_backports_trusty.list'
         - 'ppa_nvidia_graphics_drivers.list'
         - 'ppa_peek_xenial.list'
+        - 'ppa_jasonpleau_rofi_{{ ansible_distribution_release }}.list'

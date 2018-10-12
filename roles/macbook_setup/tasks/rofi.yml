@@ -1,0 +1,21 @@
+---
+- name: 'Add a PPA containing a newish version of rofi'
+  become: true
+  apt_repository:
+    repo: 'ppa:jasonpleau/rofi'
+    state: present
+    update_cache: yes
+
+- name: 'Install rofi'
+  become: true
+  apt:
+    name: 'rofi'
+    state: 'latest'
+
+- name: 'Install some rofi-related goodies'
+  become: true
+  apt:
+    name: '{{ item }}'
+    state: 'latest'
+  with_items:
+    - 'qalc'

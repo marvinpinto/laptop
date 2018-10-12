@@ -4,6 +4,7 @@
 - include: nvidia.yml
 - include: programs.yml
 - include: i3wm.yml
+- include: rofi.yml
 - include: google_chrome.yml
 - include: chromium_browser.yml
 - include: vagrant.yml

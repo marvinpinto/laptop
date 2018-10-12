@@ -6,7 +6,7 @@
   notify: 'macbook_setup-apt-get-update'
 
 - name: 'Add the i3wm ubuntu repo'
-  sudo: yes
+  become: true
   apt_repository:
     repo: "deb http://debian.sur5r.net/i3/ {{ ansible_distribution_release }} universe"
     state: present
@@ -15,7 +15,7 @@
 - meta: flush_handlers
 
 - name: 'Install i3wm + friends'
-  sudo: yes
+  become: true
   apt:
     name: "{{ item }}"
     state: latest

@@ -49,3 +49,14 @@ xterm*saveLines: 2000
 
 ! Turn the scrollbar off
 xterm*scrollBar: false
+
+! Rofi settings
+rofi.theme: android_notification
+rofi.font: mono 10
+rofi.modi: combi
+rofi.sidebar-mode: true
+rofi.disable-history: true
+rofi.hide-scrollbar: true
+rofi.kb-row-tab: Shift+space
+rofi.kb-row-select: Tab
+rofi.terminal: xterm -en utf-8
