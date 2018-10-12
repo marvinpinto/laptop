@@ -75,8 +75,6 @@
     group: 'marvin'
     mode: '0755'
   with_items:
-    - 'i3ctl.sh'
-    - 'i3lock.sh'
     - 'gpg-agent.sh'
     - 'restore-layout.sh'
     - 'wrapper.py'

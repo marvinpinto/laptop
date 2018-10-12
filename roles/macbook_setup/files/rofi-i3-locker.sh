@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 LOCKFILE="/tmp/i3lock-lockfile.txt"
+PROG=`basename "$0"`
 
 revert() {
   xset dpms 0 0 0
@@ -8,7 +9,7 @@ revert() {
 }
 
 if [ -e ${LOCKFILE} ] && kill -0 `cat ${LOCKFILE}`; then
-  msg="i3lock.sh already running"
+  msg="${PROG} already running"
   echo $msg
   logger -t i3lock $msg
   exit
@@ -21,5 +22,5 @@ trap revert SIGHUP SIGINT SIGTERM
 echo $$ > ${LOCKFILE}
 
 xset +dpms dpms 5 5 5
-i3lock --color=00001A --nofork
+/usr/bin/i3lock --color=00001A --nofork
 revert

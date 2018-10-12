@@ -39,3 +39,21 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the rofi-launcher script file in place'
+  become: true
+  copy:
+    src: 'rofi-launcher.sh'
+    dest: '/usr/local/bin/rofi-launcher'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Put the rofi-i3-locker script file in place'
+  become: true
+  copy:
+    src: 'rofi-i3-locker.sh'
+    dest: '/usr/local/bin/rofi-i3-locker'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'

@@ -31,7 +31,7 @@ bindsym $mod+Return exec xterm -en utf-8
 bindsym $mod+Shift+q kill
 
 # rofi launcher
-bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,run,calc:rofi-calc,2FA:rofi-2fa,clipboard:greenclip print' -show run"
+bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,launcher:rofi-launcher,run,2FA:rofi-2fa,calc:rofi-calc,clipboard:greenclip print' -show run"
 
 # password manager launcher
 bindsym $mod+p exec "PINENTRY_USER_DATA=gui rofi-pass"
@@ -165,26 +165,6 @@ bindsym $mod+Shift+Control+Right move workspace next_on_output
 
 # Move the current workspace to another monitor
 bindsym $mod+m move workspace to output left
-
-# System functions triggered by Mod+x
-set $mode_system System (l) lock, (e) logout, (s) suspend, (h) hibernate, (r) reboot, (Shift+s) shutdown, (Shift+e) enable screensaver, (Shift+d) disable screensaver, (Shift+p) toggle do-not-disturb
-
-mode "$mode_system" {
-    bindsym l exec --no-startup-id ~/.i3/i3ctl.sh lock, mode "default"
-    bindsym e exec --no-startup-id ~/.i3/i3ctl.sh logout, mode "default"
-    bindsym s exec --no-startup-id ~/.i3/i3ctl.sh suspend, mode "default"
-    bindsym h exec --no-startup-id ~/.i3/i3ctl.sh hibernate, mode "default"
-    bindsym r exec --no-startup-id ~/.i3/i3ctl.sh reboot, mode "default"
-    bindsym Shift+s exec --no-startup-id ~/.i3/i3ctl.sh shutdown, mode "default"
-    bindsym Shift+e exec --no-startup-id ~/.i3/i3ctl.sh enable-screensaver, mode "default"
-    bindsym Shift+d exec --no-startup-id ~/.i3/i3ctl.sh disable-screensaver, mode "default"
-    bindsym Shift+p exec --no-startup-id ~/.i3/i3ctl.sh toggle-dnd, mode "default"
-
-    # back to normal: Enter or Escape
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
-bindsym $mod+x mode "$mode_system"
 
 # Restore layout system functions triggered by Mod+shift+d
 set $mode_restore laptop only (l), laptop + monitor (m)
