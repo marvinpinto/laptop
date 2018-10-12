@@ -33,6 +33,9 @@ bindsym $mod+Shift+q kill
 # rofi launcher
 bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,run,calc:rofi-calc,2FA:rofi-2fa,clipboard:greenclip print' -show run"
 
+# password manager launcher
+bindsym $mod+p exec "PINENTRY_USER_DATA=gui rofi-pass"
+
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down

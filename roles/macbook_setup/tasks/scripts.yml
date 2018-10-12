@@ -132,3 +132,27 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the custom-pinentry script file in place'
+  become: true
+  copy:
+    content: |
+      #!/bin/bash
+      # choose pinentry depending on PINENTRY_USER_DATA
+      # requires pinentry-curses and pinentry-gtk2
+      # this *only works* with gpg 2
+      # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802020
+      case $PINENTRY_USER_DATA in
+      gui)
+        exec /usr/bin/pinentry "$@"
+        ;;
+      none)
+        exit 1 # do not ask for passphrase
+        ;;
+      *)
+        exec /usr/bin/pinentry-curses "$@"
+      esac
+    dest: '/usr/local/bin/custom-pinentry'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'

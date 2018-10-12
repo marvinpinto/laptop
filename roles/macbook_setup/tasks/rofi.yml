@@ -19,12 +19,23 @@
     state: 'latest'
   with_items:
     - 'qalc'
+    - 'gawk'
+    - 'xdotool'
 
 - name: 'Install greenclip (version 3.2)'
   become: true
   get_url:
     url: 'https://github.com/erebe/greenclip/releases/download/3.2/greenclip'
     dest: '/usr/local/bin/greenclip'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Install rofi-pass (version 2.0.1)'
+  become: true
+  get_url:
+    url: 'https://raw.githubusercontent.com/carnager/rofi-pass/2.0.1/rofi-pass'
+    dest: '/usr/local/bin/rofi-pass'
     owner: 'root'
     group: 'root'
     mode: '0755'

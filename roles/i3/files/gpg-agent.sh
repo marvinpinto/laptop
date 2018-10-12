@@ -1,6 +1,7 @@
 #!/bin/bash
 
 if [ "$(lsb_release --release --short)" == "16.04" ]; then
+  gpgconf --kill gpg-agent
   gpgconf --launch gpg-agent
 else
   # Start the GnuPG agent and enable OpenSSH agent emulation
