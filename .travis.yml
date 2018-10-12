@@ -10,8 +10,10 @@ env:
     - 'DEBIAN_FRONTEND=noninteractive'
 
 script:
+  - 'set -e'
   - 'sudo apt-get remove --purge postgresql*'
   - './bootstrap.sh'
+  - 'set +e'
 
 notifications:
   email: false
