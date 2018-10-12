@@ -15,11 +15,6 @@
     group: 'marvin'
     mode: '0644'
   with_items:
-    - 'workspace-1-laptop.json'
-    - 'workspace-2-laptop.json'
-    - 'workspace-3-laptop.json'
-    - 'workspace-2-monitor.json'
-    - 'workspace-3-monitor.json'
     - 'fastmail_username.gpg'
     - 'fastmail_password.gpg'
 
