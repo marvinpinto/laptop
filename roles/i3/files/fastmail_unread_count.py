@@ -6,6 +6,7 @@ import time
 import os
 import fcntl
 import sys
+import argparse
 
 
 USERNAME_FILE = "%s/.i3/fastmail_username.gpg" % os.environ['HOME']
@@ -53,5 +54,24 @@ def main():
         time.sleep(refresh_interval)
 
 
+def force_check():
+    try:
+        unread_count = get_unread_mail_count()
+        write_to_file(OUTPUT_FILENAME, unread_count)
+    except Exception as e:
+        write_to_file(OUTPUT_FILENAME, "ERROR: %s" % e)
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='Check the unread mail count on Fastmail.')
+    parser.add_argument('--force', dest='force', action='store_true')
+    parser.set_defaults(force=False)
+    args = parser.parse_args()
+
+    # Perform a one-off check, if requested
+    if args.force:
+        force_check()
+        sys.exit(0)
+
     main()

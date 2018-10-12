@@ -6,7 +6,7 @@ I3LOCK='/usr/bin/i3lock --color 333333'
 if [ -z $@ ]; then
   function gen_options()
   {
-    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle DND","Initiate Backup")
+    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle DND","Initiate Backup","Check Email")
     echo ${option_list[@]} | tr ',' '\n' | sort
   }
 
@@ -47,6 +47,9 @@ else
       ;;
     'Initiate Backup')
       coproc (PINENTRY_USER_DATA=gui /usr/local/bin/acd-backup "up")
+      ;;
+    'Check Email')
+      coproc (PINENTRY_USER_DATA=gui ${HOME}/.i3/fastmail_unread_count.py --force)
       ;;
     *)
       echo "Invalid option \"$OPTION\""
