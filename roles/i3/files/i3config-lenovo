@@ -103,6 +103,9 @@ focus_follows_mouse no
 # Rename the current workspace
 bindsym $mod+t exec --no-startup-id ~/.i3/rename_workspace.sh
 
+# Shortcut to lock the screen
+bindsym $mod+Control+l exec --no-startup-id /usr/local/bin/rofi-i3-locker
+
 # Startup programs
 exec --no-startup-id compton -CGb
 exec_always --no-startup-id hsetroot -solid "#00001A"
