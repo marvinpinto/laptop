@@ -1,7 +1,8 @@
 ---
 language: 'generic'
 sudo: 'required'
-dist: 'trusty'
+dist: 'xenial'
+group: 'edge'
 
 env:
   global:
@@ -9,14 +10,16 @@ env:
     - 'DEBIAN_FRONTEND=noninteractive'
 
 script:
-  - 'sudo apt-get remove --purge postgresql*'
+  - 'set -e'
+  - 'sudo apt-get remove --purge postgresql* || true'
   - './bootstrap.sh'
+  - 'set +e'
 
 notifications:
   email: false
   webhooks:
     urls:
       - secure: "Yc69+HTj8mDCL/cXcM2oh+ixkxoZOKzRNRyZpR4u9A0Hof4GUyOPhwO6nQtx9NbQag2Wz5in4pLE1twSFSkLl56YV1nMtYtPGcnSI3/H9j/qjT52xigqTPs2aIN/p7uuxsiomNDOTIiJ79sNmUw5O+S+hVcTXXEsyjDBkl4v37/wgY4b3G9yv9Uol26FuM/cG7uE4zbaSJIHgDrIjYpuBvMgv9tEM8ipdQmLmk9n9Wn4bZUoW12ZRjPNIePEaUVdApUGaptrETIby6Ax350qtk3MzWzs7sDhYc3vjoy+mXQ0gQA5xbqg1kkcNbB2XaRd7VTk640KlOeaRQKXIRSRioOT3Tb9efrOBWUfZ7HP2v0kEpxNsY5z1c/blvi7CdXbSn3os3e7iJ8LKaVLxw295ugumZ3+9nIJ/6SqnOLyjU6wTMig66tyrZI8c6sW17NYX8KrIXtdCk5Lwc3QaHirOaYf3z2fVwJ6GxBZ2b+O/5+ZZglZqto8FX8BMU1EazOxaSgfLwoCBlTEfvOv5CAe4O38jfGVdIvTfFEUm13NlmBKq1E4JR/5/Nyd8yXjNJkhrat8mavSnZzSJgFnUVTtUihvWvE6MmW7V/kdq7ueEMbg1TNhedQeaK1Wt00jc6aqOjIGAId+9efkACrdYrMu7JfRMVJudepQi0XgMsjkJ3E="
-    on_success: always  # options: [always|never|change] default: always
+    on_success: change  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
