@@ -31,10 +31,7 @@ bindsym $mod+Return exec xterm -en utf-8
 bindsym $mod+Shift+q kill
 
 # rofi launcher
-bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,launcher:rofi-launcher,run,2FA:rofi-2fa,calc:rofi-calc,clipboard:greenclip print' -show run"
-
-# password manager launcher
-bindsym $mod+p exec "PINENTRY_USER_DATA=gui rofi-pass"
+bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,launcher:rofi-launcher,run,calc:rofi-calc,clipboard:greenclip print' -show run"
 
 # change focus
 bindsym $mod+h focus left

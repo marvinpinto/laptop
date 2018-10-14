@@ -57,3 +57,58 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the rofi-calc script file in place'
+  become: true
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      if [[ -n $* ]]; then
+        echo "Query: ${1}"
+        qalc -t $1 | tee >(xclip -selection clipboard >/dev/null)
+      fi
+    dest: '/usr/local/bin/rofi-calc'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Put the rofi-switch-workspaces script file in place'
+  become: true
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      if [ -z $@ ]; then
+        function gen_workspaces()
+        {
+          i3-msg -t get_workspaces | jq ".[] | (.name)" | sort -n
+        }
+
+        echo temporary; gen_workspaces
+      else
+          WORKSPACE=$@
+
+          if [ x"temporary" = x"${WORKSPACE}" ]; then
+            i3-msg workspace scratch >/dev/null
+          elif [ -n "${WORKSPACE}" ]; then
+            i3-msg workspace "${WORKSPACE}" >/dev/null
+          fi
+      fi
+    dest: '/usr/local/bin/rofi-switch-workspaces'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Put the rofi-2fa script file in place'
+  become: true
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      ykman oath &> /dev/null
+      DMENU="rofi -dmenu"
+      if [ $? -eq 0 ]; then
+        ykman oath code -s $(ykman oath list | ${DMENU} -i -p "Select Credential" -no-custom) | xclip -selection "clipboard"
+      fi
+    dest: '/usr/local/bin/rofi-2fa'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'

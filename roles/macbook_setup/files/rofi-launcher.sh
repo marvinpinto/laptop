@@ -6,7 +6,7 @@ I3LOCK='/usr/bin/i3lock --color 333333'
 if [ -z $@ ]; then
   function gen_options()
   {
-    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle DND","Initiate Backup","Check Email","Restore Window Layout")
+    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle DND","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Password Store")
     echo ${option_list[@]} | tr ',' '\n' | sort
   }
 
@@ -53,6 +53,12 @@ else
       ;;
     'Restore Window Layout')
       coproc (${HOME}/.i3/restore-layout.sh)
+      ;;
+    '2FA Tokens')
+      coproc (/usr/local/bin/rofi-2fa)
+      ;;
+    'Password Store')
+      coproc (PINENTRY_USER_DATA=gui /usr/local/bin/rofi-pass)
       ;;
     *)
       echo "Invalid option \"$OPTION\""
