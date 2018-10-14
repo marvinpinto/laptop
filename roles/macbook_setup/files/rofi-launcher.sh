@@ -37,10 +37,11 @@ else
       /usr/bin/dbus-send --system --print-reply --dest=org.freedesktop.login1 /org/freedesktop/login1 "org.freedesktop.login1.Manager.PowerOff" boolean:true
       ;;
     'Enable Screensaver')
-      /usr/bin/xautolock -detectsleep -time 3 -locker '/usr/local/bin/rofi-i3-locker' -notify 30 -notifier "notify-send -i info -u normal -t 1000 -- 'Locking screen in 30 seconds'" &
+      /usr/bin/xautolock -exit
+      /usr/bin/xautolock -resetsaver -detectsleep -time 3 -locker '/usr/local/bin/rofi-i3-locker' -notify 30 -notifier "notify-send -i info -u normal -t 3000 -- 'Locking screen in 30 seconds'" &
       ;;
     'Disable Screensaver')
-      coproc (killall xautolock)
+      /usr/bin/xautolock -exit
       ;;
     'Toggle DND')
       [ -e ${DND_FILE} ] && rm ${DND_FILE} || touch ${DND_FILE}

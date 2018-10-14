@@ -122,8 +122,7 @@ bindsym $mod+Control+l exec --no-startup-id /usr/local/bin/rofi-i3-locker
 # Startup programs
 exec --no-startup-id compton -CGb
 exec_always --no-startup-id hsetroot -solid "#00001A"
-exec_always --no-startup-id ~/.i3/i3ctl.sh enable-screensaver
-exec_always --no-startup-id xautolock -enable
+exec_always --no-startup-id /usr/bin/xautolock -resetsaver -detectsleep -time 3 -locker '/usr/local/bin/rofi-i3-locker' -notify 30 -notifier "notify-send -i info -u normal -t 3000 -- 'Locking screen in 30 seconds'"
 exec_always --no-startup-id /usr/bin/xmodmap ~/.xmodmap
 exec_always --no-startup-id /usr/bin/xrdb -load ~/.xresources
 exec_always --no-startup-id /usr/bin/gnome-settings-daemon &
