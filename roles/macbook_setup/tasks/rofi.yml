@@ -80,7 +80,7 @@
       if [ -z $@ ]; then
         function gen_workspaces()
         {
-          i3-msg -t get_workspaces | jq ".[] | (.name)" | sort -n
+          i3-msg -t get_workspaces | jq --raw-output ".[] | (.name)" | sort -n
         }
 
         echo temporary; gen_workspaces
