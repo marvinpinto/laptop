@@ -103,6 +103,7 @@
   copy:
     content: |
       #!/usr/bin/env bash
+      pkill -9 scdaemon || true
       ykman oath &> /dev/null
       DMENU="rofi -dmenu"
       if [ $? -eq 0 ]; then
