@@ -64,7 +64,7 @@
     content: |
       #!/usr/bin/env bash
       if [[ -n $* ]]; then
-        echo "Query: ${1}"
+        echo "${1}"
         qalc -t $1 | tee >(xclip -selection clipboard >/dev/null)
       fi
     dest: '/usr/local/bin/rofi-calc'
