@@ -6,7 +6,7 @@ I3LOCK='/usr/bin/i3lock --color 333333'
 if [ -z $@ ]; then
   function gen_options()
   {
-    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle DND","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Password Store")
+    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Password Store")
     echo ${option_list[@]} | tr ',' '\n' | sort
   }
 
@@ -43,7 +43,7 @@ else
     'Disable Screensaver')
       /usr/bin/xautolock -exit
       ;;
-    'Toggle DND')
+    'Toggle Do Not Disturb (DND)')
       [ -e ${DND_FILE} ] && rm ${DND_FILE} || touch ${DND_FILE}
       ;;
     'Initiate Backup')
