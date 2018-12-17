@@ -9,6 +9,7 @@
 - include: chromium_browser.yml
 - include: vagrant.yml
 - include: virtualbox.yml
+- include: plexamp.yml
 - include: git.yml
 - include: ansible.yml
 - include: peek.yml

@@ -132,6 +132,11 @@ exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec --no-startup-id /usr/bin/emojione-picker
 exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
 exec_always --no-startup-id pkill -9 greenclip; greenclip clear && greenclip daemon &
+exec_always --no-startup-id pkill -9 plexamp; /usr/local/etc/plexamp/plexamp-x86_64.AppImage &
+
+# Ensure that the Plexamp window always starts in floating mode
+for_window [class="Plexamp"] floating enable
+assign [class="Plexamp"] irc
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
 bindsym $mod+Control+Left workspace prev_on_output
