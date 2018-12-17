@@ -336,6 +336,7 @@ function sink () {
       -e DISPLAY \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       -v /media/usb:/media/usb \
+      --security-opt=seccomp:unconfined \
       $dockerargs \
       -w $workdir \
       "quay.io/marvin/kitchensink:$(lsb_release --release --short)")
