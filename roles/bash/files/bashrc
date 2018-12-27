@@ -372,8 +372,14 @@ function docked-mode() {
 
 # Start my irssi im container
 function im() {
+  local container_name=irssi
+  if [ "$(docker ps -aq -f name=${container_name})" ]; then
+    docker rm -f ${container_name}
+  fi
+
   docker run -it \
     --log-driver=none \
+    --name ${container_name} \
     -e TERM \
     -u root:root \
     -v $HOME/.irssi:/home/user/.irssi \
