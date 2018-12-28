@@ -1,0 +1,29 @@
+---
+- name: 'Create the ~/.clical directory'
+  file:
+    path: '{{ home_directory }}/.clical'
+    state: 'directory'
+    mode: '0700'
+    force: 'yes'
+
+- name: 'Put the ~/.clical/main.ini file in place'
+  copy:
+    content: |
+      BANNER %_============================%_%w, %m %d, %y%o:%_============================
+      {% for item in reminder_ics_data_sources %}
+      INCLUDE [filedir()]/{{ item.cal_label }}.rem
+      {% endfor %}
+    dest: '{{ home_directory }}/.clical/main.ini'
+    mode: '0600'
+    force: 'yes'
+  no_log: true
+
+# Note that Ansible behaves oddly when crontab entries are looped - will need to manually remove if necessary (see `crontab -l`)
+- name: 'Cron entries to automatically populate/update the reminder data files'
+  cron:
+    name: 'reminder-ics-update-for-{{ item.cal_label }}'
+    minute: '*/{{ 50 | random(start=30, seed=item.cal_label) }}'
+    user: 'marvin'
+    job: 'curl -s -L "{{ item.cal_url }}" | docker run -i -a stdin -a stdout -a stderr clical:latest /usr/local/bin/ical2rem --label "{{ item.cal_label }}" --no-todos --heading "PRIORITY 9999" --tdelta-lead-time 20 > {{ home_directory }}/.clical/{{ item.cal_label }}.rem'
+  loop: '{{ reminder_ics_data_sources }}'
+  no_log: true

@@ -559,3 +559,44 @@ function undotenv () {
 
   unset $(cat ${dotenvfile} | grep -v ^# | sed -E 's/(.*)=.*/\1/' | xargs)
 }
+
+function clical () {
+  local force_create=$1
+  local image_label=clical
+
+  if [ -n "$force_create" ] && [ "$force_create" == "-f" ]; then
+    echo "**** Deleting image ${image_label} ****"
+    docker rmi -f $(docker images -aq --filter reference=${image_label}:latest)
+  fi
+
+  if [ ! "$(docker images -aq --filter reference=${image_label}:latest)" ]; then
+    echo "**** Building image ${image_label} ****"
+    docker build --tag ${image_label}:latest -<<EOF
+    FROM ubuntu:16.04
+
+    # 'remind' + other needed utils
+    RUN apt-get -qq update \
+      && apt-get install -y \
+        wget \
+        libical-parser-html-perl \
+        remind \
+      && apt-get clean autoclean \
+      && apt-get autoremove -y --purge \
+      && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+      && rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+    # Install the perl version of the ical2rem format converter
+    RUN wget -O /usr/local/bin/ical2rem https://raw.githubusercontent.com/marvinpinto/config/tdelta-lead-time/scripts/ical2rem.pl \
+      && chmod 0755 /usr/local/bin/ical2rem
+EOF
+  fi
+
+  docker run \
+    --rm \
+    --log-driver=none \
+    -v $HOME/.clical:/root/.clical \
+    --name ${image_label} \
+    -it \
+    clical:latest \
+    /usr/bin/remind /root/.clical/main.ini
+}
