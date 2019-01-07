@@ -453,22 +453,6 @@ function docker-bittorrent() {
     kfei/docktorrent
 }
 
-# Launch a containerized vlc client
-function docker-vlc() {
-  mkdir -p ${HOME}/bittorrent
-  docker run -it \
-    --log-driver=none \
-    --rm \
-    -v $HOME/bittorrent:/home/vlc/Documents:rw \
-    -v /dev/snd:/dev/snd --privileged \
-    -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -e uid=$(id -u) \
-    -e gid=$(id -g) \
-    -e DISPLAY=unix$DISPLAY \
-    --name vlc \
-    chrisdaish/vlc
-}
-
 # Launch a containerized letsencrypt client
 function docker-letsencrypt() {
   docker run -it \

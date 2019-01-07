@@ -25,6 +25,8 @@
     - 'xournal'
     - 'fonts-font-awesome'
     - 'jq'
+    - 'sshfs'
+    - 'snapd'
 
 - name: "Remove a few things I don't care for"
   sudo: yes
@@ -74,7 +76,6 @@
     - 'evince'
     - 'evince-common'
     - 'brltty'
-    - 'snapd'
     - 'cups-browsed'
     - 'speech-dispatcher'
     - 'modem-manager'

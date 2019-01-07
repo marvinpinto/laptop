@@ -23,4 +23,5 @@
 - include: rng_tools.yml
 - include: docker_setup.yml
 - include: yubikey.yml
+- include: digikam.yml
 - include: post_file_permissions.yml

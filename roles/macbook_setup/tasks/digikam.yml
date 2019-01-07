@@ -1,0 +1,43 @@
+---
+- name: 'Create the /usr/local/etc/digikam directory'
+  become: true
+  file:
+    path: '/usr/local/etc/digikam'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if digikam version {{digikam_version}} is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/digikam/digikam-{{digikam_version}}-x86_64.AppImage'
+  register: 'digikam_binary'
+
+- name: 'Download digikam version {{digikam_version}}'
+  become: true
+  get_url:
+    url: 'http://mirror.csclub.uwaterloo.ca/kde/stable/digikam/digikam-{{digikam_version}}-x86-64.appimage'
+    dest: '/usr/local/etc/digikam/digikam-{{digikam_version}}-x86_64.AppImage'
+    mode: '0755'
+  when: 'digikam_binary.stat.exists == False'
+
+- name: 'Symlink the digikam binary to our destination'
+  become: true
+  file:
+    src: '/usr/local/etc/digikam/digikam-{{digikam_version}}-x86_64.AppImage'
+    dest: '/usr/local/etc/digikam/digikam-x86_64.AppImage'
+    state: 'link'
+
+- name: 'Symlink the digikam binary to /usr/local/bin'
+  become: true
+  file:
+    src: '/usr/local/etc/digikam/digikam-x86_64.AppImage'
+    dest: '/usr/local/bin/digikam'
+    state: 'link'
+
+- name: 'Install VLC'
+  become: true
+  apt:
+    name:
+      - 'vlc'
+      - 'browser-plugin-vlc'
+    state: 'latest'
