@@ -584,3 +584,12 @@ EOF
     clical:latest \
     /usr/bin/remind /root/.clical/main.ini
 }
+
+# Bash function to automate some image/video file processing
+function batchprocessmedia () {
+  # Rename the file appropriately
+  exiftool '-FileName<DateTimeOriginal' -d "%Y-%m-%d_%H.%M.%S%%-c.%%e" .
+
+  # Change the extension to lowercase
+  rename 's/(\.[A-Z]+$)/lc($1)/ge' *.[A-Z]*
+}
