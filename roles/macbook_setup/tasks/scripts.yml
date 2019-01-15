@@ -58,3 +58,12 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the gopro script file in place'
+  become: true
+  copy:
+    src: 'gopro.sh'
+    dest: '/usr/local/bin/gopro'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
