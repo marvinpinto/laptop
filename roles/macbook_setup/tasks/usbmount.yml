@@ -22,20 +22,36 @@
     group: 'root'
     mode: '0644'
 
-- name: 'Create the /media/gopro'
+- name: 'Put the usb-mount.sh script in place'
   become: true
-  file:
-    path: '/media/gopro'
-    state: 'directory'
+  copy:
+    src: 'usb-mount.sh'
+    dest: '/usr/local/bin/usb-mount.sh'
     owner: 'root'
     group: 'root'
-    mode: '0755'
+    mode: '0655'
 
-- name: 'Mount the gopro SD card via fstab'
+- name: 'Add the rules file needed for auto mounting USB storage'
   become: true
-  mount:
-    path: '/media/gopro'
-    src: 'UUID={{ gopro_sd_card_uuid }}'
-    fstype: 'exfat'
-    opts: 'nodev,nosuid,noexec,user,noauto,rw,uid=1000,gid=1000'
-    state: 'present'
+  copy:
+    src: '99-usb-storage-mount.rules'
+    dest: '/etc/udev/rules.d/99-usb-storage-mount.rules'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'restart-udev'
+
+- name: 'Install the usb-mount systemd service'
+  copy:
+    content: |
+      [Unit]
+      Description=Mount USB Drive on %i
+      [Service]
+      Type=oneshot
+      RemainAfterExit=true
+      ExecStart=/usr/local/bin/usb-mount.sh add %i
+      ExecStop=/usr/local/bin/usb-mount.sh remove %i
+    dest: '/etc/systemd/system/usb-mount@.service'
+  notify: 'reload-systemctl'
+
+- meta: flush_handlers

@@ -1,14 +1,14 @@
 ---
 - name: 'Trigger an initramfs bootfile update'
-  sudo: yes
+  become: true
   command: '/usr/sbin/update-initramfs -u -k all'
 
 - name: 'Load the mba6x_bl module'
-  sudo: yes
+  become: true
   command: '/sbin/modprobe mba6x_bl'
 
 - name: 'restart-pcscd'
-  sudo: yes
+  become: true
   service:
     name: 'pcscd'
     state: 'restarted'
@@ -23,3 +23,13 @@
   become: true
   apt:
     update_cache: yes
+
+- name: 'restart-udev'
+  become: true
+  service:
+    name: 'udev'
+    state: 'restarted'
+
+- name: 'reload-systemctl'
+  become: true
+  command: 'systemctl daemon-reload'
