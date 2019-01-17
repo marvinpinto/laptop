@@ -2,12 +2,14 @@
 - name: 'Install tools needed to format + mount USB flash drives'
   become: true
   apt:
-    name: "{{ item }}"
+    name:
+      - 'usbmount'
+      - 'pmount'
+      - 'gparted'
+      - 'exfat-utils'
+      - 'exfat-fuse'
+      - 'udev'
     state: latest
-  with_items:
-    - 'usbmount'
-    - 'pmount'
-    - 'gparted'
 
 - name: 'Automount any USB flash drives as UID/GID 1000 (user marvin)'
   become: true
@@ -19,3 +21,21 @@
     owner: 'root'
     group: 'root'
     mode: '0644'
+
+- name: 'Create the /media/gopro'
+  become: true
+  file:
+    path: '/media/gopro'
+    state: 'directory'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Mount the gopro SD card via fstab'
+  become: true
+  mount:
+    path: '/media/gopro'
+    src: 'UUID={{ gopro_sd_card_uuid }}'
+    fstype: 'exfat'
+    opts: 'nodev,nosuid,noexec,user,noauto,rw,uid=1000,gid=1000'
+    state: 'present'
