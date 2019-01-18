@@ -9,6 +9,7 @@ image_mode=""
 live_run=""
 ffmpeg_filter=""
 enable_fisheye="yes"
+enable_binning="yes"
 verbose=""
 EXIFTOOL=""
 
@@ -23,10 +24,11 @@ show_help() {
   echo -ne "   Available filters: \n     none\n     color_negative\n     cross_process\n     darker\n     increase_contrast\n     lighter\n     linear_contrast\n     medium_contrast\n     negative\n     strong_contrast\n     vintage\n"
   echo "-z: Enable verbose mode"
   echo "-w: Disable fisheye correction"
+  echo "-t: Disable image binning"
   echo "e.g. ${myname} -v GOPR0735.MP4"
 }
 
-while getopts ":v:i:ulf:zw" opt; do
+while getopts ":v:i:ulf:zwt" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -41,6 +43,8 @@ while getopts ":v:i:ulf:zw" opt; do
     z) verbose="yes"
        ;;
     w) enable_fisheye=""
+       ;;
+    t) enable_binning=""
        ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
@@ -169,19 +173,47 @@ process_single_image() {
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_image_dir}/${filename}.jpg"
   set -e
 
+  local im_args=""
+
   if [[ -n "$enable_fisheye" ]]; then
-    # Fix fisheye
     echo "    - Fisheye: ${filename}.jpg"
-    mogrify -distort barrel "0.01,0,-0.31" ${temp_image_dir}/${filename}.jpg
+    im_args+=" -distort barrel 0.01,0,-0.31"
   fi
 
-  # Utilize Fred's IM autocolor script
-  echo "    - Autocolor: ${filename}.jpg"
-  fredim-autocolor -m gamma -c separate ${temp_image_dir}/${filename}.jpg ${temp_image_dir}/${filename}.jpg
+  echo "    - Auto-orientation: ${filename}.jpg"
+  im_args+=" -auto-orient"
 
-  # Utilize Fred's IM enrich script
-  echo "    - Enrich: ${filename}.jpg"
-  fredim-enrich ${temp_image_dir}/${filename}.jpg ${temp_image_dir}/${filename}.jpg
+  echo "    - Normalization: ${filename}.jpg"
+  im_args+=" -normalize"
+
+  echo "    - Gamma correction: ${filename}.jpg"
+  im_args+=" -auto-gamma"
+
+  if [[ -n "$enable_binning" ]]; then
+    # Inspired by: https://www.imagemagick.org/Usage/photos/binning/binn
+    echo "    - Binning: ${filename}.jpg"
+    set -$- `identify -format '%w %h' ${temp_image_dir}/${filename}.jpg`
+    local bin_size=2
+    local x=$1
+    local y=$2
+    newx=$((${x} / ${bin_size}))
+    checkx=$((${newx} * ${bin_size}))
+    if [[ ${checkx} -ne ${x} ]]; then
+      crop_flag="YES"
+    fi
+    newy=$((${y} / ${bin_size}))
+    checky=$((${newy} * ${bin_size}))
+    if [[ ${checky} -ne ${y} ]]; then
+      crop_flag="YES"
+    fi
+    if [ "$crop_flag" ]; then
+      crop_args="-crop '${checkx}x${checky}+0+0' +repage"
+    fi
+    im_args+=" $crop_args -filter box -resize ${newx}x${newy}"
+  fi
+
+  # Execute imagemagick with the specified arguments
+  mogrify $im_args ${temp_image_dir}/${filename}.jpg
 
   if [[ -z "$live_run" ]]; then
     # Create a side-by-side preview of this image
