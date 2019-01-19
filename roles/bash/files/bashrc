@@ -50,13 +50,15 @@ shopt -s nocaseglob
 # Append to the Bash history file, rather than overwriting it
 shopt -s histappend
 
-# Autocorrect typos in path names when using `cd`
-shopt -s cdspell
-
 shopt -s checkwinsize
 
 # Set the correct terminal size
 eval $(/usr/bin/resize)
+
+# Supercharge directory switching
+alias ..="cd .."
+complete -d cd
+shopt -s cdspell
 
 #***************
 # Bash Exports
