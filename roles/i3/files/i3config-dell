@@ -149,6 +149,10 @@ for_window [class="Plexamp"] border normal, move to scratchpad
 exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T irc -e /bin/bash -l -c \\"im\\"" "xterm.*irc"
 for_window [class="XTerm" title="irc"] border normal, move to scratchpad
 
+# Start a scratch terminal & move it to the i3 scratchpad
+exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T scratch" "xterm.*scratch"
+for_window [class="XTerm" title="scratch"] border normal, move to scratchpad
+
 # Ensure that the following windows always start in floating mode
 for_window [class="Pavucontrol"] floating enable, border normal
 for_window [class="Blueman-manager"] floating enable, border normal, resize set 640 480
