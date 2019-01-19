@@ -83,9 +83,9 @@ workspace "social" output DP-0
 bindsym $mod+b workspace back_and_forth
 
 # Volume controls for the Dell T1700
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q -D pulse sset Master 5%+ unmute
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q -D pulse sset Master 5%- unmute
-bindsym XF86AudioMute exec --no-startup-id amixer -q -D pulse sset Master toggle
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.i3/pavolume.sh --up
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.i3/pavolume.sh --down
+bindsym XF86AudioMute exec --no-startup-id ~/.i3/pavolume.sh --togmute
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -133,10 +133,15 @@ exec --no-startup-id /usr/bin/emojione-picker
 exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
 exec_always --no-startup-id pkill -9 greenclip; greenclip clear && greenclip daemon &
 exec_always --no-startup-id pkill -9 plexamp; /usr/local/etc/plexamp/plexamp-x86_64.AppImage &
+exec_always --no-startup-id pkill -9 blueman-applet; blueman-applet &
 
-# Ensure that the Plexamp window always starts in floating mode
-for_window [class="Plexamp"] floating enable
+# Ensure that the Plexamp window always starts in floating mode (in the specific workspace)
+for_window [class="Plexamp"] floating enable, border normal
 assign [class="Plexamp"] irc
+
+# Ensure that the following windows always start in floating mode
+for_window [class="Pavucontrol"] floating enable, border normal
+for_window [class="Blueman-manager"] floating enable, border normal, resize set 640 480
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
 bindsym $mod+Control+Left workspace prev_on_output

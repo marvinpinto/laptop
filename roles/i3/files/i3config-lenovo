@@ -117,8 +117,8 @@ exec --no-startup-id /usr/bin/emojione-picker
 exec_always --no-startup-id pkill -9 greenclip; greenclip clear && greenclip daemon &
 exec_always --no-startup-id pkill -9 plexamp; /usr/local/etc/plexamp/plexamp-x86_64.AppImage &
 
-# Ensure that the Plexamp window always starts in floating mode
-for_window [class="Plexamp"] floating enable
+# Ensure that the Plexamp window always starts in floating mode (in the specific workspace)
+for_window [class="Plexamp"] floating enable, border normal
 assign [class="Plexamp"] irc
 
 # Use mod-Control-Left and Right to rotate through the workspace list.
