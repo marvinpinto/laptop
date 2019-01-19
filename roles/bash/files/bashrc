@@ -390,6 +390,7 @@ function im() {
     irssi:alpine \
     irssi --config=/home/user/.irssi/config-im --home=/home/user/.irssi
 }
+export -f im
 
 # Launch a containerized gimp
 function docker-gimp() {

@@ -76,7 +76,6 @@ workspace "browser" output DVI-I-1
 
 # Workspaces mapped to the secondary monitor
 workspace "sbchrome" output DP-0
-workspace "irc" output DP-0
 workspace "social" output DP-0
 
 # switch to the previously used workspace
@@ -131,13 +130,24 @@ exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec --no-startup-id /usr/bin/emojione-picker
 exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
-exec_always --no-startup-id pkill -9 greenclip; greenclip clear && greenclip daemon &
-exec_always --no-startup-id pkill -9 plexamp; /usr/local/etc/plexamp/plexamp-x86_64.AppImage &
-exec_always --no-startup-id pkill -9 blueman-applet; blueman-applet &
+exec_always --no-startup-id ~/.i3/startup-app.sh "greenclip clear && greenclip daemon" "greenclip"
+exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-applet"
 
-# Ensure that the Plexamp window always starts in floating mode (in the specific workspace)
-for_window [class="Plexamp"] floating enable, border normal
-assign [class="Plexamp"] irc
+# Scratchpad shortcuts
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+# Start the notepad & move it to the i3 scratchpad
+exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T notepad -e /bin/bash -l -c \\"vi ~/scratchpad.md\\"" "xterm.*notepad"
+for_window [class="XTerm" title="notepad"] border normal, move to scratchpad
+
+# Start plexamp and move it to the i3 scratchpad
+exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/local/etc/plexamp/plexamp-x86_64.AppImage" "plexamp"
+for_window [class="Plexamp"] border normal, move to scratchpad
+
+# Start irc & move it to the i3 scratchpad
+exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T irc -e /bin/bash -l -c \\"im\\"" "xterm.*irc"
+for_window [class="XTerm" title="irc"] border normal, move to scratchpad
 
 # Ensure that the following windows always start in floating mode
 for_window [class="Pavucontrol"] floating enable, border normal

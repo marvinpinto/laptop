@@ -13,8 +13,6 @@ i3-msg 'workspace browser; exec chromium-browser --profile-directory="Default";'
 sleep ${SLEEP_DURATION}
 i3-msg 'workspace sbchrome; exec google-chrome;'
 sleep ${SLEEP_DURATION}
-i3-msg 'workspace irc; exec xterm -en utf-8;'
-sleep ${SLEEP_DURATION}
 i3-msg 'workspace social; exec chromium-browser --profile-directory="Default";'
 sleep ${SLEEP_DURATION}
 i3-msg 'workspace primary;'
