@@ -10,11 +10,12 @@ live_run=""
 ffmpeg_filter=""
 enable_fisheye="yes"
 enable_binning="yes"
+enable_image_autofixes="yes"
 verbose=""
 EXIFTOOL=""
 
 show_help() {
-  echo "usage: ${myname} <-v video_file | -i image_file | -u> [-l] [-f ffmpeg_filter] [-z] [-w]"
+  echo "usage: ${myname} <-v video_file | -i image_file | -u> [-l] [-f ffmpeg_filter] [-z] [-w] [-t] [-s]"
   echo "Available Options:"
   echo "-v <video file>: Video file to process"
   echo "-i <image file>: Image file to process"
@@ -25,10 +26,11 @@ show_help() {
   echo "-z: Enable verbose mode"
   echo "-w: Disable fisheye correction"
   echo "-t: Disable image binning"
+  echo "-s: Disable image auto fixes (normalization, gamma correction)"
   echo "e.g. ${myname} -v GOPR0735.MP4"
 }
 
-while getopts ":v:i:ulf:zwt" opt; do
+while getopts ":v:i:ulf:zwts" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -45,6 +47,8 @@ while getopts ":v:i:ulf:zwt" opt; do
     w) enable_fisheye=""
        ;;
     t) enable_binning=""
+       ;;
+    s) enable_image_autofixes=""
        ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
@@ -183,11 +187,13 @@ process_single_image() {
   echo "    - Auto-orientation: ${filename}.jpg"
   im_args+=" -auto-orient"
 
-  echo "    - Normalization: ${filename}.jpg"
-  im_args+=" -normalize"
+  if [[ -n "$enable_image_autofixes" ]]; then
+    echo "    - Normalization: ${filename}.jpg"
+    im_args+=" -normalize"
 
-  echo "    - Gamma correction: ${filename}.jpg"
-  im_args+=" -auto-gamma"
+    echo "    - Gamma correction: ${filename}.jpg"
+    im_args+=" -auto-gamma"
+  fi
 
   if [[ -n "$enable_binning" ]]; then
     # Inspired by: https://www.imagemagick.org/Usage/photos/binning/binn
