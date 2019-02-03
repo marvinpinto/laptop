@@ -7,7 +7,6 @@ myname=`basename "$0"`
 video_file=""
 image_mode=""
 live_run=""
-ffmpeg_filter=""
 enable_fisheye="yes"
 enable_binning="yes"
 enable_image_autofixes="yes"
@@ -15,14 +14,12 @@ verbose=""
 EXIFTOOL=""
 
 show_help() {
-  echo "usage: ${myname} <-v video_file | -i image_file | -u> [-l] [-f ffmpeg_filter] [-z] [-w] [-t] [-s]"
+  echo "usage: ${myname} <-v video_file | -i image_file | -u> [-l] [-z] [-w] [-t] [-s]"
   echo "Available Options:"
   echo "-v <video file>: Video file to process"
   echo "-i <image file>: Image file to process"
   echo "-u: Process all *.jpg images in the current directory"
   echo "-l: Perform a LIVE run (will rewrite source files)"
-  echo "-f <ffmpeg filter name>: Specify a custom ffmpeg filter (default: linear_contrast)"
-  echo -ne "   Available filters: \n     none\n     color_negative\n     cross_process\n     darker\n     increase_contrast\n     lighter\n     linear_contrast\n     medium_contrast\n     negative\n     strong_contrast\n     vintage\n"
   echo "-z: Enable verbose mode"
   echo "-w: Disable fisheye correction"
   echo "-t: Disable image binning"
@@ -30,7 +27,7 @@ show_help() {
   echo "e.g. ${myname} -v GOPR0735.MP4"
 }
 
-while getopts ":v:i:ulf:zwts" opt; do
+while getopts ":v:i:ulzwts" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -39,8 +36,6 @@ while getopts ":v:i:ulf:zwts" opt; do
     u) image_mode="yes"
        ;;
     l) live_run="yes"
-       ;;
-    f) ffmpeg_filter=$OPTARG
        ;;
     z) verbose="yes"
        ;;
@@ -65,7 +60,6 @@ while getopts ":v:i:ulf:zwts" opt; do
   esac
 done
 
-hash ffmpeg2 2>/dev/null || { echo >&2 "ffmpeg2 does not appear to be available."; exit 1; }
 hash exiftool 2>/dev/null || { echo >&2 "exiftool does not appear to be available."; exit 1; }
 hash mogrify 2>/dev/null || { echo >&2 "mogrify does not appear to be available."; exit 1; }
 hash fredim-autocolor 2>/dev/null || { echo >&2 "fredim-autocolor does not appear to be available."; exit 1; }
@@ -76,91 +70,41 @@ hash convert 2>/dev/null || { echo >&2 "convert does not appear to be available.
 [[ -z "$verbose" ]] && EXIFTOOL="exiftool -ignoreMinorErrors -q -q" || EXIFTOOL="exiftool"
 
 process_video() {
-  local filename=$(basename -- "$video_file")
+  local original_filename=$(basename -- "$video_file")
+  local temp_video_dir=${myname}-temp-videos
+
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  echo "- Creating a working copy of ${video_file}"
+  local renamed_file=${original_filename// /_}
+  cp "${video_file}" "${temp_video_dir}/${renamed_file}"
+
+  local filename=$(basename -- "$renamed_file")
   local extension="${filename##*.}"
   filename="${filename%.*}"
 
-  if [[ -n "$ffmpeg_filter" ]] && [[ ! "$ffmpeg_filter" =~ ^(none|color_negative|cross_process|darker|increase_contrast|lighter|linear_contrast|medium_contrast|negative|strong_contrast|vintage)$ ]]; then
-    show_help
+  set +e
+  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}.${extension}"
+  set -e
+
+  # Write original EXIF tags + renaming
+  echo "- EXIF tags: ${filename}.${extension}"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}.${extension}"
+  set +e
+  $EXIFTOOL -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "%Y-%m-%d_%H.%M.%S%%-c-${filename}.%%e" "${temp_video_dir}/${filename}.${extension}"
+  if [ $? -ne 0 ]; then
+    echo "File ${filename} does not appear to have the EXIF DateTimeOriginal tag set."
     exit 1
   fi
+  set -e
 
-  if [[ -z "$ffmpeg_filter" ]]; then
-    # set the default filter
-    ffmpeg_filter="linear_contrast"
-  fi
-
-  echo "- Creating a working copy of ${video_file}"
-  cp "${video_file}" "${tempdir}/${filename}-copy.${extension}"
-  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${tempdir}/${filename}-copy.${extension}"
-
-  echo "- Initiating video stabilization"
-  local vidstabtrf_args=()
-  [[ -z "$verbose" ]] && vidstabtrf_args+=(-loglevel fatal) || vidstabtrf_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && vidstabtrf_args+=(-y)
-  vidstabtrf_args+=(-threads $(nproc --ignore=1))
-  vidstabtrf_args+=(-i "${tempdir}/${filename}-copy.${extension}")
-  [[ -z "$live_run" ]] && vidstabtrf_args+=(-t 10)
-  vidstabtrf_args+=(-vf "vidstabdetect=stepsize=32:shakiness=10:accuracy=10:result=${tempdir}/transform_vectors.trf")
-  vidstabtrf_args+=(-f null -)
-  ffmpeg2 "${vidstabtrf_args[@]}"
-
-  echo "- Re-encoding video"
-  local base_video_filter="vidstabtransform=input=${tempdir}/transform_vectors.trf:zoom=0:smoothing=10,unsharp=5:5:0.8:3:3:0.4,curves=preset='${ffmpeg_filter}'"
-  local reencode_output_filename_type=""
-  [[ -z "$live_run" ]] && reencode_output_filename_type="sample"
-  [[ -n "$live_run" ]] && reencode_output_filename_type="reencoded"
-  reencode_args=()
-  [[ -z "$verbose" ]] && reencode_args+=(-loglevel fatal) || reencode_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && reencode_args+=(-y)
-  reencode_args+=(-threads $(nproc --ignore=1))
-  reencode_args+=(-i "${tempdir}/${filename}-copy.${extension}")
-  [[ -z "$live_run" ]] && reencode_args+=(-t 10)
-  reencode_args+=(-af "highpass=f=300, lowpass=f=4000, bass=frequency=100:gain=-50, bandreject=frequency=200:width_type=h:width=200, compand=attacks=.05:decays=.05:points=-90/-90 -70/-90 -15/-15 0/-10:soft-knee=6:volume=-70:gain=10")
-  [[ -n "$enable_fisheye" ]] && reencode_args+=(-vf "${base_video_filter},lenscorrection=cx=0.5:cy=0.5:k1=-0.227:k2=-0.022") || reencode_args+=(-vf "${base_video_filter}")
-  reencode_args+=(-vcodec libx264)
-  reencode_args+=(-acodec aac)
-  reencode_args+=(-tune film)
-  reencode_args+=(-preset slow)
-  reencode_args+=("${filename}-${reencode_output_filename_type}.mp4")
-  ffmpeg2 "${reencode_args[@]}"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${tempdir}/${filename}-copy.${extension}" "${filename}-${reencode_output_filename_type}.mp4"
-
-  if [[ -z "$live_run" ]]; then
-    echo "- Generating side-by-side sample"
-    local sidebyside_args=()
-    [[ -z "$verbose" ]] && sidebyside_args+=(-loglevel fatal) || sidebyside_args+=(-loglevel info)
-    sidebyside_args+=(-y)
-    sidebyside_args+=(-threads $(nproc --ignore=1))
-    sidebyside_args+=(-i "$video_file")
-    sidebyside_args+=(-i "${filename}-sample.mp4")
-    sidebyside_args+=(-t 10)
-    sidebyside_args+=(-an)
-    sidebyside_args+=(-filter_complex "[0:v:0]pad=iw*2:ih[bg]; [bg][1:v:0]overlay=w")
-    sidebyside_args+=(${filename}-combined.mp4)
-    ffmpeg2 "${sidebyside_args[@]}"
-    $EXIFTOOL -overwrite_original -tagsfromfile "${tempdir}/${filename}-copy.${extension}" "${filename}-combined.mp4"
-  fi
-
-  echo "- Renaming re-encoded outputs"
-  [[ -n "$live_run" ]] && $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -d "%Y-%m-%d_%H.%M.%S%%-c.%%e" "${filename}-${reencode_output_filename_type}.mp4"
-  [[ -z "$live_run" ]] && $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -d "%Y-%m-%d_%H.%M.%S%%-c-${filename}-${reencode_output_filename_type}.%%e" "${filename}-${reencode_output_filename_type}.mp4"
-  [[ -z "$live_run" ]] && $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -d "%Y-%m-%d_%H.%M.%S%%-c-${filename}-combined.%%e" "${filename}-combined.mp4"
-
-  echo "- Performing cleanup"
-  rm -rf "${tempdir}"
-  [[ -n "$live_run" ]] && rm -f *-${filename}-sample.mp4 *-${filename}-reencoded.mp4 *-${filename}-combined.mp4
-  [[ -n "$live_run" ]] && rm -f "${video_file}"
-
-  if [[ -z "$live_run" ]]; then
-    echo -ne "\n"
-    echo "****************************"
-    echo " Sample Generation Complete "
-    echo "****************************"
-    echo "Re-encoded sample: <filename>-sample.mp4"
-    echo "Side-by-side sample comparison: <filename>-combined.mp4"
-    echo -ne "\n"
-    echo "If everything looks good, re-run this script with the -l flag."
+  if [[ -n "$live_run" ]]; then
+    echo "- Cleanup: ${filename}.${extension}"
+    mv ${temp_video_dir}/*-${filename}.${extension} .
+    rm -f "${video_file}"
+    $EXIFTOOL -overwrite_original '-FileName<DateTimeOriginal' -d "%Y-%m-%d_%H.%M.%S%%-c.%%e" *-${filename}.${extension}
+    rm -rf "$temp_video_dir"
   fi
 }
 
