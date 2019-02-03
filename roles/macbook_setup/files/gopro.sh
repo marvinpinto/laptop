@@ -7,27 +7,21 @@ myname=`basename "$0"`
 video_file=""
 image_mode=""
 live_run=""
-enable_fisheye="yes"
-enable_binning="yes"
-enable_image_autofixes="yes"
 verbose=""
 EXIFTOOL=""
 
 show_help() {
-  echo "usage: ${myname} <-v video_file | -i image_file | -u> [-l] [-z] [-w] [-t] [-s]"
+  echo "usage: ${myname} <-v video_file | -i image_file | -u> [-l] [-z]"
   echo "Available Options:"
   echo "-v <video file>: Video file to process"
   echo "-i <image file>: Image file to process"
   echo "-u: Process all *.jpg images in the current directory"
   echo "-l: Perform a LIVE run (will rewrite source files)"
   echo "-z: Enable verbose mode"
-  echo "-w: Disable fisheye correction"
-  echo "-t: Disable image binning"
-  echo "-s: Disable image auto fixes (normalization, gamma correction)"
   echo "e.g. ${myname} -v GOPR0735.MP4"
 }
 
-while getopts ":v:i:ulzwts" opt; do
+while getopts ":v:i:ulz" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -38,12 +32,6 @@ while getopts ":v:i:ulzwts" opt; do
     l) live_run="yes"
        ;;
     z) verbose="yes"
-       ;;
-    w) enable_fisheye=""
-       ;;
-    t) enable_binning=""
-       ;;
-    s) enable_image_autofixes=""
        ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
@@ -111,56 +99,23 @@ process_video() {
 process_single_image() {
   local file=$1
   local temp_image_dir=$2
-  local filename=$(basename -- "$file")
+  local original_filename=$(basename -- "$file")
+  local renamed_file=${original_filename// /_}
+
+  local filename=$(basename -- "$renamed_file")
   local extension="${filename##*.}"
   filename="${filename%.*}"
 
   echo "- Processing file: ${filename}.jpg"
-  cp ${file} ${temp_image_dir}/${filename}.jpg
+  cp "${file}" ${temp_image_dir}/${filename}.jpg
   set +e
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_image_dir}/${filename}.jpg"
   set -e
 
   local im_args=""
 
-  if [[ -n "$enable_fisheye" ]]; then
-    echo "    - Fisheye: ${filename}.jpg"
-    im_args+=" -distort barrel 0.01,0,-0.31"
-  fi
-
   echo "    - Auto-orientation: ${filename}.jpg"
   im_args+=" -auto-orient"
-
-  if [[ -n "$enable_image_autofixes" ]]; then
-    echo "    - Normalization: ${filename}.jpg"
-    im_args+=" -normalize"
-
-    echo "    - Gamma correction: ${filename}.jpg"
-    im_args+=" -auto-gamma"
-  fi
-
-  if [[ -n "$enable_binning" ]]; then
-    # Inspired by: https://www.imagemagick.org/Usage/photos/binning/binn
-    echo "    - Binning: ${filename}.jpg"
-    set -$- `identify -format '%w %h' ${temp_image_dir}/${filename}.jpg`
-    local bin_size=2
-    local x=$1
-    local y=$2
-    newx=$((${x} / ${bin_size}))
-    checkx=$((${newx} * ${bin_size}))
-    if [[ ${checkx} -ne ${x} ]]; then
-      crop_flag="YES"
-    fi
-    newy=$((${y} / ${bin_size}))
-    checky=$((${newy} * ${bin_size}))
-    if [[ ${checky} -ne ${y} ]]; then
-      crop_flag="YES"
-    fi
-    if [ "$crop_flag" ]; then
-      crop_args="-crop '${checkx}x${checky}+0+0' +repage"
-    fi
-    im_args+=" $crop_args -filter box -resize ${newx}x${newy}"
-  fi
 
   # Execute imagemagick with the specified arguments
   mogrify $im_args ${temp_image_dir}/${filename}.jpg
