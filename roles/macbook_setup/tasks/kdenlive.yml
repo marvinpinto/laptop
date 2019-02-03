@@ -1,0 +1,35 @@
+---
+- name: 'Create the /usr/local/etc/kdenlive directory'
+  become: true
+  file:
+    path: '/usr/local/etc/kdenlive'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if kdenlive version {{kdenlive_version}} is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/kdenlive/kdenlive-{{kdenlive_version}}-x86_64.AppImage'
+  register: 'kdenlive_binary'
+
+- name: 'Download kdenlive version {{kdenlive_version}}'
+  become: true
+  get_url:
+    url: 'http://mirror.cc.columbia.edu/pub/software/kde-applicationdata/kdenlive/release/kdenlive-{{kdenlive_version}}-x86_64.appimage'
+    dest: '/usr/local/etc/kdenlive/kdenlive-{{kdenlive_version}}-x86_64.AppImage'
+    mode: '0755'
+  when: 'kdenlive_binary.stat.exists == False'
+
+- name: 'Symlink the kdenlive binary to our destination'
+  become: true
+  file:
+    src: '/usr/local/etc/kdenlive/kdenlive-{{kdenlive_version}}-x86_64.AppImage'
+    dest: '/usr/local/etc/kdenlive/kdenlive-x86_64.AppImage'
+    state: 'link'
+
+- name: 'Symlink the kdenlive binary to /usr/local/bin'
+  become: true
+  file:
+    src: '/usr/local/etc/kdenlive/kdenlive-x86_64.AppImage'
+    dest: '/usr/local/bin/kdenlive'
+    state: 'link'

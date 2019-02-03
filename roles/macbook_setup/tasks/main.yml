@@ -24,5 +24,6 @@
 - include: docker_setup.yml
 - include: yubikey.yml
 - include: digikam.yml
+- include: kdenlive.yml
 - include: bluetooth.yml
 - include: post_file_permissions.yml
