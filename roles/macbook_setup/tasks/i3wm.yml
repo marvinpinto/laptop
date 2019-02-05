@@ -2,26 +2,25 @@
 - name: 'Install the needed sur5r-keyring package'
   become: true
   apt:
-    deb: 'http://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2018.01.30_all.deb'
+    deb: 'http://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2019.02.01_all.deb'
   notify: 'macbook_setup-apt-get-update'
 
 - name: 'Add the i3wm ubuntu repo'
   become: true
   apt_repository:
-    repo: "deb http://debian.sur5r.net/i3/ {{ ansible_distribution_release }} universe"
-    state: present
-    update_cache: yes
+    repo: 'deb http://debian.sur5r.net/i3/ {{ ansible_distribution_release }} universe'
+    state: 'present'
+    update_cache: 'yes'
 
 - meta: flush_handlers
 
 - name: 'Install i3wm + friends'
   become: true
   apt:
-    name: "{{ item }}"
-    state: latest
-  with_items:
-    - 'i3'
-    - 'i3lock'
-    - 'i3status'
-    - 'compton'
-    - 'hsetroot'
+    name:
+      - 'i3'
+      - 'i3lock'
+      - 'i3status'
+      - 'compton'
+      - 'hsetroot'
+    state: 'latest'
