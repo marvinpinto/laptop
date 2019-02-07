@@ -7,12 +7,12 @@ myname=`basename "$0"`
 video_files=""
 image_mode=""
 live_run=""
-enable_fisheye="yes"
-verbose=""
+enable_fisheye=${ENABLE_FISHEYE:-"yes"}
 EXIFTOOL=""
+verbose=${VERBOSE:-""}
 
 show_help() {
-  echo "usage: ${myname} <-v video_files | -i image_file | -u> [-l] [-z] [-w]"
+  echo "usage: ${myname} <-v video_files | -i image_file | -u> [-l]"
   echo "Available Options:"
   echo "-v <video files>: Video files to process"
   echo "   Environment variables & defaults:"
@@ -20,15 +20,21 @@ show_help() {
   echo "   - SMOOTHING_FACTOR: 10"
   echo "   - SHAKINESS_FACTOR: 5"
   echo "   - METADATA_FILE: <defaults to first supplied video arg>"
+  echo "   - VERBOSE: yes|<empty> <default: empty>"
+  echo "   - ENABLE_FISHEYE: yes|<empty> <default: yes>"
   echo "-i <image file>: Image file to process"
+  echo "   Environment variables & defaults:"
+  echo "   - VERBOSE: yes|<empty> <default: empty>"
+  echo "   - ENABLE_FISHEYE: yes|<empty> <default: yes>"
   echo "-u: Process all *.jpg images in the current directory"
+  echo "   Environment variables & defaults:"
+  echo "   - VERBOSE: yes|<empty> <default: empty>"
+  echo "   - ENABLE_FISHEYE: yes|<empty> <default: yes>"
   echo "-l: Perform a LIVE run (will rewrite source files)"
-  echo "-z: Enable verbose mode"
-  echo "-w: Disable fisheye correction"
   echo "e.g. ${myname} -v GOPR0735.MP4"
 }
 
-while getopts ":v:i:ulzw" opt; do
+while getopts ":v:i:ul" opt; do
   case "$opt" in
     v) video_files=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
@@ -41,10 +47,6 @@ while getopts ":v:i:ulzw" opt; do
     u) image_mode="yes"
        ;;
     l) live_run="yes"
-       ;;
-    z) verbose="yes"
-       ;;
-    w) enable_fisheye=""
        ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
@@ -67,6 +69,7 @@ hash fredim-autocolor 2>/dev/null || { echo >&2 "fredim-autocolor does not appea
 hash fredim-enrich 2>/dev/null || { echo >&2 "fredim-enrich does not appear to be available."; exit 1; }
 hash convert 2>/dev/null || { echo >&2 "convert does not appear to be available."; exit 1; }
 hash ffmpeg2 2>/dev/null || { echo >&2 "ffmpeg2 does not appear to be available."; exit 1; }
+
 
 [[ "$verbose" == "yes" ]] && set -x
 [[ -z "$verbose" ]] && EXIFTOOL="exiftool -ignoreMinorErrors -q -q" || EXIFTOOL="exiftool"
