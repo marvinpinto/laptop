@@ -16,7 +16,10 @@ show_help() {
   echo "Available Options:"
   echo "-v <video files>: Process videos"
   echo "   Environment variables & defaults:"
-  echo "     - OUTPUT_RESOLUTION: 720"
+  echo "     - OUTPUT_RESOLUTION: <option>"
+  echo "        - 1440p: 1920x1440"
+  echo "        - 1080p: 1920x1080"
+  echo "        - 720p: 1280x720"
   echo "     - SMOOTHING_FACTOR: 10"
   echo "     - SHAKINESS_FACTOR: 5"
   echo "     - METADATA_FILE: <defaults to first supplied video arg>"
@@ -69,6 +72,7 @@ hash fredim-autocolor 2>/dev/null || { echo >&2 "fredim-autocolor does not appea
 hash fredim-enrich 2>/dev/null || { echo >&2 "fredim-enrich does not appear to be available."; exit 1; }
 hash convert 2>/dev/null || { echo >&2 "convert does not appear to be available."; exit 1; }
 hash ffmpeg2 2>/dev/null || { echo >&2 "ffmpeg2 does not appear to be available."; exit 1; }
+hash ffprobe 2>/dev/null || { echo >&2 "ffprobe does not appear to be available."; exit 1; }
 
 
 [[ "$verbose" == "yes" ]] && set -x
@@ -80,10 +84,23 @@ process_single_video() {
   local original_filename=$(basename -- "$file")
   local sample_time_seconds=15
   local  __resultvar=$3
-  local output_resolution=${OUTPUT_RESOLUTION:-720}
+  local output_resolution=${OUTPUT_RESOLUTION:-1080p}
   local smoothing_factor=${SMOOTHING_FACTOR:-10}
   local shakiness_factor=${SHAKINESS_FACTOR:-5}
   local enable_fisheye=${ENABLE_FISHEYE:-"yes"}
+
+  local ffmpeg_requested_width=""
+  local ffmpeg_requested_height=""
+  if [[ "$output_resolution" == "1440p" ]]; then
+    ffmpeg_requested_width="1920"
+    ffmpeg_requested_height="1440"
+  elif [[ "$output_resolution" == "1080p" ]]; then
+    ffmpeg_requested_width="1920"
+    ffmpeg_requested_height="1080"
+  else
+    ffmpeg_requested_width="1280"
+    ffmpeg_requested_height="720"
+  fi
 
   echo "- Processing video file: ${file}"
   echo "  - Creating working copy"
@@ -105,8 +122,29 @@ process_single_video() {
   vidstabtrf_args+=(-f null -)
   ffmpeg2 "${vidstabtrf_args[@]}"
 
+  local ffmpeg_video_aspect_ratio=$(ffprobe -v error -select_streams v:0 -show_entries stream=display_aspect_ratio -of default=nw=1:nk=1 ${file})
+  local ffmpeg_video_width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 ${file})
+  local ffmpeg_video_height=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 ${file})
+
+  # If the input video's aspect ratio is already 16x9, scale it down to the requested (resolution) height (if the requested height is less than the current height, since we only scale down) - e.g. scale=-2:'min(REQUESTED_HEIGHT,ih)'
+  # If the input video's aspect ratio is *not* 16:9, crop, then scale it to the requested size.
+  # The second option will throw an error if the input video is less than the requested resolution, since we only scale down.
+  local ffmpeg_resolution_filter=""
+  if [[ "$ffmpeg_video_aspect_ratio" == "16:9" ]]; then
+    echo "  - Downscaling file to ${ffmpeg_requested_width}x${ffmpeg_requested_height}"
+    ffmpeg_resolution_filter="scale=-2:'min(${ffmpeg_requested_height},ih)'"
+  else
+    if [[ $ffmpeg_requested_height -gt $ffmpeg_video_height ]]; then
+      echo "Error: Requested resolution of ${ffmpeg_requested_width}x${ffmpeg_requested_height} is larger resolution of ${file} (${ffmpeg_video_width}x${ffmpeg_video_height})."
+      exit 1
+    fi
+
+    echo "  - Cropping & downscaling file to ${ffmpeg_requested_width}x${ffmpeg_requested_height}"
+    ffmpeg_resolution_filter="crop=w=${ffmpeg_requested_width}:h=${ffmpeg_requested_height},scale=-2:${ffmpeg_requested_height}"
+  fi
+
   echo "  - Re-encoding video"
-  local base_video_filter="scale=-1:'min(${output_resolution},ih)',pp=al,vidstabtransform=input=${temp_video_dir}/${filename}-transform_vectors.trf:zoom=0:smoothing=${smoothing_factor},unsharp"
+  local base_video_filter="${ffmpeg_resolution_filter},pp=al,vidstabtransform=input=${temp_video_dir}/${filename}-transform_vectors.trf:zoom=0:smoothing=${smoothing_factor},unsharp"
   local reencode_output_filename_type=""
   [[ -z "$live_run" ]] && reencode_output_filename_type="sample"
   [[ -n "$live_run" ]] && reencode_output_filename_type="reencoded"
@@ -121,7 +159,7 @@ process_single_video() {
   reencode_args+=(-vcodec libx264)
   reencode_args+=(-acodec aac)
   reencode_args+=(-preset slow)
-  reencode_args+=(-crf 22)
+  reencode_args+=(-crf 15)
   reencode_args+=("${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4")
   ffmpeg2 "${reencode_args[@]}"
 
