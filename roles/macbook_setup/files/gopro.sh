@@ -10,6 +10,7 @@ live_run=""
 EXIFTOOL=""
 verbose=${VERBOSE:-""}
 video_clip_args=""
+noise_reduction_args=""
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -44,9 +45,15 @@ show_help() {
   echo "     - VERBOSE: yes|<empty> <default: empty>"
   echo "-l: Perform a LIVE run (rewrite source files, cleanup, etc)"
   echo "-c <video file> <start NN:NN:NN> <end NN:NN:NN>: Create a video clip"
+  echo "   Environment variables & defaults:"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "-s <video file> <noise sample start NN:NN:NN> <noise sample end NN:NN:NN>: Clean up background noise"
+  echo "   Environment variables & defaults:"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "     - SOX_NOISE_SENSITIVITY: num> <default: 0.21> Note 0.2 >= n <= 0.3 usually provides best results"
 }
 
-while getopts ":v:i:lc:" opt; do
+while getopts ":v:i:lc:s:" opt; do
   case "$opt" in
     v) video_files=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
@@ -57,6 +64,12 @@ while getopts ":v:i:lc:" opt; do
     c) video_clip_args=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
            video_clip_args+=($(eval "echo \${$OPTIND}"))
+           OPTIND=$((OPTIND + 1))
+       done
+       ;;
+    s) noise_reduction_args=("$OPTARG")
+       until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
+           noise_reduction_args+=($(eval "echo \${$OPTIND}"))
            OPTIND=$((OPTIND + 1))
        done
        ;;
@@ -86,6 +99,7 @@ hash fredim-enrich 2>/dev/null || { echo >&2 "fredim-enrich does not appear to b
 hash convert 2>/dev/null || { echo >&2 "convert does not appear to be available."; exit 1; }
 hash ffmpeg2 2>/dev/null || { echo >&2 "ffmpeg2 does not appear to be available."; exit 1; }
 hash ffprobe 2>/dev/null || { echo >&2 "ffprobe does not appear to be available."; exit 1; }
+hash sox 2>/dev/null || { echo >&2 "sox does not appear to be available."; exit 1; }
 
 
 [[ "$verbose" == "yes" ]] && set -x
@@ -173,10 +187,9 @@ process_single_video() {
   reencode_args+=(-threads $(nproc --ignore=1))
   reencode_args+=(-i "${temp_video_dir}/${filename}.${extension}")
   [[ -z "$live_run" ]] && reencode_args+=(-t $sample_time_seconds)
-  reencode_args+=(-af "highpass=f=300, lowpass=f=4000, bass=frequency=100:gain=-50, bandreject=frequency=200:width_type=h:width=200, compand=attacks=.05:decays=.05:points=-90/-90 -70/-90 -15/-15 0/-10:soft-knee=6:volume=-70:gain=10")
   [[ -n "$enable_fisheye" ]] && reencode_args+=(-vf "${base_video_filter},lenscorrection=k1=-0.227:k2=-0.022") || reencode_args+=(-vf "${base_video_filter}")
   reencode_args+=(-vcodec libx264)
-  reencode_args+=(-acodec aac)
+  reencode_args+=(-acodec copy)
   reencode_args+=(-preset slow)
   reencode_args+=(-crf 15)
   reencode_args+=("${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4")
@@ -404,12 +417,99 @@ create_video_clip() {
   rm -rf "$temp_video_dir"
 }
 
+clean_background_noise() {
+  local temp_video_dir=${myname}-temp-videos
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  local video_file=${noise_reduction_args[0]}
+  local noise_start=${noise_reduction_args[1]}
+  local noise_end=${noise_reduction_args[2]}
+
+  local original_filename=$(basename -- "$video_file")
+  local renamed_file=${original_filename// /_}
+  local filename=$(basename -- "$renamed_file")
+  local extension="${filename##*.}"
+  filename="${filename%.*}"
+  local sox_noise_sensitivity=${SOX_NOISE_SENSITIVITY:-0.21}
+
+  echo "- Separating video stream"
+  local ffmpeg_noise_video_stream_args=()
+  [[ -z "$verbose" ]] && ffmpeg_noise_video_stream_args+=(-loglevel fatal) || ffmpeg_noise_video_stream_args+=(-loglevel info)
+  [[ -z "$live_run" ]] && ffmpeg_noise_video_stream_args+=(-y)
+  ffmpeg_noise_video_stream_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_noise_video_stream_args+=(-i "${video_file}")
+  ffmpeg_noise_video_stream_args+=(-vcodec copy)
+  ffmpeg_noise_video_stream_args+=(-an)
+  ffmpeg_noise_video_stream_args+=("${temp_video_dir}/${filename}-video_stream.mp4")
+  ffmpeg2 "${ffmpeg_noise_video_stream_args[@]}"
+
+  echo "- Separating audio stream"
+  local ffmpeg_noise_audio_stream_args=()
+  [[ -z "$verbose" ]] && ffmpeg_noise_audio_stream_args+=(-loglevel fatal) || ffmpeg_noise_audio_stream_args+=(-loglevel info)
+  [[ -z "$live_run" ]] && ffmpeg_noise_audio_stream_args+=(-y)
+  ffmpeg_noise_audio_stream_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_noise_audio_stream_args+=(-i "${video_file}")
+  ffmpeg_noise_audio_stream_args+=(-acodec pcm_s16le)
+  ffmpeg_noise_audio_stream_args+=(-ar 128k)
+  ffmpeg_noise_audio_stream_args+=(-vn)
+  ffmpeg_noise_audio_stream_args+=("${temp_video_dir}/${filename}-audio_stream.wav")
+  ffmpeg2 "${ffmpeg_noise_audio_stream_args[@]}"
+
+  echo "- Generating noise sample"
+  local ffmpeg_noise_sample_args=()
+  [[ -z "$verbose" ]] && ffmpeg_noise_sample_args+=(-loglevel fatal) || ffmpeg_noise_sample_args+=(-loglevel info)
+  [[ -z "$live_run" ]] && ffmpeg_noise_sample_args+=(-y)
+  ffmpeg_noise_sample_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_noise_sample_args+=(-i "${video_file}")
+  ffmpeg_noise_sample_args+=(-acodec pcm_s16le)
+  ffmpeg_noise_sample_args+=(-ar 128k)
+  ffmpeg_noise_sample_args+=(-vn)
+  ffmpeg_noise_sample_args+=(-ss "${noise_start}")
+  ffmpeg_noise_sample_args+=(-to "${noise_end}")
+  ffmpeg_noise_sample_args+=("${temp_video_dir}/${filename}-noise-sample.wav")
+  ffmpeg2 "${ffmpeg_noise_sample_args[@]}"
+
+  echo "- Generating noise profile"
+  sox "${temp_video_dir}/${filename}-noise-sample.wav" -n noiseprof "${temp_video_dir}/${filename}-sox-noise-profile.prof"
+
+  echo "- Cleaning audio noise"
+  sox "${temp_video_dir}/${filename}-audio_stream.wav" "${temp_video_dir}/${filename}-audio_stream_cleaned.wav" noisered "${temp_video_dir}/${filename}-sox-noise-profile.prof" ${sox_noise_sensitivity}
+
+  echo "- Merging cleaned audio & video streams"
+  local ffmpeg_noise_merge_streams_args=()
+  [[ -z "$verbose" ]] && ffmpeg_noise_merge_streams_args+=(-loglevel fatal) || ffmpeg_noise_merge_streams_args+=(-loglevel info)
+  [[ -z "$live_run" ]] && ffmpeg_noise_merge_streams_args+=(-y)
+  ffmpeg_noise_merge_streams_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_noise_merge_streams_args+=(-i "${temp_video_dir}/${filename}-video_stream.mp4")
+  ffmpeg_noise_merge_streams_args+=(-i "${temp_video_dir}/${filename}-audio_stream_cleaned.wav")
+  ffmpeg_noise_merge_streams_args+=(-map 0:v)
+  ffmpeg_noise_merge_streams_args+=(-map 1:a)
+  ffmpeg_noise_merge_streams_args+=(-c:v copy)
+  ffmpeg_noise_merge_streams_args+=(-c:a aac)
+  ffmpeg_noise_merge_streams_args+=(-b:a 128k)
+  ffmpeg_noise_merge_streams_args+=("${temp_video_dir}/${filename}-cleaned.mp4")
+  ffmpeg2 "${ffmpeg_noise_merge_streams_args[@]}"
+
+  echo "- Renaming & adding EXIF data"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-cleaned.mp4"
+  set +e
+  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-cleaned.mp4"
+  set -e
+  $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./noise-cleaned-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-cleaned.mp4"
+  rm -rf "$temp_video_dir"
+}
+
+
 if [[ -n "$video_files" ]]; then
   process_videos
 elif [[ -n "$image_file" ]]; then
   process_images
 elif [[ -n "$video_clip_args" ]]; then
   create_video_clip
+elif [[ -n "$noise_reduction_args" ]]; then
+  clean_background_noise
 else
   show_help
   exit 1
