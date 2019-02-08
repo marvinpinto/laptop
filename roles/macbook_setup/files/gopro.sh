@@ -26,6 +26,18 @@ show_help() {
   echo "     - METADATA_FILE: <defaults to first supplied video arg>"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
   echo "     - ENABLE_FISHEYE: yes|<empty> <default: yes>"
+  echo "     - CURVES_PRESET_FILTER: <option> <default: none>"
+  echo "        - none"
+  echo "        - color_negative"
+  echo "        - cross_process"
+  echo "        - darker"
+  echo "        - increase_contrast"
+  echo "        - lighter"
+  echo "        - linear_contrast"
+  echo "        - medium_contrast"
+  echo "        - negative"
+  echo "        - strong_contrast"
+  echo "        - vintage"
   echo "-i <single image file | ALL>: Process images"
   echo "   The string \"ALL\" will process all *.jpg images in the current directory."
   echo "   Environment variables & defaults:"
@@ -89,6 +101,7 @@ process_single_video() {
   local video_stabilization_smoothing_factor=${VIDEO_STABILIZATION_SMOOTHING_FACTOR:-10}
   local video_stabilization_shakiness_factor=${VIDEO_STABILIZATION_SHAKINESS_FACTOR:-5}
   local enable_fisheye=${ENABLE_FISHEYE:-"yes"}
+  local curves_preset_filter=${CURVES_PRESET_FILTER:-none}
 
   local ffmpeg_requested_width=""
   local ffmpeg_requested_height=""
@@ -150,7 +163,7 @@ process_single_video() {
   fi
 
   echo "  - Re-encoding video"
-  local base_video_filter="${ffmpeg_resolution_filter},pp=al${video_stabilization_filter}"
+  local base_video_filter="${ffmpeg_resolution_filter},curves=preset='${curves_preset_filter}'${video_stabilization_filter}"
   local reencode_output_filename_type=""
   [[ -z "$live_run" ]] && reencode_output_filename_type="sample"
   [[ -n "$live_run" ]] && reencode_output_filename_type="reencoded"
