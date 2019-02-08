@@ -16,12 +16,13 @@ show_help() {
   echo "Available Options:"
   echo "-v <video files>: Process videos"
   echo "   Environment variables & defaults:"
-  echo "     - OUTPUT_RESOLUTION: <option>"
+  echo "     - OUTPUT_RESOLUTION: <option> <default: 1080p>"
   echo "        - 1440p: 1920x1440"
   echo "        - 1080p: 1920x1080"
   echo "        - 720p: 1280x720"
-  echo "     - SMOOTHING_FACTOR: 10"
-  echo "     - SHAKINESS_FACTOR: 5"
+  echo "     - ENABLE_VIDEO_STABILIZATION: yes|<empty> <default: empty>"
+  echo "     - VIDEO_STABILIZATION_SMOOTHING_FACTOR: 10"
+  echo "     - VIDEO_STABILIZATION_SHAKINESS_FACTOR: 5"
   echo "     - METADATA_FILE: <defaults to first supplied video arg>"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
   echo "     - ENABLE_FISHEYE: yes|<empty> <default: yes>"
@@ -85,8 +86,8 @@ process_single_video() {
   local sample_time_seconds=15
   local  __resultvar=$3
   local output_resolution=${OUTPUT_RESOLUTION:-1080p}
-  local smoothing_factor=${SMOOTHING_FACTOR:-10}
-  local shakiness_factor=${SHAKINESS_FACTOR:-5}
+  local video_stabilization_smoothing_factor=${VIDEO_STABILIZATION_SMOOTHING_FACTOR:-10}
+  local video_stabilization_shakiness_factor=${VIDEO_STABILIZATION_SHAKINESS_FACTOR:-5}
   local enable_fisheye=${ENABLE_FISHEYE:-"yes"}
 
   local ffmpeg_requested_width=""
@@ -111,16 +112,21 @@ process_single_video() {
   local extension="${filename##*.}"
   filename="${filename%.*}"
 
-  echo "  - Initiating video stabilization"
-  local vidstabtrf_args=()
-  [[ -z "$verbose" ]] && vidstabtrf_args+=(-loglevel fatal) || vidstabtrf_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && vidstabtrf_args+=(-y)
-  vidstabtrf_args+=(-threads $(nproc --ignore=1))
-  vidstabtrf_args+=(-i "${temp_video_dir}/${filename}.${extension}")
-  [[ -z "$live_run" ]] && vidstabtrf_args+=(-t $sample_time_seconds)
-  vidstabtrf_args+=(-vf "vidstabdetect=shakiness=${shakiness_factor}:result=${temp_video_dir}/${filename}-transform_vectors.trf")
-  vidstabtrf_args+=(-f null -)
-  ffmpeg2 "${vidstabtrf_args[@]}"
+  local video_stabilization_filter=""
+  if [[ -n "$ENABLE_VIDEO_STABILIZATION" ]]; then
+    echo "  - Initiating video stabilization"
+    local vidstabtrf_args=()
+    [[ -z "$verbose" ]] && vidstabtrf_args+=(-loglevel fatal) || vidstabtrf_args+=(-loglevel info)
+    [[ -z "$live_run" ]] && vidstabtrf_args+=(-y)
+    vidstabtrf_args+=(-threads $(nproc --ignore=1))
+    vidstabtrf_args+=(-i "${temp_video_dir}/${filename}.${extension}")
+    [[ -z "$live_run" ]] && vidstabtrf_args+=(-t $sample_time_seconds)
+    vidstabtrf_args+=(-vf "vidstabdetect=shakiness=${video_stabilization_shakiness_factor}:result=${temp_video_dir}/${filename}-transform_vectors.trf")
+    vidstabtrf_args+=(-f null -)
+    ffmpeg2 "${vidstabtrf_args[@]}"
+
+    video_stabilization_filter=",vidstabtransform=input=${temp_video_dir}/${filename}-transform_vectors.trf:zoom=0:smoothing=${video_stabilization_smoothing_factor},unsharp"
+  fi
 
   local ffmpeg_video_aspect_ratio=$(ffprobe -v error -select_streams v:0 -show_entries stream=display_aspect_ratio -of default=nw=1:nk=1 ${file})
   local ffmpeg_video_width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 ${file})
@@ -144,7 +150,7 @@ process_single_video() {
   fi
 
   echo "  - Re-encoding video"
-  local base_video_filter="${ffmpeg_resolution_filter},pp=al,vidstabtransform=input=${temp_video_dir}/${filename}-transform_vectors.trf:zoom=0:smoothing=${smoothing_factor},unsharp"
+  local base_video_filter="${ffmpeg_resolution_filter},pp=al${video_stabilization_filter}"
   local reencode_output_filename_type=""
   [[ -z "$live_run" ]] && reencode_output_filename_type="sample"
   [[ -n "$live_run" ]] && reencode_output_filename_type="reencoded"
