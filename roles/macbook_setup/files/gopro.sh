@@ -5,36 +5,32 @@ set -e
 
 myname=`basename "$0"`
 video_files=""
-image_mode=""
+image_file=""
 live_run=""
-enable_fisheye=${ENABLE_FISHEYE:-"yes"}
 EXIFTOOL=""
 verbose=${VERBOSE:-""}
 video_clip_args=""
 
 show_help() {
-  echo "usage: ${myname} <-v video_files | -i image_file | -u> [-l] [-c]"
+  echo "usage: ${myname} OPTIONS"
   echo "Available Options:"
-  echo "-v <video files>: Video files to process"
+  echo "-v <video files>: Process videos"
   echo "   Environment variables & defaults:"
-  echo "   - OUTPUT_RESOLUTION: 720"
-  echo "   - SMOOTHING_FACTOR: 10"
-  echo "   - SHAKINESS_FACTOR: 5"
-  echo "   - METADATA_FILE: <defaults to first supplied video arg>"
-  echo "   - VERBOSE: yes|<empty> <default: empty>"
-  echo "   - ENABLE_FISHEYE: yes|<empty> <default: yes>"
-  echo "-i <image file>: Image file to process"
+  echo "     - OUTPUT_RESOLUTION: 720"
+  echo "     - SMOOTHING_FACTOR: 10"
+  echo "     - SHAKINESS_FACTOR: 5"
+  echo "     - METADATA_FILE: <defaults to first supplied video arg>"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "     - ENABLE_FISHEYE: yes|<empty> <default: yes>"
+  echo "-i <single image file | ALL>: Process images"
+  echo "   The string \"ALL\" will process all *.jpg images in the current directory."
   echo "   Environment variables & defaults:"
-  echo "   - VERBOSE: yes|<empty> <default: empty>"
-  echo "-u: Process all *.jpg images in the current directory"
-  echo "   Environment variables & defaults:"
-  echo "   - VERBOSE: yes|<empty> <default: empty>"
-  echo "-l: Perform a LIVE run (will rewrite source files)"
-  echo "-c: <video file> <start NN:NN:NN> <end NN:NN:NN> Create a video clip"
-  echo "e.g. ${myname} -v GOPR0735.MP4"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "-l: Perform a LIVE run (rewrite source files, cleanup, etc)"
+  echo "-c <video file> <start NN:NN:NN> <end NN:NN:NN>: Create a video clip"
 }
 
-while getopts ":v:i:ulc:" opt; do
+while getopts ":v:i:lc:" opt; do
   case "$opt" in
     v) video_files=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
@@ -49,8 +45,6 @@ while getopts ":v:i:ulc:" opt; do
        done
        ;;
     i) image_file=$OPTARG
-       ;;
-    u) image_mode="yes"
        ;;
     l) live_run="yes"
        ;;
@@ -89,6 +83,7 @@ process_single_video() {
   local output_resolution=${OUTPUT_RESOLUTION:-720}
   local smoothing_factor=${SMOOTHING_FACTOR:-10}
   local shakiness_factor=${SHAKINESS_FACTOR:-5}
+  local enable_fisheye=${ENABLE_FISHEYE:-"yes"}
 
   echo "- Processing video file: ${file}"
   echo "  - Creating working copy"
@@ -288,13 +283,13 @@ process_images() {
   rm -rf "$temp_image_dir"
   mkdir -p "$temp_image_dir"
 
-  if [[ -n "$image_file" ]]; then
-    process_single_image "$image_file" "$temp_image_dir"
-  else
+  if [[ "$image_file" == "ALL" ]]; then
     # Process all jpg images in the current directory
     find . -maxdepth 1 -iname "*.jpg" | while read file; do
       process_single_image "$file" "$temp_image_dir"
     done
+  else
+    process_single_image "$image_file" "$temp_image_dir"
   fi
 
   if [[ -z "$live_run" ]]; then
@@ -355,8 +350,6 @@ create_video_clip() {
 if [[ -n "$video_files" ]]; then
   process_videos
 elif [[ -n "$image_file" ]]; then
-  process_images
-elif [[ -n "$image_mode" ]]; then
   process_images
 elif [[ -n "$video_clip_args" ]]; then
   create_video_clip
