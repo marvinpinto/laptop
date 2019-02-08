@@ -10,9 +10,10 @@ live_run=""
 enable_fisheye=${ENABLE_FISHEYE:-"yes"}
 EXIFTOOL=""
 verbose=${VERBOSE:-""}
+video_clip_args=""
 
 show_help() {
-  echo "usage: ${myname} <-v video_files | -i image_file | -u> [-l]"
+  echo "usage: ${myname} <-v video_files | -i image_file | -u> [-l] [-c]"
   echo "Available Options:"
   echo "-v <video files>: Video files to process"
   echo "   Environment variables & defaults:"
@@ -25,20 +26,25 @@ show_help() {
   echo "-i <image file>: Image file to process"
   echo "   Environment variables & defaults:"
   echo "   - VERBOSE: yes|<empty> <default: empty>"
-  echo "   - ENABLE_FISHEYE: yes|<empty> <default: yes>"
   echo "-u: Process all *.jpg images in the current directory"
   echo "   Environment variables & defaults:"
   echo "   - VERBOSE: yes|<empty> <default: empty>"
-  echo "   - ENABLE_FISHEYE: yes|<empty> <default: yes>"
   echo "-l: Perform a LIVE run (will rewrite source files)"
+  echo "-c: <video file> <start NN:NN:NN> <end NN:NN:NN> Create a video clip"
   echo "e.g. ${myname} -v GOPR0735.MP4"
 }
 
-while getopts ":v:i:ul" opt; do
+while getopts ":v:i:ulc:" opt; do
   case "$opt" in
     v) video_files=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
            video_files+=($(eval "echo \${$OPTIND}"))
+           OPTIND=$((OPTIND + 1))
+       done
+       ;;
+    c) video_clip_args=("$OPTARG")
+       until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
+           video_clip_args+=($(eval "echo \${$OPTIND}"))
            OPTIND=$((OPTIND + 1))
        done
        ;;
@@ -307,12 +313,53 @@ process_images() {
   fi
 }
 
+create_video_clip() {
+  local temp_video_dir=${myname}-temp-videos
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  local video_file=${video_clip_args[0]}
+  local seek_start=${video_clip_args[1]}
+  local seek_end=${video_clip_args[2]}
+
+  local original_filename=$(basename -- "$video_file")
+  local renamed_file=${original_filename// /_}
+  local filename=$(basename -- "$renamed_file")
+  local extension="${filename##*.}"
+  filename="${filename%.*}"
+
+  echo "- Creating clip from ${filename}.${extension}"
+  local ffmpeg_args=()
+  [[ -z "$verbose" ]] && ffmpeg_args+=(-loglevel fatal) || ffmpeg_args+=(-loglevel info)
+  [[ -z "$live_run" ]] && ffmpeg_args+=(-y)
+  ffmpeg_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_args+=(-i "${video_file}")
+  ffmpeg_args+=(-ss "${seek_start}")
+  ffmpeg_args+=(-to "${seek_end}")
+  ffmpeg_args+=(-q:a 1)
+  ffmpeg_args+=(-q:v 1)
+  ffmpeg_args+=(-vcodec libx264)
+  ffmpeg_args+=("${temp_video_dir}/${filename}-clip.mp4")
+  ffmpeg2 "${ffmpeg_args[@]}"
+
+  echo "- Renaming & adding EXIF data"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-clip.mp4"
+  set +e
+  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-clip.mp4"
+  set -e
+  $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./clip-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-clip.mp4"
+  rm -rf "$temp_video_dir"
+}
+
 if [[ -n "$video_files" ]]; then
   process_videos
 elif [[ -n "$image_file" ]]; then
   process_images
 elif [[ -n "$image_mode" ]]; then
   process_images
+elif [[ -n "$video_clip_args" ]]; then
+  create_video_clip
 else
   show_help
   exit 1
