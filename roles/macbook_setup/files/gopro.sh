@@ -11,6 +11,7 @@ EXIFTOOL=""
 verbose=${VERBOSE:-""}
 video_clip_args=""
 noise_reduction_args=""
+join_video_args=""
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -51,9 +52,14 @@ show_help() {
   echo "   Environment variables & defaults:"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
   echo "     - SOX_NOISE_SENSITIVITY: num> <default: 0.21> Note 0.2 >= n <= 0.3 usually provides best results"
+  echo "-j <video files>: Join two or more video files together"
+  echo "   Environment variables & defaults:"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "     - CROSSFADE: yes|<empty> <default: empty>"
+  echo "     - FADE_DURATION: N seconds> <default: 2>"
 }
 
-while getopts ":v:i:lc:s:" opt; do
+while getopts ":v:i:lc:s:j:" opt; do
   case "$opt" in
     v) video_files=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
@@ -70,6 +76,12 @@ while getopts ":v:i:lc:s:" opt; do
     s) noise_reduction_args=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
            noise_reduction_args+=($(eval "echo \${$OPTIND}"))
+           OPTIND=$((OPTIND + 1))
+       done
+       ;;
+    j) join_video_args=("$OPTARG")
+       until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
+           join_video_args+=($(eval "echo \${$OPTIND}"))
            OPTIND=$((OPTIND + 1))
        done
        ;;
@@ -98,6 +110,7 @@ hash fredim-autocolor 2>/dev/null || { echo >&2 "fredim-autocolor does not appea
 hash fredim-enrich 2>/dev/null || { echo >&2 "fredim-enrich does not appear to be available."; exit 1; }
 hash convert 2>/dev/null || { echo >&2 "convert does not appear to be available."; exit 1; }
 hash ffmpeg2 2>/dev/null || { echo >&2 "ffmpeg2 does not appear to be available."; exit 1; }
+hash ffmpeg 2>/dev/null || { echo >&2 "ffmpeg does not appear to be available."; exit 1; }
 hash ffprobe 2>/dev/null || { echo >&2 "ffprobe does not appear to be available."; exit 1; }
 hash sox 2>/dev/null || { echo >&2 "sox does not appear to be available."; exit 1; }
 
@@ -501,6 +514,148 @@ clean_background_noise() {
   rm -rf "$temp_video_dir"
 }
 
+join_video_files() {
+  local temp_video_dir=${myname}-temp-videos
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  local ffmpeg_input_args=()
+  local ffmpeg_filter_str=()
+  local ARRAY_CTR=0
+  local FFMPEG_IDX_CTR=0
+  local fade_duration_secs=${FADE_DURATION:-2}
+
+  if [[ ${#join_video_args[@]} -lt 2 ]]; then
+    echo "Error: Supply at least two video_file arguments"
+    exit 1
+  fi
+
+  # Copy over the video metadata, for later
+  $EXIFTOOL -overwrite_original -tagsfromfile "${join_video_args[0]}" "${temp_video_dir}/metadata-info.mie"
+
+  [[ -z "$verbose" ]] && ffmpeg_input_args+=(-loglevel fatal) || ffmpeg_input_args+=(-loglevel info)
+  ffmpeg_input_args+=(-y)
+  ffmpeg_input_args+=(-threads $(nproc --ignore=1))
+
+  local ffmpeg_fade_suffix=()
+  local ffmpeg_acrossfade_suffix=()
+
+  if [[ -n "$CROSSFADE" ]]; then
+    echo "- Joining and crossfading the following input files: ${join_video_args[@]}"
+  else
+    echo "- Joining the following input files: ${join_video_args[@]}"
+  fi
+
+  for video in "${join_video_args[@]}"; do
+    local previous_video_clip=""
+    local current_video_clip="$video"
+    if [[ "$current_video_clip" != "${join_video_args[0]}" ]]; then
+      previous_video_clip="${join_video_args[$((ARRAY_CTR-1))]}"
+    fi
+
+    # If this is the first clip in the sequence, we need to generate a blank
+    # dummy clip to "lead in" to this one.
+    if [[ -n "$CROSSFADE" ]] && [[ -z "${previous_video_clip}" ]]; then
+      local avg_frame_rate=$(echo "$(ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=nw=1:nk=1 ${current_video_clip})" | bc)
+      local audio_channel_layout=$(ffprobe -v error -select_streams a:0 -show_entries stream=channel_layout -of default=nw=1:nk=1 ${current_video_clip})
+      local audio_sample_rate=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of default=nw=1:nk=1 ${current_video_clip})
+      local video_height=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 ${current_video_clip})
+      local video_width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 ${current_video_clip})
+
+      echo "- Generating dummy video to lead in to ${current_video_clip}"
+      local dummy_lead_in_duration=$fade_duration_secs
+      local ffmpeg_dummy_leadin_args=()
+      [[ -z "$verbose" ]] && ffmpeg_dummy_leadin_args+=(-loglevel fatal) || ffmpeg_dummy_leadin_args+=(-loglevel info)
+      [[ -z "$live_run" ]] && ffmpeg_dummy_leadin_args+=(-y)
+      ffmpeg_dummy_leadin_args+=(-threads $(nproc --ignore=1))
+      ffmpeg_dummy_leadin_args+=(-f lavfi)
+      ffmpeg_dummy_leadin_args+=(-i "color=black:s=${video_width}x${video_height}:r=${avg_frame_rate}")
+      ffmpeg_dummy_leadin_args+=(-f lavfi)
+      ffmpeg_dummy_leadin_args+=(-i "anullsrc=r=${audio_sample_rate}:cl=${audio_channel_layout}")
+      ffmpeg_dummy_leadin_args+=(-vcodec libx264)
+      ffmpeg_dummy_leadin_args+=(-acodec aac)
+      ffmpeg_dummy_leadin_args+=(-t ${dummy_lead_in_duration})
+      ffmpeg_dummy_leadin_args+=("${temp_video_dir}/empty_${dummy_lead_in_duration}.mp4")
+      ffmpeg2 "${ffmpeg_dummy_leadin_args[@]}"
+
+      # Initialize the compound string with the dummy video
+      previous_video_clip="${temp_video_dir}/empty_${dummy_lead_in_duration}.mp4"
+      ffmpeg_input_args+=(-i "${temp_video_dir}/empty_${dummy_lead_in_duration}.mp4")
+
+      # Add an appropriate audio-crossfade filter
+      ffmpeg_acrossfade_suffix+=([0:a:0][1:a:0]acrossfade=d=${fade_duration_secs}[1-a]\;)
+    else
+      # Add an appropriate audio-crossfade filter
+      ffmpeg_acrossfade_suffix+=([${FFMPEG_IDX_CTR}-a][$((FFMPEG_IDX_CTR+1)):a:0]acrossfade=d=${fade_duration_secs}[$((FFMPEG_IDX_CTR+1))-a]\;)
+    fi
+
+    ffmpeg_input_args+=(-i "$current_video_clip")
+
+    if [[ -n "$CROSSFADE" ]]; then
+      local prev_video_duration=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=nw=1:nk=1 "${previous_video_clip}")
+      local prev_video_start=$(echo "$prev_video_duration - $fade_duration_secs" | bc)
+
+      # Generate the last portion of the previous clip, which will be used as the fadeout
+      ffmpeg_filter_str+=([${FFMPEG_IDX_CTR}:v:0] trim=start=${prev_video_start},setpts=PTS-STARTPTS[clip-${FFMPEG_IDX_CTR}-fadeoutsrc-v]\;)
+      FFMPEG_IDX_CTR=$((FFMPEG_IDX_CTR+1))
+
+      # Generate the clip + fadein for the current video
+      local curr_video_duration=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=nw=1:nk=1 "${current_video_clip}")
+
+      # If this is the last clip in the series, run it all the way to the end
+      local curr_video_end=$(echo "$curr_video_duration - $fade_duration_secs" | bc)
+      if [[ $((ARRAY_CTR+1)) -eq ${#join_video_args[@]} ]]; then
+        curr_video_end=$curr_video_duration
+      fi
+
+      ffmpeg_filter_str+=([${FFMPEG_IDX_CTR}:v:0] trim=start=0:end=${fade_duration_secs},setpts=PTS-STARTPTS[clip-${FFMPEG_IDX_CTR}-fadeinsrc-v]\;)
+      ffmpeg_filter_str+=([${FFMPEG_IDX_CTR}:v:0] trim=start=${fade_duration_secs}:end=${curr_video_end},setpts=PTS-STARTPTS[clip-${FFMPEG_IDX_CTR}-clip-v]\;)
+
+      # Generate the fadein/fadeout portions
+      ffmpeg_filter_str+=([clip-$((FFMPEG_IDX_CTR-1))-fadeoutsrc-v] format=pix_fmts=yuva420p,fade=t=out:st=0:d=${fade_duration_secs}:alpha=1[clip-${FFMPEG_IDX_CTR}-fadeout-v]\;)
+      ffmpeg_filter_str+=([clip-${FFMPEG_IDX_CTR}-fadeinsrc-v] format=pix_fmts=yuva420p,fade=t=in:st=0:d=${fade_duration_secs}:alpha=1[clip-${FFMPEG_IDX_CTR}-fadein-v]\;)
+
+      # Generate the fifo/crossfade portions
+      ffmpeg_filter_str+=([clip-${FFMPEG_IDX_CTR}-fadeout-v]fifo[clip-${FFMPEG_IDX_CTR}-fadeoutfifo-v]\;)
+      ffmpeg_filter_str+=([clip-${FFMPEG_IDX_CTR}-fadein-v]fifo[clip-${FFMPEG_IDX_CTR}-fadeinfifo-v]\;)
+      ffmpeg_filter_str+=([clip-${FFMPEG_IDX_CTR}-fadeoutfifo-v][clip-${FFMPEG_IDX_CTR}-fadeinfifo-v]overlay[clip-${FFMPEG_IDX_CTR}-crossfade-v]\;)
+
+      # Finally add these generated clips in order
+      ffmpeg_fade_suffix+=([clip-${FFMPEG_IDX_CTR}-crossfade-v][clip-${FFMPEG_IDX_CTR}-clip-v])
+    else
+      ffmpeg_filter_str+=([${ARRAY_CTR}:v:0][${ARRAY_CTR}:a:0])
+    fi
+
+    ARRAY_CTR=$((ARRAY_CTR+1))
+  done
+
+  # Map the final audio stream to "outa"
+  ffmpeg_acrossfade_suffix+=([${FFMPEG_IDX_CTR}-a]afifo[outa]\;)
+
+  local filter_str="$(echo -e "${ffmpeg_filter_str[@]}" | tr -d '[:space:]')"
+  local concat_ctr=$(echo "$FFMPEG_IDX_CTR * 2" | bc)
+  if [[ -n "$CROSSFADE" ]]; then
+    filter_str+="$(echo -e "${ffmpeg_acrossfade_suffix[@]}" | tr -d '[:space:]')"
+    filter_str+="$(echo -e "${ffmpeg_fade_suffix[@]}" | tr -d '[:space:]')"
+    filter_str+="concat=n=${concat_ctr}:v=1:a=0[outv]"
+  else
+    filter_str+="concat=n=${ARRAY_CTR}:v=1:a=1[outv][outa]"
+  fi
+
+  echo "- Finalizing joined ouput"
+  # For whatever reason, using acrossfade with the following commands results
+  # in a segfault on "ffmpeg2", yet works correctly with "ffmpeg".
+  ffmpeg ${ffmpeg_input_args[@]} -an -filter_complex "${filter_str}" -map "[outv]" -map "[outa]" -vcodec libx264 -acodec aac -strict experimental ${temp_video_dir}/joined-output.mp4
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/joined-output.mp4"
+  set +e
+  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/joined-output.mp4"
+  set -e
+
+  echo "- Cleaning up"
+  mv "${temp_video_dir}/joined-output.mp4" .
+  $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "joined-output-%Y-%m-%d_%H.%M.%S%%-c.%%le" "./joined-output.mp4"
+  rm -rf "$temp_video_dir"
+}
 
 if [[ -n "$video_files" ]]; then
   process_videos
@@ -510,6 +665,8 @@ elif [[ -n "$video_clip_args" ]]; then
   create_video_clip
 elif [[ -n "$noise_reduction_args" ]]; then
   clean_background_noise
+elif [[ -n "$join_video_args" ]]; then
+  join_video_files
 else
   show_help
   exit 1
