@@ -6,7 +6,6 @@ set -e
 myname=`basename "$0"`
 video_file=""
 image_file=""
-live_run=""
 EXIFTOOL=""
 verbose=${VERBOSE:-""}
 video_clip_args=""
@@ -45,7 +44,7 @@ show_help() {
   echo "   The string \"ALL\" will process all *.jpg images in the current directory."
   echo "   Environment variables & defaults:"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
-  echo "-l: Perform a LIVE run (rewrite source files, cleanup, etc)"
+  echo "     - LIVE_RUN: yes|<empty> <default: empty>"
   echo "-c <video file> <start NN:NN:NN> <end NN:NN:NN>: Create a video clip"
   echo "   Environment variables & defaults:"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
@@ -60,7 +59,7 @@ show_help() {
   echo "     - FADE_DURATION: N seconds> <default: 2>"
 }
 
-while getopts ":v:i:lc:s:j:" opt; do
+while getopts ":v:i:c:s:j:" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -83,8 +82,6 @@ while getopts ":v:i:lc:s:j:" opt; do
        done
        ;;
     i) image_file=$OPTARG
-       ;;
-    l) live_run="yes"
        ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
@@ -157,7 +154,7 @@ process_single_video() {
     echo "- Initiating video stabilization"
     local vidstabtrf_args=()
     [[ -z "$verbose" ]] && vidstabtrf_args+=(-loglevel fatal) || vidstabtrf_args+=(-loglevel info)
-    [[ -z "$LIVE_RUN" ]] && vidstabtrf_args+=(-y)
+    vidstabtrf_args+=(-y)
     vidstabtrf_args+=(-threads $(nproc --ignore=1))
     vidstabtrf_args+=(-i "${temp_video_dir}/${filename}.${extension}")
     [[ -z "$LIVE_RUN" ]] && vidstabtrf_args+=(-t $sample_time_seconds)
@@ -196,7 +193,7 @@ process_single_video() {
   [[ -n "$LIVE_RUN" ]] && reencode_output_filename_type="reencoded"
   reencode_args=()
   [[ -z "$verbose" ]] && reencode_args+=(-loglevel fatal) || reencode_args+=(-loglevel info)
-  [[ -z "$LIVE_RUN" ]] && reencode_args+=(-y)
+  reencode_args+=(-y)
   reencode_args+=(-threads $(nproc --ignore=1))
   reencode_args+=(-i "${temp_video_dir}/${filename}.${extension}")
   [[ -z "$LIVE_RUN" ]] && reencode_args+=(-t $sample_time_seconds)
@@ -280,7 +277,7 @@ process_single_image() {
   # Execute imagemagick with the specified arguments
   mogrify $im_args ${temp_image_dir}/${filename}.jpg
 
-  if [[ -z "$live_run" ]]; then
+  if [[ -z "$LIVE_RUN" ]]; then
     # Create a side-by-side preview of this image
     echo "    - Side-by-side preview: ${filename}.jpg"
     convert "${file}" "${temp_image_dir}/${filename}.jpg" +append "${temp_image_dir}/${filename}-combined.jpg"
@@ -300,7 +297,7 @@ process_single_image() {
   fi
   set -e
 
-  if [[ -n "$live_run" ]]; then
+  if [[ -n "$LIVE_RUN" ]]; then
     echo "    - Cleanup: ${filename}.jpg"
     rm -f ${temp_image_dir}/*-${filename}-combined.jpg
     mv ${temp_image_dir}/*-${filename}.jpg .
@@ -323,7 +320,7 @@ process_images() {
     process_single_image "$image_file" "$temp_image_dir"
   fi
 
-  if [[ -z "$live_run" ]]; then
+  if [[ -z "$LIVE_RUN" ]]; then
     echo -ne "\n"
     echo "****************************"
     echo " Sample Generation Complete "
@@ -333,7 +330,7 @@ process_images() {
     echo "If everything looks good, re-run this script with the -l flag."
   fi
 
-  if [[ -n "$live_run" ]]; then
+  if [[ -n "$LIVE_RUN" ]]; then
     echo "- Final cleanup"
     rm -rf "$temp_image_dir"
   fi
@@ -357,7 +354,7 @@ create_video_clip() {
   echo "- Creating clip from ${filename}.${extension}"
   local ffmpeg_args=()
   [[ -z "$verbose" ]] && ffmpeg_args+=(-loglevel fatal) || ffmpeg_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && ffmpeg_args+=(-y)
+  ffmpeg_args+=(-y)
   ffmpeg_args+=(-threads $(nproc --ignore=1))
   ffmpeg_args+=(-i "${video_file}")
   ffmpeg_args+=(-ss "${seek_start}")
@@ -397,7 +394,7 @@ clean_background_noise() {
   echo "- Separating video stream"
   local ffmpeg_noise_video_stream_args=()
   [[ -z "$verbose" ]] && ffmpeg_noise_video_stream_args+=(-loglevel fatal) || ffmpeg_noise_video_stream_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && ffmpeg_noise_video_stream_args+=(-y)
+  ffmpeg_noise_video_stream_args+=(-y)
   ffmpeg_noise_video_stream_args+=(-threads $(nproc --ignore=1))
   ffmpeg_noise_video_stream_args+=(-i "${video_file}")
   ffmpeg_noise_video_stream_args+=(-vcodec copy)
@@ -408,7 +405,7 @@ clean_background_noise() {
   echo "- Separating audio stream"
   local ffmpeg_noise_audio_stream_args=()
   [[ -z "$verbose" ]] && ffmpeg_noise_audio_stream_args+=(-loglevel fatal) || ffmpeg_noise_audio_stream_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && ffmpeg_noise_audio_stream_args+=(-y)
+  ffmpeg_noise_audio_stream_args+=(-y)
   ffmpeg_noise_audio_stream_args+=(-threads $(nproc --ignore=1))
   ffmpeg_noise_audio_stream_args+=(-i "${video_file}")
   ffmpeg_noise_audio_stream_args+=(-acodec pcm_s16le)
@@ -420,7 +417,7 @@ clean_background_noise() {
   echo "- Generating noise sample"
   local ffmpeg_noise_sample_args=()
   [[ -z "$verbose" ]] && ffmpeg_noise_sample_args+=(-loglevel fatal) || ffmpeg_noise_sample_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && ffmpeg_noise_sample_args+=(-y)
+  ffmpeg_noise_sample_args+=(-y)
   ffmpeg_noise_sample_args+=(-threads $(nproc --ignore=1))
   ffmpeg_noise_sample_args+=(-i "${video_file}")
   ffmpeg_noise_sample_args+=(-acodec pcm_s16le)
@@ -440,7 +437,7 @@ clean_background_noise() {
   echo "- Merging cleaned audio & video streams"
   local ffmpeg_noise_merge_streams_args=()
   [[ -z "$verbose" ]] && ffmpeg_noise_merge_streams_args+=(-loglevel fatal) || ffmpeg_noise_merge_streams_args+=(-loglevel info)
-  [[ -z "$live_run" ]] && ffmpeg_noise_merge_streams_args+=(-y)
+  ffmpeg_noise_merge_streams_args+=(-y)
   ffmpeg_noise_merge_streams_args+=(-threads $(nproc --ignore=1))
   ffmpeg_noise_merge_streams_args+=(-i "${temp_video_dir}/${filename}-video_stream.mp4")
   ffmpeg_noise_merge_streams_args+=(-i "${temp_video_dir}/${filename}-audio_stream_cleaned.wav")
@@ -514,7 +511,7 @@ join_video_files() {
       local dummy_lead_in_duration=$fade_duration_secs
       local ffmpeg_dummy_leadin_args=()
       [[ -z "$verbose" ]] && ffmpeg_dummy_leadin_args+=(-loglevel fatal) || ffmpeg_dummy_leadin_args+=(-loglevel info)
-      [[ -z "$live_run" ]] && ffmpeg_dummy_leadin_args+=(-y)
+      ffmpeg_dummy_leadin_args+=(-y)
       ffmpeg_dummy_leadin_args+=(-threads $(nproc --ignore=1))
       ffmpeg_dummy_leadin_args+=(-f lavfi)
       ffmpeg_dummy_leadin_args+=(-i "color=black:s=${video_width}x${video_height}:r=${avg_frame_rate}")
