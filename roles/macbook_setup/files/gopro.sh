@@ -498,45 +498,21 @@ join_video_files() {
       previous_video_clip="${join_video_args[$((ARRAY_CTR-1))]}"
     fi
 
-    # If this is the first clip in the sequence, we need to generate a blank
-    # dummy clip to "lead in" to this one.
-    if [[ -n "$CROSSFADE" ]] && [[ -z "${previous_video_clip}" ]]; then
-      local avg_frame_rate=$(echo "$(ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=nw=1:nk=1 ${current_video_clip})" | bc)
-      local audio_channel_layout=$(ffprobe -v error -select_streams a:0 -show_entries stream=channel_layout -of default=nw=1:nk=1 ${current_video_clip})
-      local audio_sample_rate=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of default=nw=1:nk=1 ${current_video_clip})
-      local video_height=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 ${current_video_clip})
-      local video_width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 ${current_video_clip})
-
-      echo "- Generating dummy video to lead in to ${current_video_clip}"
-      local dummy_lead_in_duration=$fade_duration_secs
-      local ffmpeg_dummy_leadin_args=()
-      [[ -z "$verbose" ]] && ffmpeg_dummy_leadin_args+=(-loglevel fatal) || ffmpeg_dummy_leadin_args+=(-loglevel info)
-      ffmpeg_dummy_leadin_args+=(-y)
-      ffmpeg_dummy_leadin_args+=(-threads $(nproc --ignore=1))
-      ffmpeg_dummy_leadin_args+=(-f lavfi)
-      ffmpeg_dummy_leadin_args+=(-i "color=black:s=${video_width}x${video_height}:r=${avg_frame_rate}")
-      ffmpeg_dummy_leadin_args+=(-f lavfi)
-      ffmpeg_dummy_leadin_args+=(-i "anullsrc=r=${audio_sample_rate}:cl=${audio_channel_layout}")
-      ffmpeg_dummy_leadin_args+=(-vcodec libx264)
-      ffmpeg_dummy_leadin_args+=(-acodec aac)
-      ffmpeg_dummy_leadin_args+=(-t ${dummy_lead_in_duration})
-      ffmpeg_dummy_leadin_args+=("${temp_video_dir}/empty_${dummy_lead_in_duration}.mp4")
-      ffmpeg2 "${ffmpeg_dummy_leadin_args[@]}"
-
-      # Initialize the compound string with the dummy video
-      previous_video_clip="${temp_video_dir}/empty_${dummy_lead_in_duration}.mp4"
-      ffmpeg_input_args+=(-i "${temp_video_dir}/empty_${dummy_lead_in_duration}.mp4")
-
-      # Add an appropriate audio-crossfade filter
-      ffmpeg_acrossfade_suffix+=([0:a:0][1:a:0]acrossfade=d=${fade_duration_secs}[1-a]\;)
-    else
-      # Add an appropriate audio-crossfade filter
+    if [[ -n "$CROSSFADE" ]] && [[ -n "${previous_video_clip}" ]]; then
+      # If this is not the first clip in the sequence, add an appropriate
+      # audio-crossfade filter.
       ffmpeg_acrossfade_suffix+=([${FFMPEG_IDX_CTR}-a][$((FFMPEG_IDX_CTR+1)):a:0]acrossfade=d=${fade_duration_secs}[$((FFMPEG_IDX_CTR+1))-a]\;)
+    elif [[ -n "$CROSSFADE" ]]; then
+      # Add an appropriate audio-crossfade filter for the first clip in the
+      # sequence - basically copies the stream to a named output
+      ffmpeg_acrossfade_suffix+=([0:a:0]afifo[0-a]\;)
     fi
 
     ffmpeg_input_args+=(-i "$current_video_clip")
 
-    if [[ -n "$CROSSFADE" ]]; then
+    if [[ -n "$CROSSFADE" ]] && [[ -n "${previous_video_clip}" ]]; then
+      # If this is not the first clip in the sequence, generate an appropriate
+      # video-crossfade filter.
       local prev_video_duration=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=nw=1:nk=1 "${previous_video_clip}")
       local prev_video_start=$(echo "$prev_video_duration - $fade_duration_secs" | bc)
 
@@ -567,7 +543,15 @@ join_video_files() {
 
       # Finally add these generated clips in order
       ffmpeg_fade_suffix+=([clip-${FFMPEG_IDX_CTR}-crossfade-v][clip-${FFMPEG_IDX_CTR}-clip-v])
+    elif [[ -n "$CROSSFADE" ]]; then
+      # If this is the first clip in the sequence, generate the initial
+      # filter-concat string
+      local curr_video_duration=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=nw=1:nk=1 "${current_video_clip}")
+      local curr_video_end=$(echo "$curr_video_duration - $fade_duration_secs" | bc)
+      ffmpeg_filter_str+=([0:v:0] trim=start=0:end=${curr_video_end},setpts=PTS-STARTPTS[clip-0-clip-v]\;)
+      ffmpeg_fade_suffix+=([clip-0-clip-v])
     else
+      # Perform a basic video concatenation (without crossfading)
       ffmpeg_filter_str+=([${ARRAY_CTR}:v:0][${ARRAY_CTR}:a:0])
     fi
 
@@ -578,7 +562,7 @@ join_video_files() {
   ffmpeg_acrossfade_suffix+=([${FFMPEG_IDX_CTR}-a]afifo[outa]\;)
 
   local filter_str="$(echo -e "${ffmpeg_filter_str[@]}" | tr -d '[:space:]')"
-  local concat_ctr=$(echo "$FFMPEG_IDX_CTR * 2" | bc)
+  local concat_ctr=$(echo "($FFMPEG_IDX_CTR * 2) + 1" | bc)
   if [[ -n "$CROSSFADE" ]]; then
     filter_str+="$(echo -e "${ffmpeg_acrossfade_suffix[@]}" | tr -d '[:space:]')"
     filter_str+="$(echo -e "${ffmpeg_fade_suffix[@]}" | tr -d '[:space:]')"
