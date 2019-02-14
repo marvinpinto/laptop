@@ -25,21 +25,11 @@ show_help() {
   echo "     - VIDEO_STABILIZATION_SMOOTHING_FACTOR: 10"
   echo "     - VIDEO_STABILIZATION_SHAKINESS_FACTOR: 5"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
-  echo "     - ENABLE_FISHEYE: yes|<empty> <default: yes>"
-  echo "     - CURVES_PRESET_FILTER: <option> <default: none>"
-  echo "        - none"
-  echo "        - color_negative"
-  echo "        - cross_process"
-  echo "        - darker"
-  echo "        - increase_contrast"
-  echo "        - lighter"
-  echo "        - linear_contrast"
-  echo "        - medium_contrast"
-  echo "        - negative"
-  echo "        - strong_contrast"
-  echo "        - vintage"
+  echo "     - ENABLE_FISHEYE_CORRECTION: yes|<empty> <default: empty>"
   echo "     - VIDEO_SAMPLE_TIME: N seconds <default: 15>"
   echo "     - LIVE_RUN: yes|<empty> <default: empty>"
+  echo "     - ENABLE_INTERACTIVE_COLOR_CORRECTION: yes|<empty> <default: empty>"
+  echo "     - COLOR_CORRECTION_FRAME_START: NN:NN:NN <default: 00:00:03>"
   echo "-i <single image file | ALL>: Process images"
   echo "   The string \"ALL\" will process all *.jpg images in the current directory."
   echo "   Environment variables & defaults:"
@@ -122,8 +112,6 @@ process_single_video() {
   local output_resolution=${OUTPUT_RESOLUTION:-1080p}
   local video_stabilization_smoothing_factor=${VIDEO_STABILIZATION_SMOOTHING_FACTOR:-10}
   local video_stabilization_shakiness_factor=${VIDEO_STABILIZATION_SHAKINESS_FACTOR:-5}
-  local enable_fisheye=${ENABLE_FISHEYE:-"yes"}
-  local curves_preset_filter=${CURVES_PRESET_FILTER:-none}
 
   $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
 
@@ -186,8 +174,41 @@ process_single_video() {
     ffmpeg_resolution_filter="crop=w=${ffmpeg_requested_width}:h=${ffmpeg_requested_height},scale=-2:${ffmpeg_requested_height}"
   fi
 
+  if [[ -n "$ENABLE_INTERACTIVE_COLOR_CORRECTION" ]]; then
+    local color_correction_frame_start=${COLOR_CORRECTION_FRAME_START:-'00:00:03'}
+    local hald_level=8
+    local image_width=$(echo "$hald_level ^ 3" | bc)
+
+    echo "- Taking a screenshot of frame ${color_correction_frame_start}"
+    local ffmpeg_gen_frame_args=()
+    [[ -z "$verbose" ]] && ffmpeg_gen_frame_args+=(-loglevel fatal) || ffmpeg_gen_frame_args+=(-loglevel info)
+    ffmpeg_gen_frame_args+=(-y)
+    ffmpeg_gen_frame_args+=(-threads $(nproc --ignore=1))
+    ffmpeg_gen_frame_args+=(-i "${temp_video_dir}/${filename}.${extension}")
+    ffmpeg_gen_frame_args+=(-ss "${color_correction_frame_start}")
+    ffmpeg_gen_frame_args+=(-frames:v 1)
+    ffmpeg_gen_frame_args+=(-q:v 1)
+    ffmpeg_gen_frame_args+=("${temp_video_dir}/${filename}-video-screenshot.png")
+    ffmpeg2 "${ffmpeg_gen_frame_args[@]}"
+
+    echo "- Generating Hald CLUT"
+    convert "${temp_video_dir}/${filename}-video-screenshot.png" hald:${hald_level} -gravity South -append +repage "${temp_video_dir}/${filename}-screenshot-hald-clut.png"
+
+    echo -ne "\n"
+    echo "- ******************************"
+    echo "   Manual Color Correction Mode"
+    echo "- ******************************"
+    echo "- Manually color-correct the file \"${temp_video_dir}/${filename}-screenshot-hald-clut.png\" using your favourite editing program and press Enter when you are done. "
+    echo -ne "\n"
+    read -p "- Press Enter to continue.."
+    echo -ne "\n"
+
+    echo "- Extracting the Hald from the color-corrected file"
+    convert "${temp_video_dir}/${filename}-screenshot-hald-clut.png" -gravity South -crop ${image_width}x${image_width}+0+0 +repage "${temp_video_dir}/${filename}-hald-clut-identity-edited.png"
+  fi
+
   echo "- Re-encoding video"
-  local base_video_filter="${video_stabilization_filter}${ffmpeg_resolution_filter},curves=preset='${curves_preset_filter}'"
+  local base_video_filter="[0:v:0]${video_stabilization_filter}${ffmpeg_resolution_filter}"
   local reencode_output_filename_type=""
   [[ -z "$LIVE_RUN" ]] && reencode_output_filename_type="sample"
   [[ -n "$LIVE_RUN" ]] && reencode_output_filename_type="reencoded"
@@ -196,10 +217,16 @@ process_single_video() {
   reencode_args+=(-y)
   reencode_args+=(-threads $(nproc --ignore=1))
   reencode_args+=(-i "${temp_video_dir}/${filename}.${extension}")
+  [[ -n "$ENABLE_INTERACTIVE_COLOR_CORRECTION" ]] && reencode_args+=(-i "${temp_video_dir}/${filename}-hald-clut-identity-edited.png")
   [[ -z "$LIVE_RUN" ]] && reencode_args+=(-t $sample_time_seconds)
-  [[ -n "$enable_fisheye" ]] && reencode_args+=(-vf "${base_video_filter},lenscorrection=k1=-0.227:k2=-0.022") || reencode_args+=(-vf "${base_video_filter}")
+  [[ -n "$ENABLE_FISHEYE_CORRECTION" ]] && base_video_filter+=",lenscorrection=k1=-0.227:k2=-0.022[base];" || base_video_filter+="[base];"
+  [[ -n "$ENABLE_INTERACTIVE_COLOR_CORRECTION" ]] && base_video_filter+="[base][1:v:0]haldclut[outv];" || base_video_filter+="[base]fifo[outv];"
+  base_video_filter+="[0:a:0]afifo[outa]"
+  reencode_args+=(-filter_complex "$base_video_filter")
+  reencode_args+=(-map "[outv]")
+  reencode_args+=(-map "[outa]")
   reencode_args+=(-vcodec libx264)
-  reencode_args+=(-acodec copy)
+  reencode_args+=(-acodec aac)
   reencode_args+=(-preset slow)
   reencode_args+=(-crf 15)
   reencode_args+=("${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4")
