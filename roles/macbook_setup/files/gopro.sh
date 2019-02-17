@@ -12,6 +12,7 @@ video_clip_args=""
 noise_reduction_args=""
 join_video_args=""
 create_lead_video_clip_args=""
+change_video_speed_args=""
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -39,7 +40,7 @@ show_help() {
   echo "-c <video file> <start NN:NN:NN> <end NN:NN:NN>: Create a video clip"
   echo "   Environment variables & defaults:"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
-  echo "-s <video file> <noise sample start NN:NN:NN> <noise sample end NN:NN:NN>: Clean up background noise"
+  echo "-n <video file> <noise sample start NN:NN:NN> <noise sample end NN:NN:NN>: Clean up background noise"
   echo "   Environment variables & defaults:"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
   echo "     - SOX_NOISE_SENSITIVITY: num> <default: 0.21> Note 0.2 >= n <= 0.3 usually provides best results"
@@ -57,9 +58,13 @@ show_help() {
   echo "        - 1080p: 1920x1080"
   echo "        - 720p: 1280x720"
   echo "     - CLIP_DURATION: N seconds <default: 4>"
+  echo "-s <video file> <speed factor>: Speed up or slow down a video clip"
+  echo "   e.g: ${myname} -s input.mp4 4"
+  echo "   Environment variables & defaults:"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
 }
 
-while getopts ":v:i:c:s:j:l:" opt; do
+while getopts ":v:i:c:n:j:l:s:" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -69,7 +74,7 @@ while getopts ":v:i:c:s:j:l:" opt; do
            OPTIND=$((OPTIND + 1))
        done
        ;;
-    s) noise_reduction_args=("$OPTARG")
+    n) noise_reduction_args=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
            noise_reduction_args+=($(eval "echo \${$OPTIND}"))
            OPTIND=$((OPTIND + 1))
@@ -84,6 +89,12 @@ while getopts ":v:i:c:s:j:l:" opt; do
     i) image_file=$OPTARG
        ;;
     l) create_lead_video_clip_args+=("$OPTARG")
+       ;;
+    s) change_video_speed_args=("$OPTARG")
+       until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
+           change_video_speed_args+=($(eval "echo \${$OPTIND}"))
+           OPTIND=$((OPTIND + 1))
+       done
        ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
@@ -712,6 +723,46 @@ oglevel info)
   rm -rf "${temp_video_dir}"
 }
 
+change_video_speed() {
+  local temp_video_dir=${myname}-temp-videos
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  local video_file=${change_video_speed_args[0]}
+  local speed_factor=${change_video_speed_args[1]}
+
+  local original_filename=$(basename -- "$video_file")
+  local renamed_file=${original_filename// /_}
+  local filename=$(basename -- "$renamed_file")
+  local extension="${filename##*.}"
+  filename="${filename%.*}"
+
+  local video_fps=$(echo "$(ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=nw=1:nk=1 ${video_file})" | bc)
+  local pts_rate=$(echo "scale=2; 1 / $speed_factor" | bc -l)
+
+  echo "- Re-encoding ${video_file} (${video_fps}fps) to speed factor ${speed_factor}"
+  local ffmpeg_speed_args=()
+  [[ -z "$verbose" ]] && ffmpeg_speed_args+=(-loglevel fatal) || ffmpeg_speed_args+=(-loglevel info)
+  ffmpeg_speed_args+=(-y)
+  ffmpeg_speed_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_speed_args+=(-i "${video_file}")
+  ffmpeg_speed_args+=(-r "${video_fps}")
+  ffmpeg_speed_args+=(-vf "setpts=${pts_rate}*PTS")
+  ffmpeg_speed_args+=(-vcodec libx264)
+  ffmpeg_speed_args+=(-an)
+  ffmpeg_speed_args+=("${temp_video_dir}/${filename}-speed_${speed_factor}.mp4")
+  ffmpeg2 "${ffmpeg_speed_args[@]}"
+
+  echo "- Renaming & adding EXIF data"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-speed_${speed_factor}.mp4"
+  set +e
+  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-speed_${speed_factor}.mp4"
+  set -e
+  $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./speed_${speed_factor}-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-speed_${speed_factor}.mp4"
+  rm -rf "$temp_video_dir"
+}
+
 if [[ -n "$video_file" ]]; then
   process_single_video
 elif [[ -n "$image_file" ]]; then
@@ -724,6 +775,8 @@ elif [[ -n "$join_video_args" ]]; then
   join_video_files
 elif [[ -n "${create_lead_video_clip_args[@]}" ]]; then
   create_lead_video_clip
+elif [[ -n "$change_video_speed_args" ]]; then
+  change_video_speed
 else
   show_help
   exit 1
