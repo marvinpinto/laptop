@@ -11,6 +11,7 @@ verbose=${VERBOSE:-""}
 video_clip_args=""
 noise_reduction_args=""
 join_video_args=""
+create_lead_video_clip_args=""
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -47,9 +48,18 @@ show_help() {
   echo "     - VERBOSE: yes|<empty> <default: empty>"
   echo "     - CROSSFADE: yes|<empty> <default: empty>"
   echo "     - FADE_DURATION: N seconds> <default: 2>"
+  echo "-l <text>: Create a lead video clip with the specified text"
+  echo "   e.g: ${myname} -l \"Europe Trip 2019\" -l \"Day trip to Germany\" -l \"Feb 17, 2019\""
+  echo "   Environment variables & defaults:"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "     - OUTPUT_RESOLUTION: <option> <default: 1080p>"
+  echo "        - 1440p: 1920x1440"
+  echo "        - 1080p: 1920x1080"
+  echo "        - 720p: 1280x720"
+  echo "     - CLIP_DURATION: N seconds <default: 4>"
 }
 
-while getopts ":v:i:c:s:j:" opt; do
+while getopts ":v:i:c:s:j:l:" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -73,6 +83,8 @@ while getopts ":v:i:c:s:j:" opt; do
        ;;
     i) image_file=$OPTARG
        ;;
+    l) create_lead_video_clip_args+=("$OPTARG")
+       ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
         exit 1
@@ -87,6 +99,7 @@ while getopts ":v:i:c:s:j:" opt; do
         ;;
   esac
 done
+shift $((OPTIND -1))
 
 hash exiftool 2>/dev/null || { echo >&2 "exiftool does not appear to be available."; exit 1; }
 hash mogrify 2>/dev/null || { echo >&2 "mogrify does not appear to be available."; exit 1; }
@@ -613,6 +626,92 @@ join_video_files() {
   rm -rf "$temp_video_dir"
 }
 
+create_lead_video_clip() {
+  local temp_video_dir=${myname}-temp-videos
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  local bg_color="#A85546"
+  local font_color="#DCDAB4"
+  local font_subtext_size=50
+  local font_title_size=80
+  local clip_duration=${CLIP_DURATION:-4}
+
+  local output_resolution=${OUTPUT_RESOLUTION:-1080p}
+  local title_width=""
+  local title_height=""
+  if [[ "$output_resolution" == "1440p" ]]; then
+    title_width="1920"
+    title_height="1440"
+  elif [[ "$output_resolution" == "1080p" ]]; then
+    title_width="1920"
+    title_height="1080"
+  else
+    title_width="1280"
+    title_height="720"
+  fi
+
+  local line_one=${create_lead_video_clip_args[1]}
+  local line_two=${create_lead_video_clip_args[2]}
+  local line_three=${create_lead_video_clip_args[3]}
+
+  [[ -n "$verbose" ]] && echo "Argument line one: ${line_one}"
+  [[ -n "$verbose" ]] && echo "Argument line two: ${line_two}"
+  [[ -n "$verbose" ]] && echo "Argument line three: ${line_three}"
+
+  echo "- Generating image"
+  local lead_image_args=()
+  lead_image_args+=(-size ${title_width}x${title_height})
+  lead_image_args+=(xc:"$bg_color")
+  lead_image_args+=(-gravity North)
+  lead_image_args+=(-font /usr/share/fonts/truetype/lato/Lato-Bold.ttf)
+  local text_y_position=0
+
+  if [[ -n "$line_one" ]]; then
+    text_y_position=$(echo "$font_subtext_size * 1.8" | bc)
+    lead_image_args+=(-pointsize $font_subtext_size -fill "$font_color" -draw "text 0,${text_y_position} '${line_one}'")
+  fi
+
+  if [[ -n "$line_two" ]]; then
+    text_y_position=$(echo "$text_y_position * 2" | bc)
+    lead_image_args+=(-pointsize $font_title_size -fill "$font_color" -draw "text 0,${text_y_position} '${line_two}'")
+  fi
+
+  if [[ -n "$line_three" ]]; then
+    text_y_position=$(echo "$text_y_position * 2" | bc)
+    lead_image_args+=(-pointsize $font_subtext_size -fill "$font_color" -draw "text 0,${text_y_position} '${line_three}'")
+  fi
+
+  lead_image_args+=("${temp_video_dir}/generated-lead-image.png")
+  convert "${lead_image_args[@]}"
+
+  echo "- Generating ${clip_duration} second video clip"
+  local ffmpeg_clip_args=()
+  [[ -z "$verbose" ]] && ffmpeg_clip_args+=(-loglevel fatal) || ffmpeg_clip_args+=(-
+oglevel info)
+  ffmpeg_clip_args+=(-y)
+  ffmpeg_clip_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_clip_args+=(-loop 1)
+  ffmpeg_clip_args+=(-i "${temp_video_dir}/generated-lead-image.png")
+
+  ffmpeg_clip_args+=(-f lavfi)
+  ffmpeg_clip_args+=(-i "anullsrc=r=32000:cl=mono")
+
+  ffmpeg_clip_args+=(-t $clip_duration)
+  ffmpeg_clip_args+=(-vf "scale=${title_width}:${title_height}")
+  ffmpeg_clip_args+=(-vcodec libx264)
+  ffmpeg_clip_args+=(-acodec aac)
+  ffmpeg_clip_args+=(-preset slow)
+  ffmpeg_clip_args+=(-crf 15)
+  ffmpeg_clip_args+=(-r 30)
+  ffmpeg_clip_args+=("${temp_video_dir}/generated-lead-video.mp4")
+  ffmpeg2 "${ffmpeg_clip_args[@]}"
+
+  echo "- Cleaning up"
+  mv "${temp_video_dir}/generated-lead-video.mp4" "./lead-clip.mp4"
+  rm -rf "${temp_video_dir}"
+}
+
 if [[ -n "$video_file" ]]; then
   process_single_video
 elif [[ -n "$image_file" ]]; then
@@ -623,6 +722,8 @@ elif [[ -n "$noise_reduction_args" ]]; then
   clean_background_noise
 elif [[ -n "$join_video_args" ]]; then
   join_video_files
+elif [[ -n "${create_lead_video_clip_args[@]}" ]]; then
+  create_lead_video_clip
 else
   show_help
   exit 1
