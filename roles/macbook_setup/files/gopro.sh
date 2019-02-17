@@ -13,6 +13,7 @@ noise_reduction_args=""
 join_video_args=""
 create_lead_video_clip_args=""
 change_video_speed_args=""
+add_audio_clip_args=""
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -62,9 +63,13 @@ show_help() {
   echo "   e.g: ${myname} -s input.mp4 4"
   echo "   Environment variables & defaults:"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "-a <video file> <audio file> [start NN:NN:NN - default 00:00:00]: Add an audio clip to a video, starting from NN:NN:NN in the audio file"
+  echo "   Royalty free music available at https://www.youtube.com/audiolibrary/music"
+  echo "   Environment variables & defaults:"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
 }
 
-while getopts ":v:i:c:n:j:l:s:" opt; do
+while getopts ":v:i:c:n:j:l:s:a:" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -93,6 +98,12 @@ while getopts ":v:i:c:n:j:l:s:" opt; do
     s) change_video_speed_args=("$OPTARG")
        until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
            change_video_speed_args+=($(eval "echo \${$OPTIND}"))
+           OPTIND=$((OPTIND + 1))
+       done
+       ;;
+    a) add_audio_clip_args=("$OPTARG")
+       until [[ $(eval "echo \${$OPTIND}") =~ ^-.* ]] || [ -z $(eval "echo \${$OPTIND}") ]; do
+           add_audio_clip_args+=($(eval "echo \${$OPTIND}"))
            OPTIND=$((OPTIND + 1))
        done
        ;;
@@ -763,6 +774,56 @@ change_video_speed() {
   rm -rf "$temp_video_dir"
 }
 
+add_audio_clip() {
+  local temp_video_dir=${myname}-temp-videos
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  local video_file=${add_audio_clip_args[0]}
+  local audio_file=${add_audio_clip_args[1]}
+  local audio_start_time=${add_audio_clip_args[2]:-"00:00:00"}
+
+  local original_filename=$(basename -- "$video_file")
+  local renamed_file=${original_filename// /_}
+  local filename=$(basename -- "$renamed_file")
+  local extension="${filename##*.}"
+  filename="${filename%.*}"
+
+  echo "- Truncating ${audio_file} up until ${audio_start_time}"
+  local ffmpeg_audio_tr_args=()
+  [[ -z "$verbose" ]] && ffmpeg_audio_tr_args+=(-loglevel fatal) || ffmpeg_audio_tr_args+=(-loglevel info)
+  ffmpeg_audio_tr_args+=(-y)
+  ffmpeg_audio_tr_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_audio_tr_args+=(-i "${audio_file}")
+  ffmpeg_audio_tr_args+=(-ss "${audio_start_time}")
+  ffmpeg_audio_tr_args+=("${temp_video_dir}/${filename}-truncated-audio.mp3")
+  ffmpeg2 "${ffmpeg_audio_tr_args[@]}"
+
+  echo "- Re-encoding ${video_file} with new audio stream"
+  local ffmpeg_reencode_args=()
+  [[ -z "$verbose" ]] && ffmpeg_reencode_args+=(-loglevel fatal) || ffmpeg_reencode_args+=(-loglevel info)
+  ffmpeg_reencode_args+=(-y)
+  ffmpeg_reencode_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_reencode_args+=(-i "$video_file")
+  ffmpeg_reencode_args+=(-i "${temp_video_dir}/${filename}-truncated-audio.mp3")
+  ffmpeg_reencode_args+=(-vcodec libx264)
+  ffmpeg_reencode_args+=(-acodec aac)
+  ffmpeg_reencode_args+=(-preset slow)
+  ffmpeg_reencode_args+=(-crf 15)
+  ffmpeg_reencode_args+=(-shortest)
+  ffmpeg_reencode_args+=("${temp_video_dir}/${filename}-audio-substituted.mp4")
+  ffmpeg2 "${ffmpeg_reencode_args[@]}"
+
+  echo "- Renaming & adding EXIF data"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-audio-substituted.mp4"
+  set +e
+  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-audio-substituted.mp4"
+  set -e
+  $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./audio_substituted-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-audio-substituted.mp4"
+  rm -rf "$temp_video_dir"
+}
+
 if [[ -n "$video_file" ]]; then
   process_single_video
 elif [[ -n "$image_file" ]]; then
@@ -777,6 +838,8 @@ elif [[ -n "${create_lead_video_clip_args[@]}" ]]; then
   create_lead_video_clip
 elif [[ -n "$change_video_speed_args" ]]; then
   change_video_speed
+elif [[ -n "$add_audio_clip_args" ]]; then
+  add_audio_clip
 else
   show_help
   exit 1
