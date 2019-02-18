@@ -14,6 +14,7 @@ join_video_args=""
 create_lead_video_clip_args=""
 change_video_speed_args=""
 add_audio_clip_args=""
+finalize_video_file_arg=""
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -68,9 +69,16 @@ show_help() {
   echo "   Royalty free music available at https://www.youtube.com/audiolibrary/music"
   echo "   Environment variables & defaults:"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "-f <video file>: Finalize the video file (fade in/out, write file metadata, etc)"
+  echo "   Environment variables & defaults:"
+  echo "     - VERBOSE: yes|<empty> <default: empty>"
+  echo "     - FADE_DURATION: N seconds> <default: 2>"
+  echo "     - METADATA_TITLE: <string> <default: \"\">"
+  echo "     - METADATA_ARTIST: <string> <default: \"Marvin Pinto\">"
+  echo "     - METADATA_DESC: <string> <default: \"\">"
 }
 
-while getopts ":v:i:c:n:j:l:s:a:" opt; do
+while getopts ":v:i:c:n:j:l:s:a:f:" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -107,6 +115,8 @@ while getopts ":v:i:c:n:j:l:s:a:" opt; do
            add_audio_clip_args+=($(eval "echo \${$OPTIND}"))
            OPTIND=$((OPTIND + 1))
        done
+       ;;
+    f) finalize_video_file_arg=$OPTARG
        ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
@@ -826,6 +836,136 @@ add_audio_clip() {
   rm -rf "$temp_video_dir"
 }
 
+finalize_video_file() {
+  local temp_video_dir=${myname}-temp-videos
+  rm -rf "$temp_video_dir"
+  mkdir -p "$temp_video_dir"
+
+  local video_file=$finalize_video_file_arg
+  local original_filename=$(basename -- "$video_file")
+  local sample_time_seconds=${VIDEO_SAMPLE_TIME:-15}
+  local output_resolution=${OUTPUT_RESOLUTION:-1080p}
+  local video_stabilization_smoothing_factor=${VIDEO_STABILIZATION_SMOOTHING_FACTOR:-10}
+  local video_stabilization_shakiness_factor=${VIDEO_STABILIZATION_SHAKINESS_FACTOR:-5}
+  local fade_duration_secs=${FADE_DURATION:-2}
+  local metadata_title=${METADATA_TITLE:-""}
+  local metadata_artist=${METADATA_ARTIST:-"Marvin Pinto"}
+  local metadata_desc=${METADATA_DESC:-""}
+
+  echo "- Finalizing video file: ${video_file}"
+  echo "- Creating working copy"
+  local renamed_file=${original_filename// /_}
+  cp "${video_file}" "${temp_video_dir}/${renamed_file}"
+
+  local filename=$(basename -- "$renamed_file")
+  local extension="${filename##*.}"
+  filename="${filename%.*}"
+
+  echo "- Retrieving video metadata"
+  local video_width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 ${video_file})
+  local video_height=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 ${video_file})
+  local avg_frame_rate=$(echo "$(ffprobe -v error -select_streams v:0 -show_entries stream=avg_frame_rate -of default=nw=1:nk=1 ${video_file})" | bc)
+  local audio_sample_rate=$(ffprobe -v error -select_streams a:0 -show_entries stream=sample_rate -of default=nw=1:nk=1 ${video_file})
+  local audio_channel_layout=$(ffprobe -v error -select_streams a:0 -show_entries stream=channel_layout -of default=nw=1:nk=1 ${video_file})
+  local video_duration=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of default=nw=1:nk=1 "${video_file}")
+
+  echo "- Generating dummy video clip (to lead-in/out of ${video_file})"
+  local ffmpeg_dummy_lead_args=()
+  [[ -z "$verbose" ]] && ffmpeg_dummy_lead_args+=(-loglevel fatal) || ffmpeg_dummy_lead_args+=(-loglevel info)
+  ffmpeg_dummy_lead_args+=(-y)
+  ffmpeg_dummy_lead_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_dummy_lead_args+=(-f lavfi)
+  ffmpeg_dummy_lead_args+=(-i "color=black:s=${video_width}x${video_height}:r=${avg_frame_rate}")
+  ffmpeg_dummy_lead_args+=(-f lavfi)
+  ffmpeg_dummy_lead_args+=(-i "anullsrc=r=${audio_sample_rate}:cl=${audio_channel_layout}")
+  ffmpeg_dummy_lead_args+=(-vcodec libx264)
+  ffmpeg_dummy_lead_args+=(-acodec aac)
+  ffmpeg_dummy_lead_args+=(-t ${fade_duration_secs})
+  ffmpeg_dummy_lead_args+=("${temp_video_dir}/empty_${fade_duration_secs}.mp4")
+  ffmpeg2 "${ffmpeg_dummy_lead_args[@]}"
+
+  echo "- Joining input files"
+  local fade_out_start=$(echo "$video_duration - $fade_duration_secs" | bc)
+  local ffmpeg_join_args=()
+  [[ -z "$verbose" ]] && ffmpeg_join_args+=(-loglevel fatal) || ffmpeg_join_args+=(-loglevel info)
+  ffmpeg_join_args+=(-y)
+  ffmpeg_join_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_join_args+=(-i "${temp_video_dir}/empty_${fade_duration_secs}.mp4")
+  ffmpeg_join_args+=(-i "${video_file}")
+  ffmpeg_join_args+=(-i "${temp_video_dir}/empty_${fade_duration_secs}.mp4")
+
+  local ffmpeg_filter_str=()
+  ffmpeg_filter_str+=([1:v:0] fade=t=in:st=0:d=${fade_duration_secs}, fade=t=out:st=${fade_out_start}:d=${fade_duration_secs} [1v]\;)
+  ffmpeg_filter_str+=([1:a:0] afade=t=in:st=0:d=${fade_duration_secs}, afade=t=out:st=${fade_out_start}:d=${fade_duration_secs} [1a]\;)
+  ffmpeg_filter_str+=([0:v:0][0:a:0][1v][1a][2:v:0][2:a:0])
+  ffmpeg_filter_str+=(concat=n=3:v=1:a=1[outv][outa])
+  local filter_str="$(echo -e "${ffmpeg_filter_str[@]}" | tr -d '[:space:]')"
+
+  ffmpeg_join_args+=(-filter_complex "${filter_str}")
+  ffmpeg_join_args+=(-map "[outv]")
+  ffmpeg_join_args+=(-map "[outa]")
+  ffmpeg_join_args+=(-vcodec libx264)
+  ffmpeg_join_args+=(-acodec aac)
+  ffmpeg_join_args+=(-preset slow)
+  ffmpeg_join_args+=(-crf 15)
+  ffmpeg_join_args+=("${temp_video_dir}/${filename}-finalized.mp4")
+  ffmpeg2 "${ffmpeg_join_args[@]}"
+
+  echo "- Saving a copy of ${video_file} mp4 container metadata"
+  local ffmpeg_md_save_args=()
+  [[ -z "$verbose" ]] && ffmpeg_md_save_args+=(-loglevel fatal) || ffmpeg_md_save_args+=(-loglevel info)
+  ffmpeg_md_save_args+=(-y)
+  ffmpeg_md_save_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_md_save_args+=(-i "${video_file}")
+  ffmpeg_md_save_args+=(-c copy)
+  ffmpeg_md_save_args+=(-map_metadata 0)
+  ffmpeg_md_save_args+=(-map_metadata:s:v 0:s:v)
+  ffmpeg_md_save_args+=(-map_metadata:s:a 0:s:a)
+  ffmpeg_md_save_args+=(-f ffmetadata)
+  ffmpeg_md_save_args+=("${temp_video_dir}/${filename}-mp4-container-metadata.txt")
+  ffmpeg2 "${ffmpeg_md_save_args[@]}"
+
+  echo "- Writing mp4 container metadata"
+  local ffmpeg_md_write_args=()
+  [[ -z "$verbose" ]] && ffmpeg_md_write_args+=(-loglevel fatal) || ffmpeg_md_write_args+=(-loglevel info)
+  ffmpeg_md_write_args+=(-y)
+  ffmpeg_md_write_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_md_write_args+=(-i "${temp_video_dir}/${filename}-finalized.mp4")
+  ffmpeg_md_write_args+=(-f ffmetadata)
+  ffmpeg_md_write_args+=(-i "${temp_video_dir}/${filename}-mp4-container-metadata.txt")
+  ffmpeg_md_write_args+=(-c copy)
+  ffmpeg_md_write_args+=(-map_metadata 1)
+  ffmpeg_md_write_args+=("${temp_video_dir}/${filename}-finalized-with-metadata.mp4")
+  ffmpeg2 "${ffmpeg_md_write_args[@]}"
+
+  echo "- Writing custom mp4 metadata (title, artist, description)"
+  local metadata_date=$(exiftool -createdate ${video_file} | awk '{print $4}' | sed -e 's/:/-/g')
+  mv "${temp_video_dir}/${filename}-finalized-with-metadata.mp4" "${temp_video_dir}/${filename}-finalized.mp4"
+  local ffmpeg_md_cust_args=()
+  [[ -z "$verbose" ]] && ffmpeg_md_cust_args+=(-loglevel fatal) || ffmpeg_md_cust_args+=(-loglevel info)
+  ffmpeg_md_cust_args+=(-y)
+  ffmpeg_md_cust_args+=(-threads $(nproc --ignore=1))
+  ffmpeg_md_cust_args+=(-i "${temp_video_dir}/${filename}-finalized.mp4")
+  ffmpeg_md_cust_args+=(-metadata title="$metadata_title")
+  ffmpeg_md_cust_args+=(-metadata artist="$metadata_artist")
+  ffmpeg_md_cust_args+=(-metadata comment="$metadata_desc")
+  ffmpeg_md_cust_args+=(-metadata description="$metadata_desc")
+  ffmpeg_md_cust_args+=(-metadata date="$metadata_date")
+  ffmpeg_md_cust_args+=("${temp_video_dir}/${filename}-finalized-with-metadata.mp4")
+  ffmpeg2 "${ffmpeg_md_cust_args[@]}"
+
+  echo "- Renaming & adding EXIF data"
+  mv "${temp_video_dir}/${filename}-finalized-with-metadata.mp4" "${temp_video_dir}/${filename}-finalized.mp4"
+  local filename_title=$(echo "$metadata_title" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z._-]/_/g')
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-finalized.mp4"
+  set +e
+  $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-finalized.mp4"
+  set -e
+  $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./%Y-%m-%d_%H.%M.%S%%-c-${filename_title}.%%le" "${temp_video_dir}/${filename}-finalized.mp4"
+  rm -rf "$temp_video_dir"
+}
+
 if [[ -n "$video_file" ]]; then
   process_single_video
 elif [[ -n "$image_file" ]]; then
@@ -842,6 +982,8 @@ elif [[ -n "$change_video_speed_args" ]]; then
   change_video_speed
 elif [[ -n "$add_audio_clip_args" ]]; then
   add_audio_clip
+elif [[ -n "$finalize_video_file_arg" ]]; then
+  finalize_video_file
 else
   show_help
   exit 1
