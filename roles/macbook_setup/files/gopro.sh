@@ -15,6 +15,7 @@ create_lead_video_clip_args=""
 change_video_speed_args=""
 add_audio_clip_args=""
 finalize_video_file_arg=""
+CRF_FACTOR=22
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -278,7 +279,7 @@ process_single_video() {
   reencode_args+=(-vcodec libx264)
   reencode_args+=(-acodec aac)
   reencode_args+=(-preset slow)
-  reencode_args+=(-crf 15)
+  reencode_args+=(-crf ${CRF_FACTOR})
   reencode_args+=("${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4")
   ffmpeg2 "${reencode_args[@]}"
 
@@ -734,7 +735,7 @@ oglevel info)
   ffmpeg_clip_args+=(-vcodec libx264)
   ffmpeg_clip_args+=(-acodec aac)
   ffmpeg_clip_args+=(-preset slow)
-  ffmpeg_clip_args+=(-crf 15)
+  ffmpeg_clip_args+=(-crf ${CRF_FACTOR})
   ffmpeg_clip_args+=(-r 30)
   ffmpeg_clip_args+=("${temp_video_dir}/generated-lead-video.mp4")
   ffmpeg2 "${ffmpeg_clip_args[@]}"
@@ -815,7 +816,7 @@ add_audio_clip() {
   ffmpeg_reencode_args+=(-vcodec libx264)
   ffmpeg_reencode_args+=(-acodec aac)
   ffmpeg_reencode_args+=(-preset slow)
-  ffmpeg_reencode_args+=(-crf 15)
+  ffmpeg_reencode_args+=(-crf ${CRF_FACTOR})
   ffmpeg_reencode_args+=(-shortest)
   ffmpeg_reencode_args+=("${temp_video_dir}/${filename}-audio-substituted.mp4")
   ffmpeg2 "${ffmpeg_reencode_args[@]}"
@@ -899,7 +900,7 @@ finalize_video_file() {
   ffmpeg_join_args+=(-vcodec libx264)
   ffmpeg_join_args+=(-acodec aac)
   ffmpeg_join_args+=(-preset slow)
-  ffmpeg_join_args+=(-crf 15)
+  ffmpeg_join_args+=(-crf ${CRF_FACTOR})
   ffmpeg_join_args+=("${temp_video_dir}/${filename}-finalized.mp4")
   ffmpeg2 "${ffmpeg_join_args[@]}"
 
