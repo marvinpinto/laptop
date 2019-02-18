@@ -76,9 +76,10 @@ show_help() {
   echo "     - METADATA_TITLE: <string> <default: \"\">"
   echo "     - METADATA_ARTIST: <string> <default: \"Marvin Pinto\">"
   echo "     - METADATA_DESC: <string> <default: \"\">"
+  echo "-z: Do a bit of local cleanup"
 }
 
-while getopts ":v:i:c:n:j:l:s:a:f:" opt; do
+while getopts ":v:i:c:n:j:l:s:a:f:z" opt; do
   case "$opt" in
     v) video_file=$OPTARG
        ;;
@@ -118,6 +119,10 @@ while getopts ":v:i:c:n:j:l:s:a:f:" opt; do
        ;;
     f) finalize_video_file_arg=$OPTARG
        ;;
+    z) echo "- Cleaning up"
+       rm -rf "${myname}-temp-videos" "${myname}-temp-images"
+       exit 0
+       ;;
     \?) echo "Unknown option: -$OPTARG"
         show_help
         exit 1
@@ -150,7 +155,6 @@ hash sox 2>/dev/null || { echo >&2 "sox does not appear to be available."; exit 
 
 process_single_video() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local original_filename=$(basename -- "$video_file")
@@ -158,8 +162,6 @@ process_single_video() {
   local output_resolution=${OUTPUT_RESOLUTION:-1080p}
   local video_stabilization_smoothing_factor=${VIDEO_STABILIZATION_SMOOTHING_FACTOR:-10}
   local video_stabilization_shakiness_factor=${VIDEO_STABILIZATION_SHAKINESS_FACTOR:-5}
-
-  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
 
   local ffmpeg_requested_width=""
   local ffmpeg_requested_height=""
@@ -182,6 +184,8 @@ process_single_video() {
   local filename=$(basename -- "$renamed_file")
   local extension="${filename##*.}"
   filename="${filename%.*}"
+
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}-metadata-info.mie"
 
   local video_stabilization_filter=""
   if [[ -n "$ENABLE_VIDEO_STABILIZATION" ]]; then
@@ -297,7 +301,7 @@ process_single_video() {
 
   echo "- EXIF metadata"
   find ${temp_video_dir}/ -maxdepth 1 -iname "${filename}*.mp4" | while read file; do
-    $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${file}"
+    $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/${filename}-metadata-info.mie" "${file}"
     set +e
     $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${file}"
     set -e
@@ -322,7 +326,6 @@ process_single_video() {
     echo "- Final cleanup"
     mv ${temp_video_dir}/*${filename}-${reencode_output_filename_type}.mp4 .
     $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "%Y-%m-%d_%H.%M.%S%%-c.%%le" *${filename}-${reencode_output_filename_type}.mp4
-    rm -rf "$temp_video_dir"
   fi
 }
 
@@ -381,7 +384,6 @@ process_single_image() {
 
 process_images() {
   local temp_image_dir=${myname}-temp-images
-  rm -rf "$temp_image_dir"
   mkdir -p "$temp_image_dir"
 
   if [[ "$image_file" == "ALL" ]]; then
@@ -402,16 +404,10 @@ process_images() {
     echo -ne "\n"
     echo "If everything looks good, re-run this script with the -l flag."
   fi
-
-  if [[ -n "$LIVE_RUN" ]]; then
-    echo "- Final cleanup"
-    rm -rf "$temp_image_dir"
-  fi
 }
 
 create_video_clip() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local video_file=${video_clip_args[0]}
@@ -439,18 +435,16 @@ create_video_clip() {
   ffmpeg2 "${ffmpeg_args[@]}"
 
   echo "- Renaming & adding EXIF data"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-clip.mp4"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}-metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/${filename}-metadata-info.mie" "${temp_video_dir}/${filename}-clip.mp4"
   set +e
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-clip.mp4"
   set -e
   $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./clip-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-clip.mp4"
-  rm -rf "$temp_video_dir"
 }
 
 clean_background_noise() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local video_file=${noise_reduction_args[0]}
@@ -523,18 +517,16 @@ clean_background_noise() {
   ffmpeg2 "${ffmpeg_noise_merge_streams_args[@]}"
 
   echo "- Renaming & adding EXIF data"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-cleaned.mp4"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}-metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/${filename}-metadata-info.mie" "${temp_video_dir}/${filename}-cleaned.mp4"
   set +e
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-cleaned.mp4"
   set -e
   $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./noise-cleaned-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-cleaned.mp4"
-  rm -rf "$temp_video_dir"
 }
 
 join_video_files() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local ffmpeg_input_args=()
@@ -549,8 +541,16 @@ join_video_files() {
     exit 1
   fi
 
+  # Create a "unique" string from the names of the joined files
+  local unique_str=""
+  for bn_video in "${join_video_args[@]}"; do
+    local bn=$(basename -- "$bn_video")
+    unique_str+="$bn"
+  done
+  unique_str=$(echo "$unique_str" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z._-]/_/g')
+
   # Copy over the video metadata, for later
-  $EXIFTOOL -overwrite_original -tagsfromfile "${join_video_args[${metadata_file_index}]}" "${temp_video_dir}/metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${join_video_args[${metadata_file_index}]}" "${temp_video_dir}/${unique_str}-metadata-info.mie"
 
   [[ -z "$verbose" ]] && ffmpeg_input_args+=(-loglevel fatal) || ffmpeg_input_args+=(-loglevel info)
   ffmpeg_input_args+=(-y)
@@ -649,7 +649,7 @@ join_video_files() {
   # For whatever reason, using acrossfade with the following commands results
   # in a segfault on "ffmpeg2", yet works correctly with "ffmpeg".
   ffmpeg ${ffmpeg_input_args[@]} -an -filter_complex "${filter_str}" -map "[outv]" -map "[outa]" -vcodec libx264 -acodec aac -strict experimental ${temp_video_dir}/joined-output.mp4
-  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/joined-output.mp4"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/${unique_str}-metadata-info.mie" "${temp_video_dir}/joined-output.mp4"
   set +e
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/joined-output.mp4"
   set -e
@@ -657,12 +657,10 @@ join_video_files() {
   echo "- Cleaning up"
   mv "${temp_video_dir}/joined-output.mp4" .
   $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "joined-output-%Y-%m-%d_%H.%M.%S%%-c.%%le" "./joined-output.mp4"
-  rm -rf "$temp_video_dir"
 }
 
 create_lead_video_clip() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local bg_color="#A85546"
@@ -743,12 +741,10 @@ oglevel info)
 
   echo "- Cleaning up"
   mv "${temp_video_dir}/generated-lead-video.mp4" "./lead-clip.mp4"
-  rm -rf "${temp_video_dir}"
 }
 
 change_video_speed() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local video_file=${change_video_speed_args[0]}
@@ -777,18 +773,16 @@ change_video_speed() {
   ffmpeg2 "${ffmpeg_speed_args[@]}"
 
   echo "- Renaming & adding EXIF data"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-speed_${speed_factor}.mp4"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}-metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/${filename}-metadata-info.mie" "${temp_video_dir}/${filename}-speed_${speed_factor}.mp4"
   set +e
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-speed_${speed_factor}.mp4"
   set -e
   $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./speed_${speed_factor}-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-speed_${speed_factor}.mp4"
-  rm -rf "$temp_video_dir"
 }
 
 add_audio_clip() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local video_file=${add_audio_clip_args[0]}
@@ -827,18 +821,16 @@ add_audio_clip() {
   ffmpeg2 "${ffmpeg_reencode_args[@]}"
 
   echo "- Renaming & adding EXIF data"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-audio-substituted.mp4"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}-metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/${filename}-metadata-info.mie" "${temp_video_dir}/${filename}-audio-substituted.mp4"
   set +e
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-audio-substituted.mp4"
   set -e
   $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./audio_substituted-${filename}-%Y-%m-%d_%H.%M.%S%%-c.%%le" "${temp_video_dir}/${filename}-audio-substituted.mp4"
-  rm -rf "$temp_video_dir"
 }
 
 finalize_video_file() {
   local temp_video_dir=${myname}-temp-videos
-  rm -rf "$temp_video_dir"
   mkdir -p "$temp_video_dir"
 
   local video_file=$finalize_video_file_arg
@@ -957,13 +949,12 @@ finalize_video_file() {
   echo "- Renaming & adding EXIF data"
   mv "${temp_video_dir}/${filename}-finalized-with-metadata.mp4" "${temp_video_dir}/${filename}-finalized.mp4"
   local filename_title=$(echo "$metadata_title" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z._-]/_/g')
-  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/metadata-info.mie"
-  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/metadata-info.mie" "${temp_video_dir}/${filename}-finalized.mp4"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}-metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${temp_video_dir}/${filename}-metadata-info.mie" "${temp_video_dir}/${filename}-finalized.mp4"
   set +e
   $EXIFTOOL -overwrite_original '-datetimeoriginal<CreateDate' -if '(not $datetimeoriginal or ($datetimeoriginal eq "0000:00:00 00:00:00"))' "${temp_video_dir}/${filename}-finalized.mp4"
   set -e
   $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "./%Y-%m-%d_%H.%M.%S%%-c-${filename_title}.%%le" "${temp_video_dir}/${filename}-finalized.mp4"
-  rm -rf "$temp_video_dir"
 }
 
 if [[ -n "$video_file" ]]; then
