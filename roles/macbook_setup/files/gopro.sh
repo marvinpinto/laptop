@@ -50,6 +50,7 @@ show_help() {
   echo "     - VERBOSE: yes|<empty> <default: empty>"
   echo "     - CROSSFADE: yes|<empty> <default: empty>"
   echo "     - FADE_DURATION: N seconds> <default: 2>"
+  echo "     - METADATA_FILE_INDEX: N> <default: 0>"
   echo "-l <text>: Create a lead video clip with the specified text"
   echo "   e.g: ${myname} -l \"Europe Trip 2019\" -l \"Day trip to Germany\" -l \"Feb 17, 2019\""
   echo "   Environment variables & defaults:"
@@ -531,6 +532,7 @@ join_video_files() {
   local ARRAY_CTR=0
   local FFMPEG_IDX_CTR=0
   local fade_duration_secs=${FADE_DURATION:-2}
+  local metadata_file_index=${METADATA_FILE_INDEX:-0}
 
   if [[ ${#join_video_args[@]} -lt 2 ]]; then
     echo "Error: Supply at least two video_file arguments"
@@ -538,7 +540,7 @@ join_video_files() {
   fi
 
   # Copy over the video metadata, for later
-  $EXIFTOOL -overwrite_original -tagsfromfile "${join_video_args[0]}" "${temp_video_dir}/metadata-info.mie"
+  $EXIFTOOL -overwrite_original -tagsfromfile "${join_video_args[${metadata_file_index}]}" "${temp_video_dir}/metadata-info.mie"
 
   [[ -z "$verbose" ]] && ffmpeg_input_args+=(-loglevel fatal) || ffmpeg_input_args+=(-loglevel info)
   ffmpeg_input_args+=(-y)
