@@ -77,6 +77,7 @@
     - 'rename_workspace.sh'
     - 'pavolume.sh'
     - 'startup-app.sh'
+    - 'tmux-startup.sh'
 
 - name: 'Put the other X11 based files in place'
   copy:

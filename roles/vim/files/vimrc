@@ -42,6 +42,9 @@ set noerrorbells
 " Use the OS clipboard by default (on versions compiled with `+clipboard`)
 set clipboard=unnamedplus
 
+" Do not attempt to rename the window
+set notitle
+
 """" Start of Vundle related items
 
 " set the runtime path to include Vundle and initialize

@@ -133,25 +133,18 @@ exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
 exec_always --no-startup-id ~/.i3/startup-app.sh "greenclip clear && greenclip daemon" "greenclip"
 exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-applet"
 
+# Start plexamp and move it to the default scratchpad
+exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/local/etc/plexamp/plexamp-x86_64.AppImage" "plexamp"
+for_window [class="Plexamp"] floating enable, border normal, move to scratchpad
+
+# Start a terminal and move it to the mod+n scratchpad
+exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T scratch -e /bin/bash -l -c \\"~/.i3/tmux-startup.sh\\"" "xterm.*scratch"
+for_window [class="XTerm" title="scratch$"] border normal, move to scratchpad
+bindsym $mod+n [class="XTerm" title="scratch"] scratchpad show
+
 # Scratchpad shortcuts
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
-
-# Start the notepad & move it to the i3 scratchpad
-exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T notepad -e /bin/bash -l -c \\"vi ~/scratchpad.md\\"" "xterm.*notepad"
-for_window [class="XTerm" title="notepad"] border normal, move to scratchpad
-
-# Start plexamp and move it to the i3 scratchpad
-exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/local/etc/plexamp/plexamp-x86_64.AppImage" "plexamp"
-for_window [class="Plexamp"] border normal, move to scratchpad
-
-# Start irc & move it to the i3 scratchpad
-exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T irc -e /bin/bash -l -c \\"im\\"" "xterm.*irc"
-for_window [class="XTerm" title="irc"] border normal, move to scratchpad
-
-# Start a scratch terminal & move it to the i3 scratchpad
-exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T scratch" "xterm.*scratch"
-for_window [class="XTerm" title="scratch"] border normal, move to scratchpad
 
 # Ensure that the following windows always start in floating mode
 for_window [class="Pavucontrol"] floating enable, border normal
