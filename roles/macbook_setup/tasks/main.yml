@@ -5,6 +5,7 @@
 - include: programs.yml
 - include: i3wm.yml
 - include: rofi.yml
+- include: ranger.yml
 - include: google_chrome.yml
 - include: chromium_browser.yml
 - include: vagrant.yml

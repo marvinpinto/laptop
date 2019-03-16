@@ -1,0 +1,13 @@
+---
+- name: 'Install the ranger file manager, with some optional dependencies'
+  become: true
+  apt:
+    name:
+      - 'ranger'
+      - 'w3m'
+      - 'caca-utils'
+      - 'highlight'
+      - 'atool'
+      - 'lynx'
+      - 'exiftool'
+    state: 'latest'
