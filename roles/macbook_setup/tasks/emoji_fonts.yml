@@ -1,0 +1,103 @@
+---
+- name: 'Check to see if NotoColorEmoji.ttf is already installed'
+  become: true
+  stat:
+    path: '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf'
+  register: 'noto_color_emoji_ttf'
+
+- name: 'Unzip the font package'
+  become: true
+  unarchive:
+    src: 'https://noto-website-2.storage.googleapis.com/pkgs/NotoColorEmoji-unhinted.zip'
+    dest: '/tmp'
+    copy: 'no'
+  when: 'noto_color_emoji_ttf.stat.exists == False'
+
+- name: 'Install NotoColorEmoji.ttf'
+  become: true
+  copy:
+    src: '/tmp/NotoColorEmoji.ttf'
+    dest: '/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf'
+    mode: '0644'
+    owner: 'root'
+    group: 'root'
+    remote_src: true
+  when: 'noto_color_emoji_ttf.stat.exists == False'
+
+- name: 'Check to see if NotoEmoji-Regular.ttf is already installed'
+  become: true
+  stat:
+    path: '/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf'
+  register: 'noto_emoji_regular_ttf'
+
+- name: 'Unzip the font package'
+  become: true
+  unarchive:
+    src: 'https://noto-website-2.storage.googleapis.com/pkgs/NotoEmoji-unhinted.zip'
+    dest: '/tmp'
+    copy: 'no'
+  when: 'noto_emoji_regular_ttf.stat.exists == False'
+
+- name: 'Install NotoEmoji-Regular.ttf'
+  become: true
+  copy:
+    src: '/tmp/NotoEmoji-Regular.ttf'
+    dest: '/usr/share/fonts/truetype/noto/NotoEmoji-Regular.ttf'
+    mode: '0644'
+    owner: 'root'
+    group: 'root'
+    remote_src: true
+  when: 'noto_emoji_regular_ttf.stat.exists == False'
+
+- name: 'Put the 50-noto-color-emoji.conf file in place'
+  become: true
+  copy:
+    content: |
+      <?xml version="1.0"?>
+      <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+      <fontconfig>
+
+        <match target="scan">
+          <test name="family">
+            <string>Noto Color Emoji</string>
+          </test>
+          <edit name="scalable" mode="assign">
+            <bool>true</bool>
+          </edit>
+          <edit name="pixelsize" mode="assign">
+            <double>18</double>
+          </edit>
+        </match>
+
+        <match>
+          <test name="family"><string>sans-serif</string></test>
+          <edit name="family" mode="prepend" binding="weak">
+            <string>Noto Color Emoji</string>
+          </edit>
+        </match>
+
+        <match>
+          <test name="family"><string>serif</string></test>
+          <edit name="family" mode="prepend" binding="weak">
+            <string>Noto Color Emoji</string>
+          </edit>
+        </match>
+
+        <match>
+          <test name="family"><string>Apple Color Emoji</string></test>
+          <edit name="family" mode="prepend" binding="strong">
+            <string>Noto Color Emoji</string>
+          </edit>
+        </match>
+
+      </fontconfig>
+    dest: '/etc/fonts/conf.d/50-noto-color-emoji.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  register: 'noto_color_emoji_conf'
+
+- name: 'Update the font cache'
+  become: true
+  command: 'fc-cache -r -v'
+  when: '(noto_color_emoji_ttf.stat.exists == False) or (noto_color_emoji_conf.changed) or (noto_emoji_regular_ttf.stat.exists == False)'

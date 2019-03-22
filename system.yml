@@ -73,7 +73,6 @@
         - 'apt_dockerproject_org_repo.list'
         - 'debian_sur5r_net_i3.list'
         - 'packagecloud_io_github_git_lfs_ubuntu.list'
-        - 'emojione-picker.list'
         - 'ppa_yubico_stable_{{ ansible_distribution_release }}.list'
         - 'ppa_gertvdijk_ccid_backports_trusty.list'
         - 'ppa_nvidia_graphics_drivers.list'

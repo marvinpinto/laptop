@@ -113,7 +113,6 @@ exec_always --no-startup-id /usr/bin/gnome-settings-daemon &
 exec_always --no-startup-id /usr/bin/xset r rate 250 50
 exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
-exec --no-startup-id /usr/bin/emojione-picker
 exec_always --no-startup-id pkill -9 greenclip; greenclip clear && greenclip daemon &
 exec_always --no-startup-id pkill -9 plexamp; /usr/local/etc/plexamp/plexamp-x86_64.AppImage &
 

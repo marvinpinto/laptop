@@ -18,7 +18,7 @@
 - include: function_keys.yml
 - include: scripts.yml
 - include: sounds.yml
-- include: emojione_picker.yml
+- include: emoji_fonts.yml
 - include: rclone.yml
 - include: usbmount.yml
 - include: rng_tools.yml

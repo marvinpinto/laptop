@@ -15,12 +15,12 @@
 - name: 'Install some rofi-related goodies'
   become: true
   apt:
-    name: '{{ item }}'
+    name:
+      - 'qalc'
+      - 'gawk'
+      - 'xdotool'
+      - 'libxml2-utils'
     state: 'latest'
-  with_items:
-    - 'qalc'
-    - 'gawk'
-    - 'xdotool'
 
 - name: 'Install greenclip (version 3.2)'
   become: true
@@ -110,6 +110,15 @@
         ykman oath code -s $(ykman oath list | ${DMENU} -i -p "Select Credential" -no-custom) | xclip -selection "clipboard"
       fi
     dest: '/usr/local/bin/rofi-2fa'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Put the rofi-emoji script file in place'
+  become: true
+  copy:
+    src: 'rofi-emoji.sh'
+    dest: '/usr/local/bin/rofi-emoji'
     owner: 'root'
     group: 'root'
     mode: '0755'

@@ -54,6 +54,8 @@ xterm*scrollBar: false
 ! Rofi settings
 rofi.theme: android_notification
 rofi.font: mono 10
+rofi.color-enabled: true
+rofi.bw: 0
 rofi.modi: combi
 rofi.sidebar-mode: true
 rofi.disable-history: true
