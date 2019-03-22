@@ -31,7 +31,7 @@ bindsym $mod+Return exec xterm -en utf-8
 bindsym $mod+Shift+q kill
 
 # rofi launcher
-bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,launcher:rofi-launcher,run,calc:rofi-calc,clipboard:greenclip print' -show run"
+bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,launcher:rofi-launcher,run,calc:rofi-calc' -show run"
 
 # change focus
 bindsym $mod+h focus left
@@ -129,7 +129,6 @@ exec_always --no-startup-id /usr/bin/xset r rate 250 50
 exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
-exec_always --no-startup-id ~/.i3/startup-app.sh "greenclip clear && greenclip daemon" "greenclip"
 exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-applet"
 
 # Start plexamp and move it to the default scratchpad

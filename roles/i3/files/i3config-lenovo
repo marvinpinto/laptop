@@ -31,7 +31,7 @@ bindsym $mod+Return exec xterm -en utf-8
 bindsym $mod+Shift+q kill
 
 # rofi launcher
-bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,launcher:rofi-launcher,run,calc:rofi-calc,clipboard:greenclip print' -show run"
+bindsym $mod+d exec "rofi -switchers 'workspaces:rofi-switch-workspaces,launcher:rofi-launcher,run,calc:rofi-calc' -show run"
 
 # change focus
 bindsym $mod+h focus left
@@ -113,7 +113,6 @@ exec_always --no-startup-id /usr/bin/gnome-settings-daemon &
 exec_always --no-startup-id /usr/bin/xset r rate 250 50
 exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
-exec_always --no-startup-id pkill -9 greenclip; greenclip clear && greenclip daemon &
 exec_always --no-startup-id pkill -9 plexamp; /usr/local/etc/plexamp/plexamp-x86_64.AppImage &
 
 # Ensure that the Plexamp window always starts in floating mode (in the specific workspace)
