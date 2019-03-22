@@ -10,10 +10,10 @@
     - ansible_system_vendor == "Dell Inc."
     - ansible_product_name == "Precision T1700"
 
-- name: 'Install the updated nvidia graphics drivers'
+- name: 'Install the supported nvidia graphics drivers [NVIDIA Corporation GF108GL [Quadro 600] (rev a1)]'
   become: true
   apt:
-    name: 'nvidia-387'
+    name: 'nvidia-340'
     state: latest
   when:
     - ansible_system_vendor == "Dell Inc."
