@@ -1,6 +1,28 @@
 ---
-- name: 'Install Vagrant directly from Hashicorp releases'
+- name: 'Create the /usr/local/etc/vagrant directory'
+  become: true
+  file:
+    path: '/usr/local/etc/vagrant'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if vagrant version {{vagrant_version}} is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/vagrant/vagrant_{{vagrant_version}}_x86_64.deb'
+  register: 'vagrant_binary'
+
+- name: 'Download vagrant version {{vagrant_version}}'
+  become: true
+  get_url:
+    url: 'https://releases.hashicorp.com/vagrant/{{vagrant_version}}/vagrant_{{vagrant_version}}_x86_64.deb'
+    dest: '/usr/local/etc/vagrant/vagrant_{{vagrant_version}}_x86_64.deb'
+    mode: '0755'
+  when: 'vagrant_binary.stat.exists == False'
+
+- name: 'Install Vagrant version {{vagrant_version}}'
   become: true
   apt:
-    deb: 'https://releases.hashicorp.com/vagrant/2.0.1/vagrant_2.0.1_x86_64.deb'
-    state: present
+    deb: '/usr/local/etc/vagrant/vagrant_{{vagrant_version}}_x86_64.deb'
+    state: 'present'
+  when: 'vagrant_binary.stat.exists == False'
