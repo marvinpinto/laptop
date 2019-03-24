@@ -131,3 +131,12 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the fix-bluetooth-audio script file in place'
+  become: true
+  copy:
+    src: 'fix-bluetooth-audio.sh'
+    dest: '/usr/local/bin/fix-bluetooth-audio'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'

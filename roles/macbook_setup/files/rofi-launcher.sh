@@ -6,7 +6,7 @@ I3LOCK='/usr/bin/i3lock --color 333333'
 if [ -z $@ ]; then
   function gen_options()
   {
-    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Password Store","Emoji Picker")
+    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Password Store","Emoji Picker","Fix Bluetooth Audio")
     echo ${option_list[@]} | tr ',' '\n' | sort
   }
 
@@ -63,6 +63,9 @@ else
       ;;
     'Emoji Picker')
       coproc (PINENTRY_USER_DATA=gui /usr/local/bin/rofi-emoji)
+      ;;
+    'Fix Bluetooth Audio')
+      coproc (/usr/local/bin/fix-bluetooth-audio)
       ;;
     *)
       echo "Invalid option \"$OPTION\""
