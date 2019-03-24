@@ -113,3 +113,21 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the rofi-url-handler script file in place'
+  become: true
+  copy:
+    src: 'rofi-url-handler.sh'
+    dest: '/usr/local/bin/rofi-url-handler'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+
+- name: 'Put the url-cleaner script file in place'
+  become: true
+  copy:
+    src: 'url-cleaner.py'
+    dest: '/usr/local/bin/url-cleaner'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
