@@ -33,11 +33,3 @@
     src: '/usr/local/etc/digikam/digikam-x86_64.AppImage'
     dest: '/usr/local/bin/digikam'
     state: 'link'
-
-- name: 'Install VLC'
-  become: true
-  apt:
-    name:
-      - 'vlc'
-      - 'browser-plugin-vlc'
-    state: 'latest'
