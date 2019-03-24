@@ -62,6 +62,7 @@ Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'ledger/vim-ledger'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'mustache/vim-mustache-handlebars'
+Plugin 'scratch.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
