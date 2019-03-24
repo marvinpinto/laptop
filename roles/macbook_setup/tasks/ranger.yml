@@ -1,9 +1,8 @@
 ---
-- name: 'Install the ranger file manager, with some optional dependencies'
+- name: 'Install some optional ranger dependencies'
   become: true
   apt:
     name:
-      - 'ranger'
       - 'w3m'
       - 'caca-utils'
       - 'highlight'
@@ -11,3 +10,82 @@
       - 'lynx'
       - 'exiftool'
     state: 'latest'
+
+- name: 'Create the /usr/local/etc/ranger directory'
+  become: true
+  file:
+    path: '/usr/local/etc/ranger'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Uninstall Ranger: check to see if install log for {{prev_ranger_version}} exists'
+  become: true
+  stat:
+    path: '/usr/local/etc/ranger/install_log_{{prev_ranger_version}}.txt'
+  register: 'prev_ranger_install_log'
+
+- name: 'Uninstall Ranger: prepare the file list for {{prev_ranger_version}}'
+  become: true
+  command: 'cat /usr/local/etc/ranger/install_log_{{prev_ranger_version}}.txt'
+  register: 'prev_ranger_files'
+  when: 'prev_ranger_install_log.stat.exists == True'
+
+- name: 'Uninstall Ranger: delete files from version {{prev_ranger_version}}'
+  become: true
+  command: 'rm -f "/{{ item }}"'
+  args:
+    removes: '/{{ item }}'
+    warn: false
+  with_items: '{{prev_ranger_files.stdout_lines}}'
+  when: 'prev_ranger_install_log.stat.exists == True'
+
+- name: 'Uninstall Ranger: cleanup install directories for version {{prev_ranger_version}}'
+  become: true
+  command: 'rm -rf "{{ item }}"'
+  args:
+    removes: '{{ item }}'
+    warn: false
+  with_items:
+    - '/usr/local/lib/python2.7/dist-packages/ranger'
+    - '/usr/local/share/doc/ranger'
+  when: 'prev_ranger_install_log.stat.exists == True'
+
+- name: 'Uninstall Ranger: cleanup for version {{prev_ranger_version}}'
+  become: true
+  file:
+    path: '{{ item }}'
+    state: 'absent'
+  with_items:
+    - '/usr/local/etc/ranger/ranger-{{prev_ranger_version}}'
+    - '/usr/local/etc/ranger/install_log_{{prev_ranger_version}}.txt'
+
+- name: 'Check to see if ranger {{ranger_version}} is already installed'
+  become: true
+  stat:
+    path: '/usr/local/etc/ranger/ranger-{{ranger_version}}'
+  register: 'ranger_src'
+
+- name: 'Unarchive the ranger package'
+  become: true
+  unarchive:
+    src: 'https://github.com/ranger/ranger/archive/v{{ranger_version}}.tar.gz'
+    dest: '/usr/local/etc/ranger'
+    copy: 'no'
+  when: 'ranger_src.stat.exists == False'
+
+- name: 'Install ranger {{ranger_version}}'
+  become: true
+  shell: 'umask 0022; make install'
+  args:
+    chdir: '/usr/local/etc/ranger/ranger-{{ranger_version}}'
+  when: 'ranger_src.stat.exists == False'
+
+- name: 'Copy the generated install_log.txt file to /usr/local/etc/ranger'
+  become: true
+  copy:
+    src: '/usr/local/etc/ranger/ranger-{{ranger_version}}/install_log.txt'
+    dest: '/usr/local/etc/ranger/install_log_{{ranger_version}}.txt'
+    mode: '0644'
+    owner: 'root'
+    group: 'root'
+    remote_src: true
