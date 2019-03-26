@@ -191,3 +191,6 @@ autocmd filetype python set expandtab
 
 " Use hashes (#) for comments in .env files
 call tcomment#DefineType('dosini', '# %s')
+
+" Shortcut to clear the contents of a vim buffer
+:command Clear %d
