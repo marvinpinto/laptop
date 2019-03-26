@@ -194,3 +194,6 @@ call tcomment#DefineType('dosini', '# %s')
 
 " Shortcut to clear the contents of a vim buffer
 :command Clear %d
+
+" Disable vim recording
+map q <Nop>
