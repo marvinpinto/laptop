@@ -42,6 +42,10 @@
     git diff-index --cached --quiet HEAD --ignore-submodules -- && \
     GIT_COMMITTER_DATE=\"$d\" git commit --amend -C HEAD --date \"$d\"" \
     || echo >&2 "error: date change failed: index not clean!"
+  # shortcut to unstage a staged file
+  unstage = reset HEAD --
+  # more useful stash shortcut
+  stasha = stash --include-untracked
 
 [core]
   # Use custom `.gitignore` and `.gitattributes`
