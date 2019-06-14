@@ -11,6 +11,7 @@
 - include: vagrant.yml
 # - include: virtualbox.yml
 - include: plexamp.yml
+- include: 1password.yml
 - include: git.yml
 - include: ansible.yml
 - include: peek.yml

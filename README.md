@@ -52,6 +52,7 @@ done in the bios.
 1. Follow the instructions to restore the GPG keys.
 1. Follow the instructions to restore all the data files.
 1. Follow the instructions to restore all the base project directories.
+1. Follow the instructions to initialize the 1password CLI.
 1. Configure `wicd-curses` to connect to the WiFi network.
 1. Reboot the machine one last time.
 
@@ -90,6 +91,13 @@ Use the rclone wrapper to copy/sync all the data files:
 
 ``` bash
 $ acd-backup "down"
+```
+
+
+
+## Initialize the 1password CLI
+``` bash
+$ bootstrap-op
 ```
 
 

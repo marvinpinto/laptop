@@ -22,15 +22,6 @@
       - 'libxml2-utils'
     state: 'latest'
 
-- name: 'Install rofi-pass (version 2.0.1)'
-  become: true
-  get_url:
-    url: 'https://raw.githubusercontent.com/carnager/rofi-pass/2.0.1/rofi-pass'
-    dest: '/usr/local/bin/rofi-pass'
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
-
 - name: 'Put the rofi-launcher script file in place'
   become: true
   copy:

@@ -149,8 +149,9 @@ alias yoloupdate="sudo apt-get update && sudo apt-get -y dist-upgrade && sudo ap
 # Alias docker-compose to dc
 alias dc="docker-compose"
 
-# XKCD style password generator
-alias xkcdpass="shuf -n4 /usr/share/dict/words | tr '\r\n' '-' | tr -d \' | sed 's/-$//'"
+# 1password helpers
+alias op-signin='eval $(op signin)'
+alias op-logout='op signout && unset "${!OP_SESSION@}"'
 
 #************
 # GPG agent

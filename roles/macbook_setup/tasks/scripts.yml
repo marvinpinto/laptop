@@ -67,3 +67,14 @@
     owner: 'root'
     group: 'root'
     mode: '0755'
+
+- name: 'Put the bootstrap-op script file in place'
+  become: true
+  copy:
+    content: |
+      #!/usr/bin/env bash
+      op signin {{ op_account_address }} {{ op_account_email }}
+    dest: '/usr/local/bin/bootstrap-op'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
