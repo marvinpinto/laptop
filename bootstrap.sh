@@ -37,7 +37,11 @@ if [ -z "$TRAVIS" ]; then
   cd laptop
   git checkout origin/master
 fi
-$SUDO make system
+if [ "$TRAVIS" == "true" ]; then
+  $SUDO make system
+else
+  make system
+fi
 
 echo "Installing dotfiles"
 $SUDO rm -rf ~/.ansible
@@ -59,4 +63,8 @@ echo "Last time for good measure"
 if [ -z "$TRAVIS" ]; then
   cd /tmp/laptop
 fi
-$SUDO make system
+if [ "$TRAVIS" == "true" ]; then
+  $SUDO make system
+else
+  make system
+fi

@@ -127,5 +127,5 @@ repository.
 Make the changes as needed and then run:
 
 ```bash
-sudo -E make system
+make system
 ```
