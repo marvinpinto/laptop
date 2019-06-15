@@ -141,7 +141,7 @@ alias dps="docker ps"
 alias weather="curl http://wttr.in/M6P?1n"
 
 # System Update
-alias yoloupdate="sudo apt-get update && sudo apt-get -y dist-upgrade && sudo apt-get clean && sudo apt-get autoremove -y --purge"
+alias yoloupdate="sudo apt-get clean && sudo apt-get autoremove -y --purge && sudo apt-get update && sudo apt-get -y dist-upgrade"
 
 # Alias docker-compose to dc
 alias dc="docker-compose"
