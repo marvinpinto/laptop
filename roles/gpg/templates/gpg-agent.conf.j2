@@ -1,5 +1,6 @@
 # PIN entry program
 pinentry-program /usr/local/bin/custom-pinentry
+pinentry-timeout 10
 
 # Cache settings
 default-cache-ttl 600
@@ -7,9 +8,5 @@ default-cache-ttl-ssh 600
 max-cache-ttl 7200
 max-cache-ttl-ssh 7200
 
-# Environment file
-write-env-file {{ home_directory }}/.gnupg/gpg-agent-info
-
 # GPG support for SSH Agent
 enable-ssh-support
-use-standard-socket

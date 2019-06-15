@@ -102,9 +102,6 @@ export GIT_PS1_SHOWDIRTYSTATE='yes'
 export GIT_PS1_SHOWSTASHSTATE='yes'
 export GIT_PS1_SHOWUNTRACKEDFILES='yes'
 
-# Needed for pinentry-curses + friends
-export GPG_TTY=`tty`
-gpg-connect-agent updatestartuptty /bye >/dev/null
 
 
 #***************
@@ -204,6 +201,10 @@ fi
 function __prompt_command() {
   local EXIT="$?"
   PS1=""
+
+  # Needed for pinentry-curses + friends
+  export GPG_TTY=`tty`
+  gpg-connect-agent updatestartuptty /bye >/dev/null
 
   # Set the terminal title
   echo -ne "\033]0;${HOSTNAME}\007"
