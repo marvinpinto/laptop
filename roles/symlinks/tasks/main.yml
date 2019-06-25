@@ -45,3 +45,10 @@
     dest: '{{ home_directory }}/running-journal.txt'
     state: 'link'
     force: 'yes'
+
+- name: 'symlink ~/Dropbox/mozilla-firefox-profile-data to ~/.mozilla'
+  file:
+    src: '{{ home_directory }}/Dropbox/mozilla-firefox-profile-data'
+    dest: '{{ home_directory }}/.mozilla'
+    state: 'link'
+    force: 'yes'
