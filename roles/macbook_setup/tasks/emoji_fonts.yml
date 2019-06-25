@@ -101,3 +101,16 @@
   become: true
   command: 'fc-cache -r -v'
   when: '(noto_color_emoji_ttf.stat.exists == False) or (noto_color_emoji_conf.changed) or (noto_emoji_regular_ttf.stat.exists == False)'
+
+- name: 'Add the twemoji ubuntu repo'
+  become: true
+  apt_repository:
+    repo: 'ppa:eosrei/fonts'
+    state: present
+    update_cache: yes
+
+- name: 'Install twemoji'
+  become: true
+  apt:
+    name: 'fonts-twemoji-svginot'
+    state: latest
