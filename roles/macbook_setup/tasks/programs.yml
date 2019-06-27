@@ -27,6 +27,7 @@
     - 'jq'
     - 'sshfs'
     - 'snapd'
+    - 'ttf-mscorefonts-installer'
 
 - name: "Remove a few things I don't care for"
   sudo: yes
