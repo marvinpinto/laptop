@@ -15,7 +15,7 @@ create_lead_video_clip_args=""
 change_video_speed_args=""
 add_audio_clip_args=""
 finalize_video_file_arg=""
-CRF_FACTOR=22
+CRF_FACTOR=17
 
 show_help() {
   echo "usage: ${myname} OPTIONS"
@@ -193,8 +193,8 @@ process_single_video() {
   reencode_args+=(-vf "${video_stabilization_filter}")
   reencode_args+=(-vcodec libx264)
   reencode_args+=(-acodec copy)
-  reencode_args+=(-preset veryfast)
-  reencode_args+=(-qp 0)
+  reencode_args+=(-preset superfast)
+  reencode_args+=(-crf ${CRF_FACTOR})
   reencode_args+=("${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4")
   pv "${temp_video_dir}/${filename}.${extension}" | ffmpeg2 "${reencode_args[@]}"
 
@@ -210,7 +210,7 @@ process_single_video() {
     sidebyside_args+=(-an)
     sidebyside_args+=(-filter_complex "[0:v]pad=iw*2:ih[int];[int][1:v]overlay=W/2:0[vid]")
     sidebyside_args+=(-map [vid])
-    sidebyside_args+=(-preset veryfast)
+    sidebyside_args+=(-preset superfast)
     sidebyside_args+=(${temp_video_dir}/${filename}-combined.mp4)
     ffmpeg2 "${sidebyside_args[@]}"
   fi
