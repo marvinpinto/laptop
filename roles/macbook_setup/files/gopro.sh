@@ -193,8 +193,8 @@ process_single_video() {
   reencode_args+=(-vf "${video_stabilization_filter}")
   reencode_args+=(-vcodec libx264)
   reencode_args+=(-acodec copy)
-  reencode_args+=(-preset slow)
-  reencode_args+=(-crf ${CRF_FACTOR})
+  reencode_args+=(-preset veryfast)
+  reencode_args+=(-qp 0)
   reencode_args+=("${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4")
   pv "${temp_video_dir}/${filename}.${extension}" | ffmpeg2 "${reencode_args[@]}"
 
