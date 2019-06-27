@@ -20,21 +20,13 @@ CRF_FACTOR=22
 show_help() {
   echo "usage: ${myname} OPTIONS"
   echo "Available Options:"
-  echo "-v <video file>: Process & fix a single video file"
+  echo "-v <video file>: Stabilize a single video file, in preparation for further processing (e.g. with kdenlive)"
   echo "   Environment variables & defaults:"
-  echo "     - OUTPUT_RESOLUTION: <option> <default: 1080p>"
-  echo "        - 1440p: 1920x1440"
-  echo "        - 1080p: 1920x1080"
-  echo "        - 720p: 1280x720"
-  echo "     - ENABLE_VIDEO_STABILIZATION: yes|<empty> <default: empty>"
   echo "     - VIDEO_STABILIZATION_SMOOTHING_FACTOR: 10"
   echo "     - VIDEO_STABILIZATION_SHAKINESS_FACTOR: 5"
   echo "     - VERBOSE: yes|<empty> <default: empty>"
-  echo "     - ENABLE_FISHEYE_CORRECTION: yes|<empty> <default: empty>"
   echo "     - VIDEO_SAMPLE_TIME: N seconds <default: 15>"
   echo "     - LIVE_RUN: yes|<empty> <default: empty>"
-  echo "     - ENABLE_INTERACTIVE_COLOR_CORRECTION: yes|<empty> <default: empty>"
-  echo "     - COLOR_CORRECTION_FRAME_START: NN:NN:NN <default: 00:00:03>"
   echo "-i <single image file | ALL>: Process images"
   echo "   The string \"ALL\" will process all *.jpg images in the current directory."
   echo "   Environment variables & defaults:"
@@ -160,22 +152,8 @@ process_single_video() {
 
   local original_filename=$(basename -- "$video_file")
   local sample_time_seconds=${VIDEO_SAMPLE_TIME:-15}
-  local output_resolution=${OUTPUT_RESOLUTION:-1080p}
   local video_stabilization_smoothing_factor=${VIDEO_STABILIZATION_SMOOTHING_FACTOR:-10}
   local video_stabilization_shakiness_factor=${VIDEO_STABILIZATION_SHAKINESS_FACTOR:-5}
-
-  local ffmpeg_requested_width=""
-  local ffmpeg_requested_height=""
-  if [[ "$output_resolution" == "1440p" ]]; then
-    ffmpeg_requested_width="1920"
-    ffmpeg_requested_height="1440"
-  elif [[ "$output_resolution" == "1080p" ]]; then
-    ffmpeg_requested_width="1920"
-    ffmpeg_requested_height="1080"
-  else
-    ffmpeg_requested_width="1280"
-    ffmpeg_requested_height="720"
-  fi
 
   echo "- Processing video file: ${video_file}"
   echo "- Creating working copy"
@@ -189,77 +167,20 @@ process_single_video() {
   $EXIFTOOL -overwrite_original -tagsfromfile "${video_file}" "${temp_video_dir}/${filename}-metadata-info.mie"
 
   local video_stabilization_filter=""
-  if [[ -n "$ENABLE_VIDEO_STABILIZATION" ]]; then
-    echo "- Initiating video stabilization"
-    local vidstabtrf_args=()
-    [[ -z "$verbose" ]] && vidstabtrf_args+=(-loglevel fatal) || vidstabtrf_args+=(-loglevel info)
-    vidstabtrf_args+=(-y)
-    vidstabtrf_args+=(-threads $(nproc --ignore=1))
-    vidstabtrf_args+=(-i "${temp_video_dir}/${filename}.${extension}")
-    [[ -z "$LIVE_RUN" ]] && vidstabtrf_args+=(-t $sample_time_seconds)
-    vidstabtrf_args+=(-vf "vidstabdetect=shakiness=${video_stabilization_shakiness_factor}:result=${temp_video_dir}/${filename}-transform_vectors.trf")
-    vidstabtrf_args+=(-f null -)
-    ffmpeg2 "${vidstabtrf_args[@]}"
+  echo "- Initiating video stabilization"
+  local vidstabtrf_args=()
+  [[ -z "$verbose" ]] && vidstabtrf_args+=(-loglevel fatal) || vidstabtrf_args+=(-loglevel info)
+  vidstabtrf_args+=(-y)
+  vidstabtrf_args+=(-threads $(nproc --ignore=1))
+  vidstabtrf_args+=(-i "pipe:0")
+  [[ -z "$LIVE_RUN" ]] && vidstabtrf_args+=(-t $sample_time_seconds)
+  vidstabtrf_args+=(-vf "vidstabdetect=stepsize=32:shakiness=${video_stabilization_shakiness_factor}:accuracy=10:result=${temp_video_dir}/${filename}-transform_vectors.trf")
+  vidstabtrf_args+=(-f null -)
+  pv "${temp_video_dir}/${filename}.${extension}" | ffmpeg2 "${vidstabtrf_args[@]}"
 
-    video_stabilization_filter="vidstabtransform=input=${temp_video_dir}/${filename}-transform_vectors.trf:zoom=0:smoothing=${video_stabilization_smoothing_factor},unsharp,"
-  fi
-
-  local ffmpeg_video_aspect_ratio=$(ffprobe -v error -select_streams v:0 -show_entries stream=display_aspect_ratio -of default=nw=1:nk=1 ${video_file})
-  local ffmpeg_video_width=$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=nw=1:nk=1 ${video_file})
-  local ffmpeg_video_height=$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=nw=1:nk=1 ${video_file})
-
-  # If the input video's aspect ratio is already 16x9, scale it down to the requested (resolution) height (if the requested height is less than the current height, since we only scale down) - e.g. scale=-2:'min(REQUESTED_HEIGHT,ih)'
-  # If the input video's aspect ratio is *not* 16:9, crop, then scale it to the requested size.
-  # The second option will throw an error if the input video is less than the requested resolution, since we only scale down.
-  local ffmpeg_resolution_filter=""
-  if [[ "$ffmpeg_video_aspect_ratio" == "16:9" ]]; then
-    echo "- Downscaling file to ${ffmpeg_requested_width}x${ffmpeg_requested_height}"
-    ffmpeg_resolution_filter="scale=-2:'min(${ffmpeg_requested_height},ih)'"
-  else
-    if [[ $ffmpeg_requested_height -gt $ffmpeg_video_height ]]; then
-      echo "Error: Requested resolution of ${ffmpeg_requested_width}x${ffmpeg_requested_height} is larger resolution of ${video_file} (${ffmpeg_video_width}x${ffmpeg_video_height})."
-      exit 1
-    fi
-
-    echo "- Cropping & downscaling file to ${ffmpeg_requested_width}x${ffmpeg_requested_height}"
-    ffmpeg_resolution_filter="crop=w=${ffmpeg_requested_width}:h=${ffmpeg_requested_height},scale=-2:${ffmpeg_requested_height}"
-  fi
-
-  if [[ -n "$ENABLE_INTERACTIVE_COLOR_CORRECTION" ]]; then
-    local color_correction_frame_start=${COLOR_CORRECTION_FRAME_START:-'00:00:03'}
-    local hald_level=8
-    local image_width=$(echo "$hald_level ^ 3" | bc)
-
-    echo "- Taking a screenshot of frame ${color_correction_frame_start}"
-    local ffmpeg_gen_frame_args=()
-    [[ -z "$verbose" ]] && ffmpeg_gen_frame_args+=(-loglevel fatal) || ffmpeg_gen_frame_args+=(-loglevel info)
-    ffmpeg_gen_frame_args+=(-y)
-    ffmpeg_gen_frame_args+=(-threads $(nproc --ignore=1))
-    ffmpeg_gen_frame_args+=(-i "${temp_video_dir}/${filename}.${extension}")
-    ffmpeg_gen_frame_args+=(-ss "${color_correction_frame_start}")
-    ffmpeg_gen_frame_args+=(-frames:v 1)
-    ffmpeg_gen_frame_args+=(-q:v 1)
-    ffmpeg_gen_frame_args+=("${temp_video_dir}/${filename}-video-screenshot.png")
-    ffmpeg2 "${ffmpeg_gen_frame_args[@]}"
-
-    echo "- Generating Hald CLUT"
-    convert "${temp_video_dir}/${filename}-video-screenshot.png" hald:${hald_level} -gravity South -append +repage "${temp_video_dir}/${filename}-screenshot-hald-clut.png"
-
-    echo -ne "\n"
-    echo "- ******************************"
-    echo "   Manual Color Correction Mode"
-    echo "- ******************************"
-    echo "- Manually color-correct the file \"${temp_video_dir}/${filename}-screenshot-hald-clut.png\" using your favourite editing program and press Enter when you are done. "
-    echo -ne "\n"
-    read -p "- Press Enter to continue.."
-    echo -ne "\n"
-
-    echo "- Extracting the Hald from the color-corrected file"
-    convert "${temp_video_dir}/${filename}-screenshot-hald-clut.png" -gravity South -crop ${image_width}x${image_width}+0+0 +repage "${temp_video_dir}/${filename}-hald-clut-identity-edited.png"
-  fi
+  video_stabilization_filter="vidstabtransform=input=${temp_video_dir}/${filename}-transform_vectors.trf:zoom=0:smoothing=${video_stabilization_smoothing_factor},unsharp=5:5:0.8:3:3:0.4"
 
   echo "- Re-encoding video"
-  local base_video_filter="[0:v:0]${video_stabilization_filter}${ffmpeg_resolution_filter}"
   local reencode_output_filename_type=""
   [[ -z "$LIVE_RUN" ]] && reencode_output_filename_type="sample"
   [[ -n "$LIVE_RUN" ]] && reencode_output_filename_type="reencoded"
@@ -267,21 +188,15 @@ process_single_video() {
   [[ -z "$verbose" ]] && reencode_args+=(-loglevel fatal) || reencode_args+=(-loglevel info)
   reencode_args+=(-y)
   reencode_args+=(-threads $(nproc --ignore=1))
-  reencode_args+=(-i "${temp_video_dir}/${filename}.${extension}")
-  [[ -n "$ENABLE_INTERACTIVE_COLOR_CORRECTION" ]] && reencode_args+=(-i "${temp_video_dir}/${filename}-hald-clut-identity-edited.png")
+  reencode_args+=(-i "pipe:0")
   [[ -z "$LIVE_RUN" ]] && reencode_args+=(-t $sample_time_seconds)
-  [[ -n "$ENABLE_FISHEYE_CORRECTION" ]] && base_video_filter+=",lenscorrection=k1=-0.227:k2=-0.022[base];" || base_video_filter+="[base];"
-  [[ -n "$ENABLE_INTERACTIVE_COLOR_CORRECTION" ]] && base_video_filter+="[base][1:v:0]haldclut[outv];" || base_video_filter+="[base]fifo[outv];"
-  base_video_filter+="[0:a:0]afifo[outa]"
-  reencode_args+=(-filter_complex "$base_video_filter")
-  reencode_args+=(-map "[outv]")
-  reencode_args+=(-map "[outa]")
+  reencode_args+=(-vf "${video_stabilization_filter}")
   reencode_args+=(-vcodec libx264)
-  reencode_args+=(-acodec aac)
+  reencode_args+=(-acodec copy)
   reencode_args+=(-preset slow)
   reencode_args+=(-crf ${CRF_FACTOR})
   reencode_args+=("${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4")
-  ffmpeg2 "${reencode_args[@]}"
+  pv "${temp_video_dir}/${filename}.${extension}" | ffmpeg2 "${reencode_args[@]}"
 
   if [[ -z "$LIVE_RUN" ]]; then
     echo "- Generating side-by-side sample"
@@ -309,9 +224,9 @@ process_single_video() {
   done
 
   echo "- Renaming re-encoded outputs"
-  find "${temp_video_dir}/" -iname "${filename}.mp4" -exec $EXIFTOOL -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "%Y-%m-%d_%H.%M.%S%%-c-${filename}.%%le" {} \;
-  [[ -z "$LIVE_RUN" ]] && $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "%Y-%m-%d_%H.%M.%S%%-c-${filename}-${reencode_output_filename_type}.%%le" "${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4"
-  [[ -z "$LIVE_RUN" ]] && $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "%Y-%m-%d_%H.%M.%S%%-c-${filename}-combined.%%le" "${temp_video_dir}/${filename}-combined.mp4"
+  find "${temp_video_dir}/" -iname "${filename}.mp4" -exec $EXIFTOOL -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "${filename}.%%le" {} \;
+  [[ -z "$LIVE_RUN" ]] && $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "${filename}-${reencode_output_filename_type}.%%le" "${temp_video_dir}/${filename}-${reencode_output_filename_type}.mp4"
+  [[ -z "$LIVE_RUN" ]] && $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "${filename}-combined.%%le" "${temp_video_dir}/${filename}-combined.mp4"
 
   if [[ -z "$LIVE_RUN" ]]; then
     echo -ne "\n"
@@ -320,13 +235,13 @@ process_single_video() {
     echo "****************************"
     echo "Look through the ${temp_video_dir} directory for updated files and side-by-side comparisons"
     echo -ne "\n"
-    echo "If everything looks good, re-run this script with the -l flag."
+    echo "If everything looks good, re-run this script with the LIVE_RUN=yes flag."
   fi
 
   if [[ -n "$LIVE_RUN" ]]; then
     echo "- Final cleanup"
     mv ${temp_video_dir}/*${filename}-${reencode_output_filename_type}.mp4 .
-    $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "%Y-%m-%d_%H.%M.%S%%-c.%%le" *${filename}-${reencode_output_filename_type}.mp4
+    $EXIFTOOL  -overwrite_original '-FileName<DateTimeOriginal' -if '($datetimeoriginal)' -d "${filename}-stabilized.%%le" *${filename}-${reencode_output_filename_type}.mp4
   fi
 }
 
