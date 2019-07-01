@@ -150,6 +150,11 @@ alias dc="docker-compose"
 alias op-signin='eval $(op signin)'
 alias op-logout='op signout && unset "${!OP_SESSION@}"'
 
+# Copying/moving a large number of files (with progress)
+alias rscp='rsync -aP'
+alias rsmv='rsync -aP --remove-source-files'
+
+
 #************
 # GPG agent
 #************
