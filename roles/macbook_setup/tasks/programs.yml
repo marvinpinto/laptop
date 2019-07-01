@@ -1,6 +1,6 @@
 ---
 - name: 'Install a bunch of needed programs'
-  sudo: yes
+  become: true
   apt:
     name: "{{ item }}"
     state: latest
@@ -28,9 +28,10 @@
     - 'sshfs'
     - 'snapd'
     - 'ttf-mscorefonts-installer'
+    - 'audacity'
 
 - name: "Remove a few things I don't care for"
-  sudo: yes
+  become: true
   apt:
     name: "{{ item }}"
     state: absent
