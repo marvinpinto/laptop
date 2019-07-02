@@ -1,6 +1,6 @@
 ---
 - name: 'Make sure GRUB_CMDLINE_LINUX_DEFAULT does not use any options'
-  sudo: true
+  become: true
   lineinfile:
     dest: '/etc/default/grub'
     state: present
@@ -10,9 +10,11 @@
     group: 'root'
     mode: '0644'
   notify: 'Update grub'
+  when:
+    - 'not dockerenv'
 
 - name: 'Make sure GRUB_CMDLINE_LINUX does not use any options'
-  sudo: true
+  become: true
   lineinfile:
     dest: '/etc/default/grub'
     state: present
@@ -22,9 +24,11 @@
     group: 'root'
     mode: '0644'
   notify: 'Update grub'
+  when:
+    - 'not dockerenv'
 
 - name: 'Make sure GRUB_TERMINAL is set to console'
-  sudo: true
+  become: true
   lineinfile:
     dest: '/etc/default/grub'
     state: present
@@ -33,3 +37,5 @@
     group: 'root'
     mode: '0644'
   notify: 'Update grub'
+  when:
+    - 'not dockerenv'

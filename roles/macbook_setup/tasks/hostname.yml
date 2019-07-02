@@ -6,6 +6,7 @@
   when:
     - ansible_system_vendor == "LENOVO"
     - ansible_product_name == "20BS0032US"
+    - not dockerenv
 
 - name: 'Update the /etc/hosts entry for the Lenovo X1 Carbon'
   become: true
@@ -20,6 +21,7 @@
   when:
     - ansible_system_vendor == "LENOVO"
     - ansible_product_name == "20BS0032US"
+    - not dockerenv
 
 - name: 'Set the hostname for the Dell T1700'
   become: true
@@ -28,6 +30,7 @@
   when:
     - ansible_system_vendor == "Dell Inc."
     - ansible_product_name == "Precision T1700"
+    - not dockerenv
 
 - name: 'Update the /etc/hosts entry for the Dell T1700'
   become: true
@@ -42,3 +45,4 @@
   when:
     - ansible_system_vendor == "Dell Inc."
     - ansible_product_name == "Precision T1700"
+    - not dockerenv

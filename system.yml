@@ -4,6 +4,16 @@
     - 'vars/secret.yml'
     - 'vars/public.yml'
   connection: local
+
+  pre_tasks:
+    - name: 'Check to see if we are within a docker environment'
+      stat:
+        path: '/.dockerenv'
+      register: dockerenv_file
+    - name: 'Set the dockerenv global fact'
+      set_fact:
+        dockerenv: "{{ dockerenv_file.stat.exists }}"
+
   roles:
     - role: 'marvinpinto.docker'
       docker_additional_service_opts: |
