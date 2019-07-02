@@ -2,18 +2,32 @@
 language: 'generic'
 sudo: 'required'
 dist: 'xenial'
-group: 'edge'
+
+services:
+  - 'docker'
 
 env:
   global:
     - secure: "wxRB6lTROM3RuJrs/DqPa7w2/PTqJaWwuVqndBG2XXkpl25sXcuRaKP/85NBD+tzlqs06/Fa+he8Xx3akGdYs255716sPHH2g31lwSL49T9JkPDvm0N1/HmBPZNgJlIsLy/UekvDCWL5TEAG9QTtt4Q3ctfvXof20bBZ2dr7W2vKCcaI0TrBHQlaUsXD8qBzeVKrcSHgONW6nobAo6RsHu7Mu47alTt6vF/vuXYffagmFDxbGXeA6szP+IG8yMQvfoLZPcZzocU99tu4fEjncP+T3LEgkvubDT3PUnIB/mySyqbNqdwP7rzkx5SF38oKzHknzOltXrulZ2lzQoiRahgtT4Q7bZroPZVnt5F3lf8fdMDH1c6xhQzgj2kXcR+hN41uOT1zcHKcWEMWTIp2U5MLzfaMgYMGEXd0qZc7V728+smRttM09qG8/R60K5l7OCCZ68UBIx/0KZC3DXdQkeK2QV/iLw1Y4710UsDAPfk82+Vql8TFDisUNA+K8/hSiaAHwoB99Z3A0sJt5B0d395mnswdErzUhPXmS2hd+JNQVzxi7XSjFx/vK1HKbCFEwe4y25qF8P4vG1fDxUAXfbXPZp0vikxbxeCAXd3NdcaH6vUTXcrZ7jfZGTtrq3FUUIze4NYskRxizOqbZEHnz7f6XM3InDk82vM7mB7oFkk="
     - 'DEBIAN_FRONTEND=noninteractive'
+    - 'DOCKER_IMG=ubuntu:16.04'
+    - 'DOCKER_CONTAINER=ubuntu-container'
+
+before_install:
+  - 'docker pull ${DOCKER_IMG}'
+  - >-
+    sudo docker run --privileged -dit
+    --volume "${PWD}:/root/laptop"
+    --workdir /root/laptop
+    --env ANSIBLE_VAULT_PASSWORD
+    --env TRAVIS
+    --env DEBIAN_FRONTEND
+    --name "${DOCKER_CONTAINER}"
+    --user root
+    "${DOCKER_IMG}"
 
 script:
-  - 'set -e'
-  - 'sudo apt-get remove --purge postgresql* || true'
-  - './bootstrap.sh'
-  - 'set +e'
+  - 'sudo docker exec -it "${DOCKER_CONTAINER}" sh -c /root/laptop/bootstrap.sh'
 
 notifications:
   email: false

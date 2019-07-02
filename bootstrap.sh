@@ -3,6 +3,10 @@
 export DEBIAN_FRONTEND=noninteractive
 SUDO="sudo -E"
 
+if [ "$TRAVIS" == "true" ]; then
+  apt-get -qq update && apt-get install -y curl sudo
+fi
+
 $SUDO apt-get install -qq -y software-properties-common build-essential
 
 if [ "$TRAVIS" == "true" ]; then
@@ -11,6 +15,12 @@ if [ "$TRAVIS" == "true" ]; then
   $SUDO mkdir -p /home/marvin
   $SUDO chown -R marvin: /home/marvin
   $SUDO apt-get -qq update
+
+  # Remove /sbin/initctl within the docker container so that Ansible uses
+  # 'sysvinit' for the 'service' module
+  $SUDO rm -rf /sbin/initctl
+
+  $SUDO ln -s -f /bin/true /usr/bin/chfn
   $SUDO apt-get install -qq -y -o Dpkg::Options::=--force-confnew network-manager ubuntu-desktop
 fi
 
