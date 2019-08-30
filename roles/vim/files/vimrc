@@ -135,6 +135,11 @@ nnoremap <leader>q gqip
 " Trick to replace multiple lines with the content of the default clipboard
 xnoremap p pgvy
 
+" Map the tab creation/traversal sequence to Ctrl+w
+nnoremap <C-w><Left> :tabprev<CR>
+nnoremap <C-w><Right> :tabnext<CR>
+nnoremap <C-w>n :tabnew<CR>
+
 " Disable backup and swap files
 set nobackup
 set noswapfile
