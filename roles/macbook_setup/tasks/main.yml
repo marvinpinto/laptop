@@ -9,6 +9,7 @@
 - include: google_chrome.yml
 - include: chromium_browser.yml
 - include: vagrant.yml
+- include: openaudible.yml
 # - include: virtualbox.yml
 - include: plexamp.yml
 - include: 1password.yml

@@ -1,0 +1,28 @@
+---
+- name: 'Create the /usr/local/etc/openaudible directory'
+  become: true
+  file:
+    path: '/usr/local/etc/openaudible'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if openaudible version {{openaudible_version}} is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/openaudible/OpenAudible_deb_{{openaudible_version}}.deb'
+  register: 'openaudible_binary'
+
+- name: 'Download openaudible version {{openaudible_version}}'
+  become: true
+  get_url:
+    url: 'https://github.com/openaudible/openaudible/releases/download/v{{openaudible_version}}/OpenAudible_deb_{{openaudible_version}}.deb'
+    dest: '/usr/local/etc/openaudible/OpenAudible_deb_{{openaudible_version}}.deb'
+    mode: '0755'
+  when: 'openaudible_binary.stat.exists == False'
+
+- name: 'Install openaudible version {{openaudible_version}}'
+  become: true
+  apt:
+    deb: '/usr/local/etc/openaudible/OpenAudible_deb_{{openaudible_version}}.deb'
+    state: 'present'
+  when: 'openaudible_binary.stat.exists == False'

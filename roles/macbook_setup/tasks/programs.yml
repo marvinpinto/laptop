@@ -29,6 +29,7 @@
     - 'snapd'
     - 'ttf-mscorefonts-installer'
     - 'audacity'
+    - 'default-jre'
 
 - name: "Remove a few things I don't care for"
   become: true
