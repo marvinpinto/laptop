@@ -6,7 +6,7 @@ I3LOCK='/usr/bin/i3lock --color 333333'
 if [ -z $@ ]; then
   function gen_options()
   {
-    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Emoji Picker","Fix Bluetooth Audio","New Firefox Process")
+    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Emoji Picker","Switch Bluetooth Device","New Firefox Process")
     echo ${option_list[@]} | tr ',' '\n' | sort
   }
 
@@ -61,8 +61,8 @@ else
     'Emoji Picker')
       coproc (PINENTRY_USER_DATA=gui /usr/local/bin/rofi-emoji)
       ;;
-    'Fix Bluetooth Audio')
-      coproc (/usr/local/bin/fix-bluetooth-audio)
+    'Switch Bluetooth Device')
+      coproc (/usr/local/bin/switch-bluetooth-device)
       ;;
     'New Firefox Process')
       coproc (${HOME}/.i3/new-firefox-process.sh)

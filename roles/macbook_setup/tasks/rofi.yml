@@ -123,11 +123,11 @@
     group: 'root'
     mode: '0755'
 
-- name: 'Put the fix-bluetooth-audio script file in place'
+- name: 'Put the switch-bluetooth-device script file in place'
   become: true
   copy:
-    src: 'fix-bluetooth-audio.sh'
-    dest: '/usr/local/bin/fix-bluetooth-audio'
+    src: 'switch-bluetooth-device.sh'
+    dest: '/usr/local/bin/switch-bluetooth-device'
     owner: 'root'
     group: 'root'
     mode: '0755'
