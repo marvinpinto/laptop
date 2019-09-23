@@ -1,0 +1,34 @@
+---
+- name: 'Add the keybase apt signing key'
+  become: true
+  apt_key:
+    url: 'https://keybase.io/docs/server_security/code_signing_key.asc'
+    state: 'present'
+
+- name: 'Create the /usr/local/etc/keybase directory'
+  become: true
+  file:
+    path: '/usr/local/etc/keybase'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if keybase is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/keybase/keybase_amd64.deb'
+  register: 'keybase_binary'
+
+- name: 'Download keybase'
+  become: true
+  get_url:
+    url: 'https://prerelease.keybase.io/keybase_amd64.deb'
+    dest: '/usr/local/etc/keybase/keybase_amd64.deb'
+    mode: '0755'
+  when: 'keybase_binary.stat.exists == False'
+
+- name: 'Install keybase'
+  become: true
+  apt:
+    deb: '/usr/local/etc/keybase/keybase_amd64.deb'
+    state: 'present'
+  when: 'keybase_binary.stat.exists == False'
