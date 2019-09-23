@@ -82,3 +82,9 @@
     - 'cups-browsed'
     - 'speech-dispatcher'
     - 'modem-manager'
+
+- name: 'Set xterm as the default terminal'
+  become: true
+  alternatives:
+    name: 'x-terminal-emulator'
+    path: '/usr/bin/xterm'

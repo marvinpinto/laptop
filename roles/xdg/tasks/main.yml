@@ -52,3 +52,19 @@
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
+
+- name: 'Put the mimeapps.list file in place'
+  copy:
+    src: 'default-applications.list'
+    dest: "{{ home_directory }}/.local/share/applications/mimeapps.list"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+
+- name: 'Put the defaults.list file in place'
+  copy:
+    src: 'default-applications.list'
+    dest: "{{ home_directory }}/.local/share/applications/defaults.list"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'

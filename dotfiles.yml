@@ -31,3 +31,9 @@
       key: 'disable-lock-screen'
       value: 'true'
       expected_value: 'true'
+
+    - role: 'set_gsettings_value'
+      schema: 'org.gnome.desktop.background'
+      key: 'show-desktop-icons'
+      value: 'false'
+      expected_value: 'false'
