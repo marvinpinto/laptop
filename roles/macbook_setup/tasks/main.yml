@@ -12,7 +12,6 @@
 - include: openaudible.yml
 # - include: virtualbox.yml
 - include: keybase.yml
-- include: plexamp.yml
 - include: 1password.yml
 - include: git.yml
 - include: ansible.yml

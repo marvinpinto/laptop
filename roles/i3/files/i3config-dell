@@ -134,10 +134,6 @@ exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec_always --no-startup-id xrandr --output DP-0 --primary --right-of DVI-I-1
 exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-applet"
 
-# Start plexamp and move it to the default scratchpad
-exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/local/etc/plexamp/plexamp-x86_64.AppImage" "plexamp"
-for_window [class="Plexamp"] floating enable, border normal, move to scratchpad
-
 # Ensure that the keybase window always stays in floating mode
 exec_always --no-startup-id /usr/bin/run_keybase
 for_window [class="Keybase"] floating enable, border normal, move to scratchpad
