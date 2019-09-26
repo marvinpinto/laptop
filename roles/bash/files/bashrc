@@ -542,7 +542,9 @@ function dotenv () {
     dotenvfile=".env"
   fi
 
-  export $(cat ${dotenvfile} | grep -v ^# | xargs)
+  set -a
+  source $dotenvfile
+  set +a
 }
 
 # Bash function to unset the environment variables in the specified .env file
