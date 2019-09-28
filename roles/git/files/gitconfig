@@ -119,7 +119,7 @@
   insteadOf = "gist:"
 
 [push]
-  default = simple
+  default = upstream
   followTags = true
 [user]
   email = git@pinto.im
