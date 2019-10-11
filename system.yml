@@ -80,3 +80,4 @@
         - 'ppa_jasonpleau_rofi_{{ ansible_distribution_release }}.list'
         - 'ppa_eosrei_fonts_{{ ansible_distribution_release }}.list'
         - 'prerelease_keybase_io_deb.list'
+        - 'packagecloud_io_slacktechnologies_slack_debian.list'

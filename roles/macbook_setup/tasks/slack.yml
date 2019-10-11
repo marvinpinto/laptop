@@ -1,29 +1,13 @@
 ---
-- name: 'Create the /usr/local/etc/slack directory'
+- name: 'Add the slack ubuntu repo'
   become: true
-  file:
-    path: '/usr/local/etc/slack'
-    state: 'directory'
-    mode: '0755'
+  apt_repository:
+    repo: 'deb https://packagecloud.io/slacktechnologies/slack/debian/ jessie main'
+    state: 'present'
+    update_cache: 'yes'
 
-- name: 'Check to see if slack version {{slack_version}} is already downloaded'
-  become: true
-  stat:
-    path: '/usr/local/etc/slack/slack-desktop-{{slack_version}}-amd64.deb'
-  register: 'slack_binary'
-
-- name: 'Download slack version {{slack_version}}'
-  become: true
-  get_url:
-    url: 'https://downloads.slack-edge.com/linux_releases/slack-desktop-{{slack_version}}-amd64.deb'
-    dest: '/usr/local/etc/slack/slack-desktop-{{slack_version}}-amd64.deb'
-    mode: '0755'
-  when: 'slack_binary.stat.exists == False'
-
-- name: 'Install slack version {{slack_version}}'
+- name: 'Install Slack'
   become: true
   apt:
-    deb: '/usr/local/etc/slack/slack-desktop-{{slack_version}}-amd64.deb'
-    state: 'present'
-  when: 'slack_binary.stat.exists == False'
-
+    name: 'slack-desktop'
+    state: 'latest'
