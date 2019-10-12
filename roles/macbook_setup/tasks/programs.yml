@@ -30,6 +30,7 @@
     - 'ttf-mscorefonts-installer'
     - 'audacity'
     - 'default-jre'
+    - 'autocutsel'
 
 - name: "Remove a few things I don't care for"
   become: true

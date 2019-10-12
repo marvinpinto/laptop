@@ -10,6 +10,10 @@ info() {
   /usr/bin/logger --id --priority local3.info --tag $SYSLOG_TAG "INFO: $@"
 }
 
+if [ -z "$process_regex" ]; then
+  process_regex=$app_command
+fi
+
 info "Searching for all processes matching ${process_regex}"
 pids=( $(pgrep -f "$process_regex") )
 for pid in "${pids[@]}"; do
