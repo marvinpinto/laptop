@@ -15,12 +15,6 @@ set $mod Mod4
 # used in the bar {} block below.
 font pango:Terminus 7
 
-# This option determines which border style new windows will have. The default is
-# normal. Note that new_float applies only to windows which are starting out as
-# floating windows, e.g., dialog windows, but not windows that are floated later
-# on.
-new_window pixel 2
-
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
@@ -70,6 +64,9 @@ bindsym $mod+Shift+space floating toggle
 
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
+
+# focus on the parent container
+bindsym $mod+a focus parent
 
 # Workspaces mapped to the primary monitor
 workspace "primary" output DVI-I-1
