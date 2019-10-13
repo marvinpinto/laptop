@@ -1,0 +1,130 @@
+---
+- name: 'Do not show the menu bar'
+  include_role:
+    name: 'set_gsettings_value'
+  vars:
+    schema: 'org.gnome.Terminal.Legacy.Settings'
+    key: 'default-show-menubar'
+    value: 'false'
+
+- name: 'Gnome Terminal color scheme values'
+  set_fact:
+    gnome_terminal_color_scheme:
+      - "'#151515'"
+      - "'#a53c23'"
+      - "'#7b9246'"
+      - "'#d3a04d'"
+      - "'#6c99bb'"
+      - "'#9f4e85'"
+      - "'#7dd6cf'"
+      - "'#d0d0d0'"
+      - "'#505050'"
+      - "'#a53c23'"
+      - "'#7b9246'"
+      - "'#d3a04d'"
+      - "'#547c99'"
+      - "'#9f4e85'"
+      - "'#7dd6cf'"
+      - "'#f5f5f5'"
+
+- name: 'Get the default gnome profile uuid'
+  shell: "gsettings get org.gnome.Terminal.ProfilesList default | tr -d \\'"
+  register: 'default_gnome_terminal_profile'
+  changed_when: false
+
+- name: 'Customize the default gnome terminal profile ({{default_gnome_terminal_profile.stdout}})'
+  include_role:
+    name: 'set_gsettings_value'
+  loop:
+    - name: 'Use UTF-8'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'encoding'
+      value: 'UTF-8'
+
+    - name: 'Re-wrap the terminal on window resize'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'rewrap-on-resize'
+      value: 'true'
+
+    - name: 'Allow a set number of lines in scrollback'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'scrollback-lines'
+      value: '8192'
+
+    - name: 'Disable unlimited scrollback'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'scrollback-unlimited'
+      value: 'false'
+
+    - name: 'Do not scroll on output'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'scroll-on-output'
+      value: 'false'
+
+    - name: 'Scroll to the bottom on a keystroke'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'scroll-on-keystroke'
+      value: 'true'
+
+    - name: 'Do not display the scrollbar'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'scrollbar-policy'
+      value: 'never'
+
+    - name: 'Exit the terminal when a command exits'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'exit-action'
+      value: 'close'
+
+    - name: 'Disable cursor blinking'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'cursor-blink-mode'
+      value: 'off'
+
+    - name: 'Disable the audible bell'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'audible-bell'
+      value: 'false'
+
+    # The color scheme here roughly corresponds to afterglow:
+    # https://github.com/Mayccoll/Gogh/blob/451173a451bf369a732af52e969df55c3270faa4/themes/afterglow.sh
+    - name: 'Set the color scheme'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'palette'
+      value: '"[{{ gnome_terminal_color_scheme | join(", ") }}]"'
+
+    - name: 'Set the foreground text color'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'foreground-color'
+      value: '"#d0d0d0"'
+
+    - name: 'Set the terminal background color'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'background-color'
+      value: '"#222222"'
+
+    - name: 'Set the bold text color'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'bold-color'
+      value: '"#000000"'
+
+    - name: 'Bold text should not be the same color as regular text'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'bold-color-same-as-fg'
+      value: 'false'
+
+    - name: 'Do not use the default system font'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'use-system-font'
+      value: 'false'
+
+    - name: 'Use a custom terminal font'
+      schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
+      key: 'font'
+      value: '"Hack Nerd Font Regular 11"'
+  loop_control:
+    loop_var: 'setting'
+  vars:
+    schema: '{{ setting.schema }}'
+    key: '{{ setting.key }}'
+    value: '{{ setting.value }}'

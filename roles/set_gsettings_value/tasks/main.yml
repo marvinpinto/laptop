@@ -1,8 +1,16 @@
 ---
-- command: "/usr/bin/gsettings get {{ schema }} {{ key }}"
+- shell: "/usr/bin/gsettings get {{ schema }} {{ key }} | tr -d \\'"
   changed_when: false
   register: contents
 
+- shell: "echo {{ value }} | tr -d \\'"
+  changed_when: false
+  register: expected
+
+- debug:
+    msg: "Schema {{schema}}, key {{key}}: expected value to be {{expected.stdout}}, actual value is {{contents.stdout}}"
+  when: "contents.stdout != expected.stdout"
+
 - name: 'Set the gsettings value'
   command: "/usr/bin/gsettings set {{ schema }} {{ key }} {{ value }}"
-  when: 'expected_value != contents.stdout'
+  when: "contents.stdout != expected.stdout"

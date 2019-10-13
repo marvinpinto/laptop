@@ -1,0 +1,21 @@
+---
+- name: 'Create the ~/.local/share/fonts directory'
+  file:
+    path: '{{ home_directory }}/.local/share/fonts'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Create the ~/.local/etc directory'
+  file:
+    path: '{{ home_directory }}/.local/etc'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Create the ~/.local/etc/nerd_fonts directory'
+  file:
+    path: '{{ home_directory }}/.local/etc/nerd_fonts'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Install the Hack font'
+  include: hack.yml

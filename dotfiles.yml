@@ -19,21 +19,20 @@
     - 'ngrok'
     - 'clical'
     - 'ranger'
+    - 'nerd_fonts'
+    - 'gnome_terminal'
 
     - role: 'set_gsettings_value'
       schema: 'org.gnome.settings-daemon.plugins.keyboard'
       key: 'active'
       value: 'false'
-      expected_value: 'false'
 
     - role: 'set_gsettings_value'
       schema: 'org.gnome.desktop.lockdown'
       key: 'disable-lock-screen'
       value: 'true'
-      expected_value: 'true'
 
     - role: 'set_gsettings_value'
       schema: 'org.gnome.desktop.background'
       key: 'show-desktop-icons'
       value: 'false'
-      expected_value: 'false'

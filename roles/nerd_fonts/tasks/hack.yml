@@ -1,0 +1,28 @@
+---
+- name: 'Create the ~/.local/etc/nerd_fonts/hack directory'
+  file:
+    path: '{{ home_directory }}/.local/etc/nerd_fonts/hack'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if hack version {{hack_font_version}} is already downloaded'
+  stat:
+    path: '{{ home_directory }}/.local/etc/nerd_fonts/hack/hack-{{hack_font_version}}.zip'
+  register: 'hack_zip'
+
+- name: 'Download Hack font version {{hack_font_version}}'
+  get_url:
+    url: 'https://github.com/ryanoasis/nerd-fonts/releases/download/{{hack_font_version}}/Hack.zip'
+    dest: '{{ home_directory }}/.local/etc/nerd_fonts/hack/hack-{{hack_font_version}}.zip'
+    mode: '0755'
+  when: 'hack_zip.stat.exists == False'
+
+- name: 'Unzip Hack font version {{hack_font_version}}'
+  unarchive:
+    src: '{{ home_directory }}/.local/etc/nerd_fonts/hack/hack-{{hack_font_version}}.zip'
+    dest: '{{ home_directory }}/.local/share/fonts/'
+    copy: 'no'
+  when: 'hack_zip.stat.exists == False'
+  notify: 'nerd-fonts-update-font-cache'
+
+- meta: flush_handlers
