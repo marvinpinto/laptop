@@ -19,7 +19,7 @@ pids=( $(pgrep -f "$process_regex") )
 for pid in "${pids[@]}"; do
   if [[ $pid != $$ ]]; then
     info "Force-stopping process ${pid}"
-    kill -9 "$pid"
+    kill -9 "$pid" > /dev/null 2>&1
   fi
 done
 

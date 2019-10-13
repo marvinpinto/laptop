@@ -26,31 +26,6 @@
 *color7:         rgb:ff/ff/ff
 *color15:        rgb:dd/dd/dd
 
-! Xterm specific settings
-XTerm*utf8: 1
-Xterm*termName: xterm-256color
-XTerm*charClass: 33:48,36-47:48,58-59:48,61:48,63-64:48,95:48,126:48
-XTerm*on3Clicks: regex ([[:alpha:]]+://)?([[:alnum:]!#+,./=?@_~-]|(%[[:xdigit:]][[:xdigit:]]))+
-XTerm*selectToClipboard: true
-XTerm*fullscreen: never
-XTerm*disallowedWindowOps: 20,21,SetXProp
-
-! Font setup
-xterm*faceName: Terminus
-xterm*faceSize: 11
-
-! Only select text
-xterm*highlightSelection: true
-
-! Remove trailing spaces
-xterm*trimSelection: true
-
-! Lines of output that you can scroll back over
-xterm*saveLines: 2000
-
-! Turn the scrollbar off
-xterm*scrollBar: false
-
 ! Rofi settings
 rofi.theme: android_notification
 rofi.font: mono 10
@@ -62,4 +37,4 @@ rofi.disable-history: true
 rofi.hide-scrollbar: true
 rofi.kb-row-tab: Shift+space
 rofi.kb-row-select: Tab
-rofi.terminal: xterm -en utf-8
+rofi.terminal: gnome-terminal

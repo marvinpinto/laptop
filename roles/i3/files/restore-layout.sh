@@ -3,7 +3,7 @@
 SLEEP_DURATION=2
 
 notify-send -i info -u normal -t 1000 -- 'Restoring basic window layout'
-i3-msg 'workspace primary; exec xterm -en utf-8;'
+i3-msg 'workspace primary; exec gnome-terminal;'
 sleep ${SLEEP_DURATION}
 i3-msg 'workspace research; exec chromium-browser --profile-directory="Default";'
 sleep ${SLEEP_DURATION}

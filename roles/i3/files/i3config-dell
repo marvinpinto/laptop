@@ -19,7 +19,7 @@ font pango:Terminus 7
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec xterm -en utf-8
+bindsym $mod+Return exec gnome-terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -136,15 +136,16 @@ exec_always --no-startup-id ~/.i3/startup-app.sh "autocutsel -selection PRIMARY 
 # Ensure that the keybase window always stays in floating mode
 exec_always --no-startup-id /usr/bin/run_keybase
 for_window [class="Keybase"] floating enable, border normal, move to scratchpad
+bindsym $mod+c [class="Keybase"] scratchpad show
 
 # Ensure that the slack window always stays in floating mode
 exec_always --no-startup-id ~/.i3/startup-app.sh "slack" "slack"
 for_window [class="Slack"] floating enable, border normal, move to scratchpad
 
 # Start a terminal and move it to the mod+n scratchpad
-exec_always --no-startup-id ~/.i3/startup-app.sh "xterm -en utf-8 -xrm \\"xterm*allowTitleOps: false\\" -T scratch -e /bin/bash -l -c \\"~/.i3/tmux-startup.sh\\"" "xterm.*scratch"
-for_window [class="XTerm" title="scratch$"] border normal, move to scratchpad
-bindsym $mod+n [class="XTerm" title="scratch"] scratchpad show
+exec_always --no-startup-id ~/.i3/startup-app.sh "gnome-terminal -e \\"bash -l -c '\\$\\(declare -f title\\); title scratch; ~/.i3/tmux-startup.sh'\\"" "tmux-startup.sh"
+for_window [class="Gnome-terminal" title="scratch$"] border normal, move to scratchpad
+bindsym $mod+n [class="Gnome-terminal" title="scratch"] scratchpad show
 
 # Scratchpad shortcuts
 bindsym $mod+Shift+minus move scratchpad

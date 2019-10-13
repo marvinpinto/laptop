@@ -88,4 +88,4 @@
   become: true
   alternatives:
     name: 'x-terminal-emulator'
-    path: '/usr/bin/xterm'
+    path: '/usr/bin/gnome-terminal'

@@ -64,9 +64,6 @@ shopt -s cdspell
 # Bash Exports
 #***************
 
-# Set the terminal type to xterm-256color
-export TERM=xterm-256color
-
 # Make vim the default editor
 export EDITOR="vim"
 
@@ -211,9 +208,6 @@ function __prompt_command() {
   export GPG_TTY=`tty`
   gpg-connect-agent updatestartuptty /bye >/dev/null
 
-  # Set the terminal title
-  echo -ne "\033]0;${HOSTNAME}\007"
-
   local RED="\[$(tput setaf 1)\]"
   local GREEN="\[$(tput setaf 2)\]"
   local YELLOW="\[$(tput setaf 3)\]"
@@ -258,6 +252,11 @@ export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
 #*******************
 # Helper Functions
 #*******************
+
+# Set the terminal title
+function title() {
+  echo -ne "\033]0;$1\007"
+}
 
 # Simple calculator
 function calc() {

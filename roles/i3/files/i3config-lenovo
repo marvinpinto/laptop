@@ -25,7 +25,7 @@ new_window pixel 2
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec xterm -en utf-8
+bindsym $mod+Return exec gnome-terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
