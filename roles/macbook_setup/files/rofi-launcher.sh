@@ -6,7 +6,7 @@ I3LOCK='/usr/bin/i3lock --color 333333'
 if [ -z $@ ]; then
   function gen_options()
   {
-    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Restore Window Layout","2FA Tokens","Emoji Picker","Switch Bluetooth Device","New Firefox Process")
+    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Create Development Workspace","2FA Tokens","Emoji Picker","Switch Bluetooth Device","New Firefox Process")
     echo ${option_list[@]} | tr ',' '\n' | sort
   }
 
@@ -52,8 +52,8 @@ else
     'Check Email')
       coproc (PINENTRY_USER_DATA=gui ${HOME}/.i3/fastmail_unread_count.py --force)
       ;;
-    'Restore Window Layout')
-      coproc (${HOME}/.i3/restore-layout.sh)
+    'Create Development Workspace')
+      coproc (${HOME}/.i3/dev-layout.sh)
       ;;
     '2FA Tokens')
       coproc (/usr/local/bin/rofi-2fa)

@@ -7,6 +7,14 @@
     key: 'default-show-menubar'
     value: 'false'
 
+- name: 'Do not display the "confirm close" dialog'
+  include_role:
+    name: 'set_gsettings_value'
+  vars:
+    schema: 'org.gnome.Terminal.Legacy.Settings'
+    key: 'confirm-close'
+    value: 'false'
+
 - name: 'Gnome Terminal color scheme values'
   set_fact:
     gnome_terminal_color_scheme:

@@ -17,6 +17,7 @@
   with_items:
     - 'fastmail_username.gpg'
     - 'fastmail_password.gpg'
+    - 'dev-layout.json'
 
 - name: 'Put the X1 Carbon i3 config file in place'
   copy:
@@ -71,7 +72,6 @@
     mode: '0755'
   with_items:
     - 'gpg-agent.sh'
-    - 'restore-layout.sh'
     - 'wrapper.py'
     - 'fastmail_unread_count.py'
     - 'rename_workspace.sh'
@@ -80,6 +80,7 @@
     - 'tmux-startup.sh'
     - 'new-firefox-process.sh'
     - 'terminal-output-test.sh'
+    - 'dev-layout.sh'
 
 - name: 'Put the other X11 based files in place'
   copy:
