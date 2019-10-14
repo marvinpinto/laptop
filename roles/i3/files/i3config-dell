@@ -69,14 +69,10 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 
 # Workspaces mapped to the primary monitor
-workspace "primary" output DVI-I-1
-workspace "research" output DVI-I-1
-workspace "sb" output DVI-I-1
-workspace "browser" output DVI-I-1
+workspace "misc" output DVI-I-1
 
 # Workspaces mapped to the secondary monitor
-workspace "sbchrome" output DP-0
-workspace "social" output DP-0
+workspace "other" output DP-0
 
 # switch to the previously used workspace
 bindsym $mod+b workspace back_and_forth
@@ -165,12 +161,18 @@ bindsym $mod+Control+Right workspace next_on_output
 bindsym $mod+Shift+Control+Left move workspace prev_on_output
 bindsym $mod+Shift+Control+Right move workspace next_on_output
 
-# Move the current workspace to another monitor
-bindsym $mod+m move workspace to output left
-
 # Do not allow any windows to steal focus or try and grab my attention
 focus_on_window_activation none
 force_display_urgency_hint 0
+
+# Show i3 vim-style window marks
+show_marks yes
+
+# read 1 character and mark the current window with this character
+bindsym $mod+m exec i3-input -F 'mark --toggle %s' -l 1 -P 'Mark: '
+
+# read 1 character and go to the window with the character
+bindsym $mod+g exec i3-input -F '[con_mark="%s"] focus' -l 1 -P 'Goto: '
 
 # color defines for zenburn styled i3
 set $bg     #2c2c2e
