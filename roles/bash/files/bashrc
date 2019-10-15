@@ -342,6 +342,7 @@ function sink () {
       -v $SSH_AUTH_SOCK:/ssh-agent \
       -e SSH_AUTH_SOCK=/ssh-agent \
       -e DISPLAY \
+      -e TERM \
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       -v /media/usb:/media/usb \
       -v /usr/local/bin:/usr/local/sbin \
