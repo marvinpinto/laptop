@@ -77,7 +77,6 @@
     - 'rename_workspace.sh'
     - 'pavolume.sh'
     - 'startup-app.sh'
-    - 'new-firefox-process.sh'
     - 'terminal-output-test.sh'
     - 'dev-layout.sh'
 
