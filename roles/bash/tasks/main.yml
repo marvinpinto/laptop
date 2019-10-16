@@ -17,3 +17,12 @@
     state: absent
   with_items:
     - '{{ home_directory }}/.bash_login'
+
+- name: 'Put all the bashrc scripts in place'
+  synchronize:
+    src: 'bash.d/'
+    dest: '{{ home_directory }}/.bash.d'
+    recursive: true
+    delete: true
+    rsync_opts:
+      - '--chmod=D755,F644'

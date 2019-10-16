@@ -199,7 +199,6 @@ fi
 #**************
 # Bash Prompt
 #**************
-
 function __prompt_command() {
   local EXIT="$?"
   PS1=""
@@ -252,6 +251,11 @@ export PROMPT_COMMAND=__prompt_command  # Func to gen PS1 after CMDs
 #*******************
 # Helper Functions
 #*******************
+
+# Load the helper bash function files
+for bfile in ~/.bash.d/* ; do
+  [ -f "$bfile" ] && . "$bfile"
+done
 
 # Set the terminal title
 function title() {
@@ -310,49 +314,6 @@ function drma() {
   if [ -n "$untagged" ]; then
     docker rmi -f $untagged
   fi
-}
-
-# Bash function to attach to, or spin up a new (named) docker container
-function sink () {
-  local boxname=$1
-  local dockerargs=$2
-  local workdir="/root"
-
-  if [ -z "$boxname" ]; then
-    echo "usage: sink <box name> [extra docker args]"
-    echo "e.g. sink tidycat-ui \"-p 4200:4200\""
-    return 1
-  fi
-
-  if [ -e "${HOME}/projects/${boxname}" ]; then
-    workdir="/root/projects/${boxname}"
-  fi
-
-  local dockerid=$(docker ps -aq --filter=name=$boxname)
-  if [ "$dockerid" != "" ]; then
-    echo "Attaching to existing docker container ${dockerid}"
-  else
-    echo "Creating new docker container"
-    dockerid=$(docker run -dit \
-      -e "HOSTNAME=${boxname}" \
-      --log-driver=none \
-      --name $boxname \
-      --hostname ${boxname} \
-      -v /home/marvin:/var/shared \
-      -v $SSH_AUTH_SOCK:/ssh-agent \
-      -e SSH_AUTH_SOCK=/ssh-agent \
-      -e DISPLAY \
-      -e TERM \
-      -v /tmp/.X11-unix:/tmp/.X11-unix \
-      -v /media/usb:/media/usb \
-      -v /usr/local/bin:/usr/local/sbin \
-      -v /home/marvin/.op:/root/.op \
-      --security-opt=seccomp:unconfined \
-      $dockerargs \
-      -w $workdir \
-      "quay.io/marvin/kitchensink:$(lsb_release --release --short)")
-  fi
-  docker exec -it $dockerid /bin/bash
 }
 
 # Delete an EC2 AMI & corresponding snapshot
