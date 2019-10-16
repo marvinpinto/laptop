@@ -141,10 +141,13 @@ bindsym $mod+c [class="Keybase"] scratchpad show
 exec_always --no-startup-id ~/.i3/startup-app.sh "slack" "slack"
 for_window [class="Slack"] floating enable, border normal, move to scratchpad
 
-# Start a terminal and move it to the mod+n scratchpad
-exec_always --no-startup-id ~/.i3/startup-app.sh "gnome-terminal -e \\"bash -l -c '\\$\\(declare -f title\\); title scratch; ~/.i3/tmux-startup.sh'\\"" "tmux-startup.sh"
-for_window [class="Gnome-terminal" title="scratch$"] border normal, move to scratchpad
-bindsym $mod+n [class="Gnome-terminal" title="scratch"] scratchpad show
+# Ensure that the irssi window always stays in floating mode
+exec_always --no-startup-id gnome-terminal --geometry "110x35" -e "bash -l -c 'title irssi; im'"
+for_window [class="Gnome-terminal" title="irssi"] floating enable, border normal, move to scratchpad
+
+# Start a bunch of floating throwaway terminals, as needed
+bindsym $mod+n exec --no-startup-id "gnome-terminal --geometry '110x35' -e \\"bash -l -c 'title throwaway; bash'\\""
+for_window [class="Gnome-terminal" title="throwaway"] floating enable, border normal
 
 # Scratchpad shortcuts
 bindsym $mod+Shift+minus move scratchpad
