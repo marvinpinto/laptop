@@ -1,0 +1,8 @@
+# vim: set filetype=sh :
+
+# Alias git to g
+alias g="git"
+
+# Use system git completions for the 'g' alias
+_completion_loader git
+complete -o bashdefault -o default -o nospace -F __git_wrap__git_main g

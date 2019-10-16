@@ -89,9 +89,6 @@ alias ls="command ls --color"
 alias tls='/usr/bin/tmux ls'
 alias tks='/usr/bin/tmux kill-session -t '
 
-# Alias git to g
-alias g="git"
-
 # Docker related aliases
 alias drm="docker rm -f"
 alias dps="docker ps"
