@@ -68,6 +68,9 @@ bindsym $mod+space focus mode_toggle
 # focus on the parent container
 bindsym $mod+a focus parent
 
+# focus on the child container
+bindsym $mod+Shift+a focus child
+
 # Workspaces mapped to the primary monitor
 workspace "misc" output DVI-I-1
 
