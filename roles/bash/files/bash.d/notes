@@ -1,0 +1,54 @@
+# vim: set filetype=sh :
+
+# Bash function to make taking random notes slightly easier
+function note() {
+  local notes_dir="${HOME}/projects/notes"
+  case "$1" in
+    list)
+      tree -aC -I '.git' --dirsfirst "$notes_dir"
+      ;;
+    push)
+      pushd "$notes_dir"
+      msg="Regenerated at $(date -u '+%Y-%m-%d %H:%M:%S') UTC"
+      git add .
+      git commit -m "$msg"
+      git push origin master
+      popd
+      ;;
+    *)
+      vim "$notes_dir/$1"
+  esac
+}
+
+function _note_completion() {
+  # Temporarily set the completion-display-width value to 0
+  # https://unix.stackexchange.com/a/344773
+  local width=$(bind -v | sed -n 's/^set completion-display-width //p')
+  if [[ $width -ne 0 ]]; then
+    # change the readline variable
+    bind "set completion-display-width 0"
+
+    # set up PROMPT_COMMAND to reset itself to its current value
+    PROMPT_COMMAND="PROMPT_COMMAND=$(printf %q "$PROMPT_COMMAND")"
+
+    # set up PROMPT_COMMAND to reset the readline variable
+    PROMPT_COMMAND+="; bind 'set completion-display-width $width'"
+  fi
+
+  local cur prev base_opts notes_dir
+  base_opts="list push"
+  notes_dir="${HOME}/projects/notes"
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  words=$(find "$notes_dir" -iname "*.md" -not -path "*.git*" | sed -n "s|^${notes_dir}/||p" | xargs)
+  words="${base_opts} ${words}"
+
+  case $COMP_CWORD in
+    1)
+      COMPREPLY=( $(compgen -W "${words}" -- "${cur}") )
+      ;;
+  esac
+  return 0
+}
+complete -F _note_completion note
