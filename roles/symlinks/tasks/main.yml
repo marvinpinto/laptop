@@ -6,45 +6,10 @@
     state: 'link'
     force: 'yes'
 
-- name: 'symlink ~/Dropbox/freshbooks to ~/freshbooks'
-  file:
-    src: '{{ home_directory }}/Dropbox/freshbooks'
-    dest: '{{ home_directory }}/freshbooks'
-    state: 'link'
-    force: 'yes'
-
-- name: 'symlink ~/Dropbox/projects/password-store to ~/.password-store'
-  file:
-    src: '{{ home_directory }}/Dropbox/projects/password-store'
-    dest: '{{ home_directory }}/.password-store'
-    state: 'link'
-    force: 'yes'
-
-- name: 'symlink ~/Dropbox/projects/tmuxinator-templates to ~/.tmuxinator'
-  file:
-    src: '{{ home_directory }}/Dropbox/projects/tmuxinator-templates'
-    dest: '{{ home_directory }}/.tmuxinator'
-    state: 'link'
-    force: 'yes'
-
 - name: 'Create the ~/tmp directory'
   file:
     dest: '{{ home_directory }}/tmp'
     state: 'directory'
-
-- name: 'symlink ~/Dropbox/scratchpad.md to ~/scratchpad.md'
-  file:
-    src: '{{ home_directory }}/Dropbox/scratchpad.md'
-    dest: '{{ home_directory }}/scratchpad.md'
-    state: 'link'
-    force: 'yes'
-
-- name: 'symlink ~/Dropbox/running-journal.txt to ~/running-journal.txt'
-  file:
-    src: '{{ home_directory }}/Dropbox/running-journal.txt'
-    dest: '{{ home_directory }}/running-journal.txt'
-    state: 'link'
-    force: 'yes'
 
 - name: 'symlink ~/Dropbox/mozilla-firefox-profile-data to ~/.mozilla'
   file:

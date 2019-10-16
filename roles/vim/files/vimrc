@@ -62,7 +62,6 @@ Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'ledger/vim-ledger'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'mustache/vim-mustache-handlebars'
-Plugin 'scratch.vim'
 Plugin 'leafgarland/typescript-vim'
 
 " All of your Plugins must be added before the following line
@@ -192,15 +191,8 @@ autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 " Do not use tabs when in python mode
 autocmd filetype python set expandtab
 
-" Define a custom `:Scratchpad` command that opens the scratch notepad in the
-" current buffer
-:command Scratchpad edit ~/scratchpad.md
-
 " Use hashes (#) for comments in .env files
-call tcomment#DefineType('dosini', '# %s')
-
-" Shortcut to clear the contents of a vim buffer
-:command Clear %d
+call tcomment#type#Define('dosini', '# %s')
 
 " Disable vim recording
 map q <Nop>
