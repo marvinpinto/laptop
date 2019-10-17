@@ -83,7 +83,7 @@ alias la="ls -laF --color"
 alias lsd="ls -lF --color | grep --color=never '^d'"
 
 # Always use color output for `ls`
-alias ls="command ls --color"
+alias ls="ls --color"
 
 # List and kill off tmux sessions
 alias tls='/usr/bin/tmux ls'
@@ -140,7 +140,6 @@ fi
 if [ -f /etc/bash_completion ]; then
   source /etc/bash_completion
 fi
-
 
 #************
 # NVM setup

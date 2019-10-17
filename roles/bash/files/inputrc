@@ -34,3 +34,6 @@ set skip-completed-text on
 set input-meta on
 set output-meta on
 set convert-meta off
+
+# Enable colored bash completion output
+set colored-stats on

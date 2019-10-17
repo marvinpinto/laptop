@@ -44,11 +44,10 @@ function sink() {
 }
 
 function _sink_completion() {
-  local cur prev opts
   COMPREPLY=()
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD-1]}"
-  words=$(docker ps --filter "ancestor=quay.io/marvin/kitchensink:16.04" --format "{{.Names}}" | tr '\n' ' ' | xargs)
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local prev="${COMP_WORDS[COMP_CWORD-1]}"
+  local words=$(docker ps --filter "ancestor=quay.io/marvin/kitchensink:16.04" --format "{{.Names}}" | tr '\n' ' ' | xargs)
   case $COMP_CWORD in
     1)
       COMPREPLY=( $(compgen -W "${words}" -- "${cur}") )
