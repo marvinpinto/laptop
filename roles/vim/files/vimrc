@@ -187,7 +187,11 @@ autocmd filetype go set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
 autocmd filetype python set expandtab
 
 " Use hashes (#) for comments in .env files
-call tcomment#type#Define('dosini', '# %s')
+try
+  call tcomment#type#Define('dosini', '# %s')
+catch
+  " Plugin not yet loaded, will probably work on next invocation
+endtry
 
 " Disable vim recording
 map q <Nop>
