@@ -35,10 +35,6 @@ syntax on
 " Disable error bells
 set noerrorbells
 
-" It seems that 'some' servers can't handle screen-256colors correctly and I'm
-" tired of fighting :(
-" colorscheme distinguished
-
 " Use the OS clipboard by default (on versions compiled with `+clipboard`)
 set clipboard=unnamedplus
 
@@ -56,13 +52,15 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'rodjek/vim-puppet'
-Plugin 'flazz/vim-colorschemes'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'ledger/vim-ledger'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'leafgarland/typescript-vim'
+Plugin 'jacoborus/tender.vim'
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -169,12 +167,6 @@ set shortmess=atI
 " Start scrolling three lines before the horizontal window border
 set scrolloff=3
 
-" Use the distinguised colorscheme
-silent! colorscheme railscasts
-
-" Disable the background color erase facility
-set t_ut=
-
 " Set some filetypes depending on the file extension
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
@@ -199,3 +191,21 @@ call tcomment#type#Define('dosini', '# %s')
 
 " Disable vim recording
 map q <Nop>
+
+" Configure the colorscheme
+if (has("termguicolors"))
+ set termguicolors
+endif
+silent! colorscheme tender
+highlight Comment cterm=italic " Italic comments.
+highlight Comment gui=italic " Italic comments in gui.
+highlight Todo cterm=italic " Italic comments.
+highlight Todo gui=italic " Italic comments in gui.
+
+" Extra markdown configuration
+set conceallevel=2
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_markdown_fenced_languages = ['c++=cpp', 'viml=vim', 'bash=sh', 'ini=dosini']
+let g:vim_markdown_frontmatter = 1
+autocmd FileType markdown highlight mkdLink guifg=#c9d05c ctermfg=185 guibg=NONE ctermbg=NONE gui=underline cterm=underline
