@@ -21,6 +21,9 @@ floating_modifier $mod
 # start a terminal
 bindsym $mod+Return exec gnome-terminal
 
+# start a browser
+bindsym $mod+BackSpace exec firefox
+
 # kill focused window
 bindsym $mod+Shift+q kill
 
