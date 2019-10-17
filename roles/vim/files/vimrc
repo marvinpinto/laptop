@@ -110,6 +110,9 @@ set smartcase   " ignore case if search pattern is all lowercase,
 " Clear the search highlights
 nnoremap <F3> :set hlsearch!<CR>
 
+" Refresh all buffers with F5
+nnoremap <F5> :silent windo e!<CR>
+
 " Remove access to the arrow keys
 nnoremap <up> <nop>
 nnoremap <down> <nop>
