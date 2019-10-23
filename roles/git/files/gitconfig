@@ -129,3 +129,5 @@
   prune = true
 [gpg]
   program = gpg2
+[status]
+  showUntrackedFiles = all
