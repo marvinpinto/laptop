@@ -1,5 +1,5 @@
 set nocompatible              " be iMproved, required
-filetype off                  " required
+filetype off
 
 " Show the (partial) command as it's being typed
 set showcmd
@@ -28,9 +28,6 @@ set nofoldenable
 " Show 'invisible' characters
 set listchars=tab:>-,trail:~,extends:>,precedes:<,nbsp:.
 set list
-
-" Enable syntax highlighting
-syntax on
 
 " Disable error bells
 set noerrorbells
@@ -65,6 +62,7 @@ Plugin 'plasticboy/vim-markdown'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+syntax on
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "
