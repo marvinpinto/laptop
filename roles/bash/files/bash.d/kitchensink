@@ -26,6 +26,7 @@ function sink() {
       --log-driver=none \
       --name $boxname \
       --hostname ${boxname} \
+      --add-host=localgw:172.17.0.1 \
       -v /home/marvin:/var/shared \
       -v $SSH_AUTH_SOCK:/ssh-agent \
       -e SSH_AUTH_SOCK=/ssh-agent \
