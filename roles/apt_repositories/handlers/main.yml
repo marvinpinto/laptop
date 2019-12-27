@@ -1,5 +1,5 @@
 ---
 - name: 'Perform an apt-get update'
-  sudo: true
+  become: true
   apt:
     update_cache: yes

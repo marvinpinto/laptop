@@ -4,7 +4,7 @@
     LANGUAGE: "{{ locale_string }}"
     LANG: "{{ locale_string }}"
     LC_ALL: "{{ locale_string }}"
-  sudo: yes
+  become: true
   command: '/usr/sbin/dpkg-reconfigure locales'
 
 - name: 'Purge un-needed locales'
@@ -12,5 +12,5 @@
     LANGUAGE: "{{ locale_string }}"
     LANG: "{{ locale_string }}"
     LC_ALL: "{{ locale_string }}"
-  sudo: yes
+  become: true
   command: "/usr/sbin/locale-gen --purge {{ locale_string }}"

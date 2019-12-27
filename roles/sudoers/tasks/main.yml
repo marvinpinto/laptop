@@ -1,6 +1,6 @@
 ---
 - name: 'Put the /etc/sudoers file in place'
-  sudo: yes
+  become: true
   copy:
     src: 'sudoers'
     dest: '/etc/sudoers'
@@ -10,7 +10,7 @@
     validate: '/usr/sbin/visudo -cf %s'
 
 - name: 'Put the /etc/sudoers.d/README file in place'
-  sudo: yes
+  become: true
   copy:
     src: 'README'
     dest: '/etc/sudoers.d/README'

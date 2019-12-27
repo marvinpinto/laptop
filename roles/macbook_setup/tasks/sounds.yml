@@ -1,6 +1,6 @@
 ---
 - name: 'Delete the ubuntu startup drumbeat sound'
-  sudo: yes
+  become: true
   file:
     path: '/usr/share/sounds/ubuntu/stereo/system-ready.ogg'
     state: 'absent'

@@ -1,6 +1,6 @@
 ---
 - name: 'Restart sshd'
-  sudo: true
+  become: true
   service:
     name: 'ssh'
     state: 'restarted'

@@ -1,49 +1,47 @@
 ---
 - name: 'Install a few networking-related things'
-  sudo: yes
+  become: true
   apt:
-    name: "{{ item }}"
+    name:
+      - 'wicd'
+      - 'wicd-cli'
+      - 'wicd-curses'
     state: latest
-  with_items:
-    - 'wicd'
-    - 'wicd-cli'
-    - 'wicd-curses'
 
 - name: 'Install a few networking things related to the X1 Carbon'
-  sudo: yes
+  become: true
   apt:
-    name: "{{ item }}"
+    name:
+      - 'bcmwl-kernel-source'
+      - 'linux-firmware-nonfree'
     state: latest
-  with_items:
-    - 'bcmwl-kernel-source'
-    - 'linux-firmware-nonfree'
   when:
     - ansible_system_vendor == "LENOVO"
     - ansible_product_name == "20BS0032US"
 
 - name: 'Stop the network-manager service'
-  sudo: yes
+  become: true
   service:
     name: 'network-manager'
     state: 'stopped'
     enabled: no
 
 - name: 'Add marvin to the netdev group'
-  sudo: yes
+  become: true
   user:
     name: 'marvin'
     groups: 'netdev'
     append: yes
 
 - name: 'Start the wicd service'
-  sudo: yes
+  become: true
   service:
     name: 'wicd'
     state: 'started'
     enabled: yes
 
 - name: 'Wait until the Internet is accessible again'
-  shell: curl --head --silent https://www.freshbooks.com
+  shell: curl --head --silent https://www.google.com
   register: result
   until: result.stdout.find("200 OK") != -1
   retries: 30

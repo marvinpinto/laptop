@@ -1,6 +1,6 @@
 ---
 - name: 'Create the /usr/local/etc/virtualbox directory'
-  sudo: yes
+  become: true
   file:
     path: '/usr/local/etc/virtualbox'
     state: 'directory'
@@ -22,14 +22,14 @@
     - ansible_distribution_version == "14.04"
 
 - name: 'Add the Virtualbox ubuntu repo'
-  sudo: yes
+  become: true
   apt_repository:
     repo: "deb http://download.virtualbox.org/virtualbox/debian {{ ansible_distribution_release }} contrib"
     state: present
     update_cache: yes
 
 - name: 'Install Virtualbox'
-  sudo: yes
+  become: true
   apt:
     name: "{{ item }}"
     state: latest
@@ -38,13 +38,13 @@
     - 'dkms'
 
 - name: 'Check to see if the extension pack file exists'
-  sudo: yes
+  become: true
   stat:
     path: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-{{virtualbox_major_version}}.{{virtualbox_minor_version}}.{{virtualbox_patch_version}}-{{virtualbox_build_id}}.vbox-extpack'
   register: extension_pack_binary
 
 - name: 'Download the extension pack'
-  sudo: yes
+  become: true
   get_url:
     url: 'http://download.virtualbox.org/virtualbox/{{virtualbox_major_version}}.{{virtualbox_minor_version}}.{{virtualbox_patch_version}}/Oracle_VM_VirtualBox_Extension_Pack-{{virtualbox_major_version}}.{{virtualbox_minor_version}}.{{virtualbox_patch_version}}-{{virtualbox_build_id}}.vbox-extpack'
     dest: '/usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-{{virtualbox_major_version}}.{{virtualbox_minor_version}}.{{virtualbox_patch_version}}-{{virtualbox_build_id}}.vbox-extpack'
@@ -52,12 +52,12 @@
   when: extension_pack_binary.stat.exists == False
 
 - name: 'Install the extension pack'
-  sudo: yes
+  become: true
   shell: 'echo y | /usr/bin/VBoxManage extpack install --replace /usr/local/etc/virtualbox/Oracle_VM_VirtualBox_Extension_Pack-{{virtualbox_major_version}}.{{virtualbox_minor_version}}.{{virtualbox_patch_version}}-{{virtualbox_build_id}}.vbox-extpack'
   when: extension_pack_binary.stat.exists == False
 
 - name: 'Add marvin to the vboxusers group'
-  sudo: yes
+  become: true
   user:
     name: 'marvin'
     groups: 'vboxusers'

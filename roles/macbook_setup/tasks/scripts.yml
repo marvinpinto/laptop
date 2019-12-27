@@ -1,6 +1,6 @@
 ---
 - name: 'Put the screenshot script file in place'
-  sudo: yes
+  become: true
   copy:
     src: 'screenshot.sh'
     dest: '/usr/local/bin/screenshot'
@@ -9,7 +9,7 @@
     mode: '0755'
 
 - name: 'Put the diff-highlight script file in place'
-  sudo: yes
+  become: true
   copy:
     src: 'diff-highlight'
     dest: '/usr/local/bin/diff-highlight'

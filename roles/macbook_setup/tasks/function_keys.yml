@@ -1,6 +1,6 @@
 ---
 - name: 'Put the /etc/modprobe.d/hid_apple.conf file in place'
-  sudo: yes
+  become: true
   copy:
     content: "options hid_apple fnmode=2\n"
     dest: '/etc/modprobe.d/hid_apple.conf'

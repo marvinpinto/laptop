@@ -1,6 +1,6 @@
 ---
 - name: 'Create the /etc/X11/xorg.conf.d directory'
-  sudo: yes
+  become: true
   file:
     path: '/etc/X11/xorg.conf.d'
     owner: 'root'
@@ -9,7 +9,7 @@
     state: directory
 
 - name: 'Put the 60-magictrackpad.conf file in place'
-  sudo: yes
+  become: true
   copy:
     src: '60-magictrackpad.conf'
     dest: '/etc/X11/xorg.conf.d/60-magictrackpad.conf'
@@ -18,7 +18,7 @@
     mode: '0644'
 
 - name: 'Put the 60-synaptics.conf file in place'
-  sudo: yes
+  become: true
   copy:
     src: '60-synaptics.conf'
     dest: '/etc/X11/xorg.conf.d/60-synaptics.conf'
@@ -27,7 +27,7 @@
     mode: '0644'
 
 - name: 'Put the 70-optical-mice.conf file in place'
-  sudo: yes
+  become: true
   copy:
     src: '70-optical-mice.conf'
     dest: '/etc/X11/xorg.conf.d/70-optical-mice.conf'
@@ -36,7 +36,7 @@
     mode: '0644'
 
 - name: 'Install gnome-settings-daemon'
-  sudo: yes
+  become: true
   apt:
     name: 'gnome-settings-daemon'
     state: latest

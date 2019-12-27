@@ -10,15 +10,14 @@
 - name: 'Install a few requirements needed by the various yubikey tools'
   become: true
   apt:
-    name: "{{ item }}"
+    name:
+      - 'python-usb'
+      - 'gnupg2'
+      - 'pinentry-curses'
+      - 'pcscd'
+      - 'scdaemon'
+      - 'pcsc-tools'
     state: latest
-  with_items:
-    - 'python-usb'
-    - 'gnupg2'
-    - 'pinentry-curses'
-    - 'pcscd'
-    - 'scdaemon'
-    - 'pcsc-tools'
   notify: 'restart-pcscd'
 
 - name: 'Add the CCID Backports (libccid) ubuntu repo'
@@ -45,12 +44,11 @@
 - name: 'Install the Yubikey personalization tools'
   become: true
   apt:
-    name: "{{ item }}"
+    name:
+      - 'yubikey-personalization'
+      - 'yubikey-personalization-gui'
+      - 'yubioath-desktop'
     state: latest
-  with_items:
-    - 'yubikey-personalization'
-    - 'yubikey-personalization-gui'
-    - 'yubioath-desktop'
 
 - name: 'Put the yubitouch.sh script in place'
   become: true
@@ -64,11 +62,10 @@
 - name: 'Install the yubikey-manager package for 16.04'
   become: true
   apt:
-    name: "{{ item }}"
+    name:
+      - 'yubikey-manager'
+      - 'python3-yubikey-manager'
     state: latest
-  with_items:
-    - 'yubikey-manager'
-    - 'python3-yubikey-manager'
   when:
     - ansible_distribution == "Ubuntu"
     - ansible_distribution_version == "16.04"

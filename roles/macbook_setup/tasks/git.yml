@@ -1,19 +1,19 @@
 ---
 - name: 'Add the git ubuntu repo'
-  sudo: yes
+  become: true
   apt_repository:
     repo: 'ppa:git-core/ppa'
     state: present
     update_cache: yes
 
 - name: 'Install git'
-  sudo: yes
+  become: true
   apt:
     name: 'git'
     state: latest
 
 - name: 'Add the git-lfs apt signing key'
-  sudo: yes
+  become: true
   apt_key:
     url: 'https://packagecloud.io/github/git-lfs/gpgkey'
     state: present
@@ -22,20 +22,20 @@
 - meta: flush_handlers
 
 - name: 'Install apt-transport-https'
-  sudo: yes
+  become: true
   apt:
     name: 'apt-transport-https'
     state: latest
 
 - name: 'Add the git-lfs ubuntu repo'
-  sudo: yes
+  become: true
   apt_repository:
     repo: 'deb https://packagecloud.io/github/git-lfs/ubuntu/ {{ ansible_distribution_release }} main'
     state: present
     update_cache: yes
 
 - name: 'Install git-lfs'
-  sudo: yes
+  become: true
   apt:
     name: 'git-lfs'
     state: latest
