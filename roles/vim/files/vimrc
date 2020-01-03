@@ -172,7 +172,7 @@ autocmd BufNewFile,BufRead *.md set filetype=markdown
 autocmd BufNewFile,BufRead *.ledger set filetype=ledger
 autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
 autocmd BufNewFile,BufRead *.{handlebars,hb,hbs,hbt} set filetype=html.handlebars
-autocmd BufNewFile,BufRead *.{ts,tsx} set filetype=typescript
+autocmd BufNewFile,BufRead *.{ts,tsx,js,jsx} set filetype=typescript
 
 " Do not display the tab character in the following kind of files
 autocmd filetype make set listchars=tab:\ \ ,trail:~,extends:>,precedes:<,nbsp:.
