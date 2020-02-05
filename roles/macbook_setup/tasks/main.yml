@@ -16,6 +16,7 @@
 - include: 1password.yml
 - include: git.yml
 - include: ansible.yml
+- include: inkscape.yml
 - include: peek.yml
 - include: x11.yml
 - include: function_keys.yml

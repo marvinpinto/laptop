@@ -1,0 +1,13 @@
+---
+- name: 'Add the inkscape ubuntu repo'
+  become: true
+  apt_repository:
+    repo: 'ppa:inkscape.dev/stable-daily'
+    state: present
+    update_cache: yes
+
+- name: 'Install inkscape'
+  become: true
+  apt:
+    name: 'inkscape'
+    state: latest

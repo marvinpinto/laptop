@@ -81,3 +81,4 @@
         - 'ppa_eosrei_fonts_{{ ansible_distribution_release }}.list'
         - 'prerelease_keybase_io_deb.list'
         - 'packagecloud_io_slacktechnologies_slack_debian.list'
+        - 'ppa_inkscape_dev_stable_{{ ansible_distribution_release }}.list'
