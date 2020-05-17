@@ -54,7 +54,6 @@
       managed_files_directory: '/etc/X11/xorg.conf.d'
       managed_files:
         - '60-magictrackpad.conf'
-        - '60-synaptics.conf'
         - '70-optical-mice.conf'
 
     - role: 'delete_unmanaged_files'

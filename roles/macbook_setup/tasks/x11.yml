@@ -17,15 +17,6 @@
     group: 'root'
     mode: '0644'
 
-- name: 'Put the 60-synaptics.conf file in place'
-  become: true
-  copy:
-    src: '60-synaptics.conf'
-    dest: '/etc/X11/xorg.conf.d/60-synaptics.conf'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-
 - name: 'Put the 70-optical-mice.conf file in place'
   become: true
   copy:
