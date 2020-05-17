@@ -74,11 +74,11 @@ bindsym $mod+a focus parent
 # focus on the child container
 bindsym $mod+Shift+a focus child
 
-# Workspaces mapped to the primary monitor
-workspace "misc" output DVI-I-1
-
 # Workspaces mapped to the secondary monitor
-workspace "other" output DP-0
+workspace "other" output DVI-I-1
+
+# Workspaces mapped to the primary monitor
+workspace "misc" output DP-0
 
 # switch to the previously used workspace
 bindsym $mod+b workspace back_and_forth
@@ -130,7 +130,7 @@ exec_always --no-startup-id /usr/bin/gnome-settings-daemon &
 exec_always --no-startup-id /usr/bin/xset r rate 250 50
 exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
-exec_always --no-startup-id xrandr --output DVI-I-1 --primary --right-of DP-0 --rotate left
+exec_always --no-startup-id xrandr --output DP-0 --primary --rotate normal --output DVI-I-1 --right-of DP-0 --rotate left
 exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-applet"
 exec_always --no-startup-id ~/.i3/startup-app.sh "autocutsel -fork"
 exec_always --no-startup-id ~/.i3/startup-app.sh "autocutsel -selection PRIMARY -fork"
