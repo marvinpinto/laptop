@@ -26,6 +26,21 @@
     group: 'root'
     mode: '0644'
 
+- name: 'Put the 99-M570Logitech.conf file in place'
+  become: true
+  copy:
+    src: '99-M570Logitech.conf'
+    dest: '/etc/X11/xorg.conf.d/99-M570Logitech.conf'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+
+- name: 'Install solaar'
+  become: true
+  apt:
+    name: 'solaar'
+    state: 'present'
+
 - name: 'Install gnome-settings-daemon'
   become: true
   apt:
