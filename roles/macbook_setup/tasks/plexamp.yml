@@ -1,0 +1,43 @@
+---
+- name: 'Create the /usr/local/etc/plexamp directory'
+  become: true
+  file:
+    path: '/usr/local/etc/plexamp'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if plexamp version {{plexamp_version}} is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/plexamp/Plexamp-{{plexamp_version}}.AppImage'
+  register: 'plexamp_binary'
+
+- name: 'Download plexamp version {{plexamp_version}}'
+  become: true
+  get_url:
+    url: 'https://plexamp.plex.tv/plexamp.plex.tv/desktop/Plexamp-{{plexamp_version}}.AppImage'
+    dest: '/usr/local/etc/plexamp/Plexamp-{{plexamp_version}}.AppImage'
+    mode: '0755'
+  when: 'plexamp_binary.stat.exists == False'
+
+- name: 'Symlink the plexamp binary to our destination'
+  become: true
+  file:
+    src: '/usr/local/etc/plexamp/Plexamp-{{plexamp_version}}.AppImage'
+    dest: '/usr/local/etc/plexamp/Plexamp.AppImage'
+    state: 'link'
+
+- name: 'Create the /usr/share/appimagekit directory'
+  become: true
+  file:
+    path: '/usr/share/appimagekit'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Ensure that AppImage installations do not prompt to install desktop shortcuts & such'
+  become: true
+  file:
+    path: '/usr/share/appimagekit/no_desktopintegration'
+    state: 'touch'
+    modification_time: 'preserve'
+    access_time: 'preserve'

@@ -135,6 +135,10 @@ exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-apple
 exec_always --no-startup-id ~/.i3/startup-app.sh "autocutsel -fork"
 exec_always --no-startup-id ~/.i3/startup-app.sh "autocutsel -selection PRIMARY -fork"
 
+# Start plexamp and move it to the default scratchpad
+exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/local/etc/plexamp/Plexamp.AppImage" "plexamp"
+for_window [class="Plexamp"] floating enable, border normal, move to scratchpad
+
 # Ensure that the keybase window always stays in floating mode
 exec_always --no-startup-id /usr/bin/run_keybase
 for_window [class="Keybase"] floating enable, border normal, move to scratchpad
