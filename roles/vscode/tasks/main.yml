@@ -1,0 +1,24 @@
+---
+- name: 'Create the ~/.config/Code directory'
+  file:
+    path: '{{ home_directory }}/.config/Code'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Create the ~/.config/Code/User directory'
+  file:
+    path: '{{ home_directory }}/.config/Code/User'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Put the vscode settings file in place'
+  copy:
+    src: "settings.json"
+    dest: "{{ home_directory }}/.config/Code/User/settings.json"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0600'

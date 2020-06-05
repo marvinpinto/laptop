@@ -82,3 +82,4 @@
         - 'prerelease_keybase_io_deb.list'
         - 'packagecloud_io_slacktechnologies_slack_debian.list'
         - 'ppa_inkscape_dev_stable_daily_{{ ansible_distribution_release }}.list'
+        - 'packages_microsoft_com_repos_vscode.list'

@@ -8,6 +8,7 @@
     - 'bash'
     - 'xdg'
     - 'i3'
+    - 'vscode'
     - 'vim'
     - 'tmux'
     - 'git'
