@@ -1,0 +1,41 @@
+---
+- name: 'Add marvin to the plugdev group'
+  become: true
+  user:
+    name: 'marvin'
+    groups: 'plugdev'
+    append: yes
+
+- name: 'Add the rules file needed for connect the Ergodox EZ to chrome via web usb'
+  become: true
+  copy:
+    src: '50-oryx.rules'
+    dest: '/etc/udev/rules.d/50-oryx.rules'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'restart-udev'
+
+- name: 'Add the rules file needed flash the Ergodox EZ'
+  become: true
+  copy:
+    src: '50-wally.rules'
+    dest: '/etc/udev/rules.d/50-wally.rules'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify: 'restart-udev'
+
+- name: 'Check to see if the wally binary exists'
+  become: true
+  stat:
+    path: '/usr/local/bin/wally'
+  register: wally_binary
+
+- name: 'Download the wally binary'
+  become: true
+  get_url:
+    url: 'https://configure.ergodox-ez.com/wally/linux'
+    dest: '/usr/local/bin/wally'
+    mode: '0755'
+  when: 'wally_binary.stat.exists == False'

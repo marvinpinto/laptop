@@ -27,6 +27,7 @@
 - include: emoji_fonts.yml
 - include: rclone.yml
 - include: usbmount.yml
+- include: ergodox.yml
 - include: rng_tools.yml
 - include: docker_setup.yml
 - include: yubikey.yml

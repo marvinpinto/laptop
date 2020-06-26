@@ -1,0 +1,2 @@
+# Rule for the Ergodox EZ Original / Shine / Glow
+SUBSYSTEM=="usb", ATTR{idVendor}=="feed", ATTR{idProduct}=="1307", GROUP="plugdev"

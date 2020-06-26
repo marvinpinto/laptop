@@ -10,6 +10,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 set $mod Mod4
+set $alt Mod1
 
 # Font for window titles. Will also be used by the bar unless a different font is
 # used in the bar {} block below.
@@ -114,11 +115,8 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 focus_follows_mouse yes
 
-# Rename the current workspace
-bindsym $mod+t exec --no-startup-id ~/.i3/rename_workspace.sh
-
 # Shortcut to lock the screen
-bindsym $mod+Control+l exec --no-startup-id /usr/local/bin/rofi-i3-locker
+bindsym $alt+Control+Shift+l exec --no-startup-id /usr/local/bin/rofi-i3-locker
 
 # Startup programs
 exec --no-startup-id compton -CGb
@@ -157,35 +155,19 @@ bindsym $mod+n exec --no-startup-id "gnome-terminal --geometry '110x35' -e \\"ba
 for_window [class="Gnome-terminal" title="throwaway"] floating enable, border normal
 
 # Scratchpad shortcuts
-bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
 # Ensure that the following windows always start in floating mode
 for_window [class="Pavucontrol"] floating enable, border normal
 for_window [class="Blueman-manager"] floating enable, border normal, resize set 640 480
 
-# Use mod-Control-Left and Right to rotate through the workspace list.
-bindsym $mod+Control+Left workspace prev_on_output
-bindsym $mod+Control+Right workspace next_on_output
-
-# Use mod-Shift-Control-Left and Right to move the selected window to an
-# adjacent workspace. (This does *not* change your view to that workspace,
-# it just "zaps" the window there.)
-bindsym $mod+Shift+Control+Left move workspace prev_on_output
-bindsym $mod+Shift+Control+Right move workspace next_on_output
+# Use special Ergodox keys to cycle through workspaces
+bindsym $alt+Control+Shift+Left workspace prev_on_output
+bindsym $alt+Control+Shift+Right workspace next_on_output
 
 # Do not allow any windows to steal focus or try and grab my attention
 focus_on_window_activation none
 force_display_urgency_hint 0
-
-# Show i3 vim-style window marks
-show_marks yes
-
-# read 1 character and mark the current window with this character
-bindsym $mod+m exec i3-input -F 'mark --toggle %s' -l 1 -P 'Mark: '
-
-# read 1 character and go to the window with the character
-bindsym $mod+g exec i3-input -F '[con_mark="%s"] focus' -l 1 -P 'Goto: '
 
 # color defines for zenburn styled i3
 set $bg     #2c2c2e
