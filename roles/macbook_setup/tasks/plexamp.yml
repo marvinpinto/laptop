@@ -15,7 +15,7 @@
 - name: 'Download plexamp version {{plexamp_version}}'
   become: true
   get_url:
-    url: 'https://plexamp.plex.tv/plexamp.plex.tv/desktop/Plexamp-{{plexamp_version}}.AppImage'
+    url: 'https://plexamp.plex.tv/plexamp.plex.tv/plexamp-{{plexamp_version}}-x86_64.AppImage'
     dest: '/usr/local/etc/plexamp/Plexamp-{{plexamp_version}}.AppImage'
     mode: '0755'
   when: 'plexamp_binary.stat.exists == False'
