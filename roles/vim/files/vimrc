@@ -42,6 +42,7 @@ set notitle
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
+set rtp+=/usr/local/bin/fzf
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
@@ -59,6 +60,8 @@ Plugin 'jacoborus/tender.vim'
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'hashivim/vim-terraform'
+Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -214,3 +217,9 @@ autocmd FileType markdown highlight mkdLink guifg=#c9d05c ctermfg=185 guibg=NONE
 
 " jump to the last cursor position when reopening a file
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+" Find files by name under the current directory
+nmap <leader>f :Files<cr>
+
+" Search content in the current file
+nmap <leader>l :BLines<cr>

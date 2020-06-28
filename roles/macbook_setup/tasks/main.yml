@@ -16,6 +16,7 @@
 - include: slack.yml
 - include: plexamp.yml
 - include: 1password.yml
+- include: fzf.yml
 - include: git.yml
 - include: ansible.yml
 - include: inkscape.yml

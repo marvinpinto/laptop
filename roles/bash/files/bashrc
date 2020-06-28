@@ -130,16 +130,14 @@ fi
 #*****************
 # Tab Completion
 #*****************
-
-# Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
-if [ -e "$HOME/.ssh/config" ]; then
-  complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2 | tr ' ' '\n')" scp sftp ssh cs
-fi
-
 # If possible, add tab completion for many more commands
 if [ -f /etc/bash_completion ]; then
   source /etc/bash_completion
 fi
+
+# bash completion for fzf
+[ -e "/usr/local/etc/fzf/completion.bash" ] && source "/usr/local/etc/fzf/completion.bash"
+[ -e "/usr/local/etc/fzf/key-bindings.bash" ] && source "/usr/local/etc/fzf/key-bindings.bash"
 
 #************
 # NVM setup

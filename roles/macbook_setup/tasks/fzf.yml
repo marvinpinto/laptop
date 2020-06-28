@@ -1,0 +1,66 @@
+---
+- name: 'Create the /usr/local/etc/fzf directory'
+  become: true
+  file:
+    path: '/usr/local/etc/fzf'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if fzf version {{fzf_version}} is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/fzf/fzf-{{fzf_version}}'
+  register: 'fzf_path'
+
+- name: 'Create the /usr/local/etc/fzf/fzf-{{fzf_version}}/ directory'
+  become: true
+  file:
+    path: '/usr/local/etc/fzf/fzf-{{fzf_version}}'
+    state: 'directory'
+    mode: '0755'
+  when: 'fzf_path.stat.exists == False'
+
+- name: 'Download the fzf package'
+  become: true
+  unarchive:
+    src: 'https://github.com/junegunn/fzf-bin/releases/download/{{fzf_version}}/fzf-{{fzf_version}}-linux_amd64.tgz'
+    dest: '/usr/local/etc/fzf/fzf-{{fzf_version}}/'
+    copy: 'no'
+  when: 'fzf_path.stat.exists == False'
+
+- name: 'Symlink the fzf binary to /usr/local/bin'
+  become: true
+  file:
+    src: '/usr/local/etc/fzf/fzf-{{fzf_version}}/fzf'
+    dest: '/usr/local/bin/fzf'
+    state: 'link'
+
+- name: 'Install the fzf bash completion script'
+  become: true
+  get_url:
+    url: 'https://raw.githubusercontent.com/junegunn/fzf/{{fzf_version}}/shell/completion.bash'
+    dest: '/usr/local/etc/fzf/fzf-{{fzf_version}}/completion.bash'
+    mode: '0755'
+  when: 'fzf_path.stat.exists == False'
+
+- name: 'Symlink the fzf bash completion script'
+  become: true
+  file:
+    src: '/usr/local/etc/fzf/fzf-{{fzf_version}}/completion.bash'
+    dest: '/etc/bash_completion.d/fzf'
+    state: 'link'
+
+- name: 'Install the fzf bash completion script for key bindings'
+  become: true
+  get_url:
+    url: 'https://raw.githubusercontent.com/junegunn/fzf/{{fzf_version}}/shell/key-bindings.bash'
+    dest: '/usr/local/etc/fzf/fzf-{{fzf_version}}/key-bindings.bash'
+    mode: '0755'
+  when: 'fzf_path.stat.exists == False'
+
+- name: 'Symlink the fzf bash completion script for key bindings'
+  become: true
+  file:
+    src: '/usr/local/etc/fzf/fzf-{{fzf_version}}/key-bindings.bash'
+    dest: '/etc/bash_completion.d/fzf-key-bindings'
+    state: 'link'
