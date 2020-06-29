@@ -1,0 +1,59 @@
+---
+- name: 'Create the /usr/local/etc/cheat directory'
+  become: true
+  file:
+    path: '/usr/local/etc/cheat'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if cheat version {{cheat_version}} is already downloaded'
+  become: true
+  stat:
+    path: '/usr/local/etc/cheat/cheat-{{cheat_version}}'
+  register: 'cheat_path'
+
+- name: 'Create the /usr/local/etc/cheat/cheat-{{cheat_version}}/ directory'
+  become: true
+  file:
+    path: '/usr/local/etc/cheat/cheat-{{cheat_version}}'
+    state: 'directory'
+    mode: '0755'
+  when: 'cheat_path.stat.exists == False'
+
+- name: 'Download the cheat binary'
+  become: true
+  get_url:
+    url: 'https://github.com/cheat/cheat/releases/download/{{cheat_version}}/cheat-linux-amd64.gz'
+    dest: '/usr/local/etc/cheat/cheat-{{cheat_version}}/cheat.gz'
+    mode: '0755'
+  when: 'cheat_path.stat.exists == False'
+
+- name: 'Unpack the cheat binary'
+  become: true
+  shell: |
+    cd /usr/local/etc/cheat/cheat-{{cheat_version}}/
+    gunzip cheat.gz
+    chmod +x cheat
+  when: 'cheat_path.stat.exists == False'
+
+- name: 'Symlink the cheat binary to /usr/local/bin'
+  become: true
+  file:
+    src: '/usr/local/etc/cheat/cheat-{{cheat_version}}/cheat'
+    dest: '/usr/local/bin/cheat'
+    state: 'link'
+
+- name: 'Install the cheat bash completion script'
+  become: true
+  get_url:
+    url: 'https://raw.githubusercontent.com/cheat/cheat/{{cheat_version}}/scripts/cheat.bash'
+    dest: '/usr/local/etc/cheat/cheat-{{cheat_version}}/completion.bash'
+    mode: '0755'
+  when: 'cheat_path.stat.exists == False'
+
+- name: 'Symlink the cheat bash completion script'
+  become: true
+  file:
+    src: '/usr/local/etc/cheat/cheat-{{cheat_version}}/completion.bash'
+    dest: '/etc/bash_completion.d/cheat'
+    state: 'link'

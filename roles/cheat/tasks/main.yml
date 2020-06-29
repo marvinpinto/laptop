@@ -1,0 +1,27 @@
+---
+- name: 'Create the ~/.config/cheat directory'
+  file:
+    path: '{{ home_directory }}/.config/cheat'
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Put all the config files in place'
+  copy:
+    src: "{{ item }}"
+    dest: "{{ home_directory }}/.config/cheat/{{ item }}"
+    owner: 'marvin'
+    group: 'marvin'
+    mode: '0644'
+  with_items:
+    - 'conf.yml'
+
+- name: 'Put all the cheatsheet files in place'
+  synchronize:
+    src: 'cheatsheets/'
+    dest: "{{ home_directory }}/.config/cheat/cheatsheets"
+    recursive: true
+    delete: true
+    rsync_opts:
+      - '--chmod=D755,F644'

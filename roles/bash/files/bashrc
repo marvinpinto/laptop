@@ -61,7 +61,8 @@ export GIT_PS1_SHOWDIRTYSTATE='yes'
 export GIT_PS1_SHOWSTASHSTATE='yes'
 export GIT_PS1_SHOWUNTRACKEDFILES='yes'
 
-
+# Use fzf for searching through cheatsheets
+export CHEAT_USE_FZF=true
 
 #***************
 # Bash Aliases

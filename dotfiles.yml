@@ -10,6 +10,7 @@
     - 'i3'
     - 'vscode'
     - 'vim'
+    - 'cheat'
     - 'tmux'
     - 'git'
     - 'symlinks'
