@@ -129,16 +129,10 @@ fi
 
 
 #*****************
-# Tab Completion
+# Bash Completion
 #*****************
-# If possible, add tab completion for many more commands
-if [ -f /etc/bash_completion ]; then
-  source /etc/bash_completion
-fi
+[ -e "/etc/bash_completion" ] && source "/etc/bash_completion"
 
-# bash completion for fzf
-[ -e "/usr/local/etc/fzf/completion.bash" ] && source "/usr/local/etc/fzf/completion.bash"
-[ -e "/usr/local/etc/fzf/key-bindings.bash" ] && source "/usr/local/etc/fzf/key-bindings.bash"
 
 #************
 # NVM setup
