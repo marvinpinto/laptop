@@ -133,8 +133,6 @@ exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec_always --no-startup-id xrandr --output DP-0 --primary --rotate normal --output DVI-I-1 --right-of DP-0 --rotate left --brightness 0.8
 exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-applet"
-exec_always --no-startup-id ~/.i3/startup-app.sh "autocutsel -fork"
-exec_always --no-startup-id ~/.i3/startup-app.sh "autocutsel -selection PRIMARY -fork"
 
 # Start plexamp and move it to the default scratchpad
 exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/local/etc/plexamp/Plexamp.AppImage" "plexamp"

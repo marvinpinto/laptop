@@ -28,7 +28,6 @@
       - 'ttf-mscorefonts-installer'
       - 'audacity'
       - 'default-jre'
-      - 'autocutsel'
       - 'silversearcher-ag'
     state: 'present'
 
