@@ -223,3 +223,6 @@ nmap <leader>f :Files<cr>
 
 " Search content in the current file
 nmap <leader>l :BLines<cr>
+
+" Bring up vim file explorer
+nmap <leader>e :Explore<cr>

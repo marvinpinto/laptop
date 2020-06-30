@@ -1,0 +1,9 @@
+---
+syntax: bash
+---
+
+# Use fzf to dynamically find & open files in the cirrent directory
+,f
+
+# Bring up the vim file explorer in the current buffer
+,e

@@ -29,7 +29,8 @@
       - 'audacity'
       - 'default-jre'
       - 'autocutsel'
-    state: latest
+      - 'silversearcher-ag'
+    state: 'present'
 
 - name: "Remove a few things I don't care for"
   become: true
