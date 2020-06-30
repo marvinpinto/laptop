@@ -20,14 +20,7 @@ i3-msg 'append_layout ~/.i3/dev-layout.json'
 
 for i in {1..7}
 do
-  sleep ${SLEEP_DURATION}
-  i3-msg exec gnome-terminal;
-  sleep ${SLEEP_DURATION}
-  xdotool type "sink ${WORKSPACE_NAME}"
-  xdotool key KP_Enter
-  sleep 3
-  xdotool type "clear"
-  xdotool key KP_Enter
+  i3-msg exec "gnome-terminal --working-directory=${HOME}/projects/${WORKSPACE_NAME}"
   sleep ${SLEEP_DURATION}
 done
 
