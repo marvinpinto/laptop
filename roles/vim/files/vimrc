@@ -113,6 +113,9 @@ nnoremap <F3> :set hlsearch!<CR>
 " Refresh all buffers with F5
 nnoremap <F5> :silent windo e!<CR>
 
+" Reset the syntax highlighting in the current buffer with F12
+nnoremap <F12> <Esc>:syntax sync fromstart<CR>
+
 " Remove access to the arrow keys
 nnoremap <up> <nop>
 nnoremap <down> <nop>
