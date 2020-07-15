@@ -22,6 +22,11 @@ alias ..="cd .."
 complete -d cd
 shopt -s cdspell
 
+# Disable accidental Ctrl+s presses
+if [[ -t 0 && $- = *i* ]]; then
+  stty -ixon
+fi
+
 #***************
 # Bash Exports
 #***************
