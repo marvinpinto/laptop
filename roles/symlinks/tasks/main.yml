@@ -17,3 +17,17 @@
     dest: '{{ home_directory }}/.mozilla'
     state: 'link'
     force: 'yes'
+
+- name: 'symlink ~/Dropbox/aws-cli-config to ~/.aws'
+  file:
+    src: '{{ home_directory }}/Dropbox/aws-cli-config'
+    dest: '{{ home_directory }}/.aws'
+    state: 'link'
+    force: 'yes'
+
+- name: 'symlink ~/Dropbox/aws-vault-config to ~/.aws'
+  file:
+    src: '{{ home_directory }}/Dropbox/aws-vault-config'
+    dest: '{{ home_directory }}/.awsvault'
+    state: 'link'
+    force: 'yes'

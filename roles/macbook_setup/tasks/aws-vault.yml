@@ -1,0 +1,22 @@
+---
+- name: 'Check to see if the aws-vault binary exists'
+  become: true
+  stat:
+    path: '/usr/local/bin/aws-vault'
+  register: aws_vault_binary
+
+- name: 'Download the aws-vault binary'
+  become: true
+  get_url:
+    url: 'https://github.com/99designs/aws-vault/releases/download/{{ aws_vault_version }}/aws-vault-linux-amd64'
+    dest: '/usr/local/bin/aws-vault'
+    mode: '0755'
+  when: 'aws_vault_binary.stat.exists == False'
+
+- name: 'Install the aws-vault bash completion script'
+  become: true
+  get_url:
+    url: 'https://raw.githubusercontent.com/99designs/aws-vault/{{ aws_vault_version }}/contrib/completions/bash/aws-vault.bash'
+    dest: '/etc/bash_completion.d/aws-vault'
+    mode: '0755'
+  when: 'aws_vault_binary.stat.exists == False'
