@@ -20,7 +20,7 @@
   bra = branch -a
   remotes = remote -v
   # Interactive rebase with the given number of latest commits
-  reb = "!r() { git rebase -i HEAD~$1; }; r"
+  reb = "!r() { git rebase -i --autostash HEAD~$1; }; r"
   # Find branches containing commit
   fb = "!f() { git branch -a --contains $1; }; f"
   # Find tags containing commit
@@ -46,6 +46,11 @@
   unstage = reset HEAD --
   # more useful stash shortcut
   stasha = stash --include-untracked
+  # use fzf to make fixup commits easier to generate and squash
+  fixup = !"git log --oneline | fzf | cut -d' ' -f1 | xargs git commit --no-verify --fixup"
+
+[rebase]
+  autosquash = true
 
 [core]
   # Use custom `.gitignore` and `.gitattributes`
