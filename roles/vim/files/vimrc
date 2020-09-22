@@ -38,6 +38,10 @@ set clipboard=unnamedplus
 " Do not attempt to rename the window
 set notitle
 
+" Do not allocate too much resources to parens matching (seemingly very slow)
+let g:matchparen_timeout = 2
+let g:matchparen_insert_timeout = 2
+
 """" Start of Vundle related items
 
 " set the runtime path to include Vundle and initialize
@@ -48,16 +52,11 @@ call vundle#begin()
 "call vundle#begin('~/some/path/here')
 
 Plugin 'gmarik/Vundle.vim'
-Plugin 'tpope/vim-fugitive'
-Plugin 'rodjek/vim-puppet'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'docker/docker' , {'rtp': '/contrib/syntax/vim/'}
 Plugin 'ledger/vim-ledger'
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'jacoborus/tender.vim'
-Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'hashivim/vim-terraform'
 Plugin 'junegunn/fzf'
