@@ -19,8 +19,8 @@
   tags = tag -l
   bra = branch -a
   remotes = remote -v
-  # Interactive rebase with the given number of latest commits
-  reb = "!r() { git rebase -i --autostash HEAD~$1; }; r"
+  # Use fzf to choose the SHA to interactively rebase onto
+  reb = !git rebase -i --autostash --autosquash $(git log --color --oneline | fzf --ansi | cut -d ' ' -f1)^
   # Find branches containing commit
   fb = "!f() { git branch -a --contains $1; }; f"
   # Find tags containing commit
@@ -47,7 +47,7 @@
   # more useful stash shortcut
   stasha = stash --include-untracked
   # use fzf to make fixup commits easier to generate and squash
-  fixup = !"git log --oneline | fzf | cut -d' ' -f1 | xargs git commit --no-verify --fixup"
+  fixup = !"git log --color --oneline | fzf --ansi | cut -d' ' -f1 | xargs git commit --no-verify --fixup"
 
 [rebase]
   autosquash = true
@@ -69,7 +69,7 @@
   # files such as git status.
   untrackedCache = true
   # Explicitly set vim as the editor
-  editor = "vim"
+  editor = vim
 
 [pager]
   # Use the diff-highlight script to emphasize the changed parts of a line
