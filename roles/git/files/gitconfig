@@ -68,8 +68,8 @@
   # This cache is meant to speed up commands that involve determining untracked
   # files such as git status.
   untrackedCache = true
-  # Explicitly set vim as the editor
-  editor = vim
+  # Use nvim as the default pager
+  pager = "nvim -R"
 
 [pager]
   # Use the diff-highlight script to emphasize the changed parts of a line

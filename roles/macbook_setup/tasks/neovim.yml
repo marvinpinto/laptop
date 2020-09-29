@@ -1,0 +1,24 @@
+---
+- name: 'Install neovim from the snapd store'
+  become: true
+  snap:
+    name: 'nvim'
+    classic: 'yes'
+
+- name: 'Set nvim as the default editor'
+  become: true
+  alternatives:
+    name: 'editor'
+    path: '/snap/bin/nvim'
+
+- name: 'Set nvim as the default program when vi is invoked'
+  become: true
+  alternatives:
+    name: 'vi'
+    path: '/snap/bin/nvim'
+
+- name: 'Set nvim as the default program when vim is invoked'
+  become: true
+  alternatives:
+    name: 'vim'
+    path: '/snap/bin/nvim'

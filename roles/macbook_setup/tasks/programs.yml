@@ -29,6 +29,7 @@
       - 'audacity'
       - 'default-jre'
       - 'silversearcher-ag'
+      - 'fonts-powerline'
     state: 'present'
 
 - name: "Remove a few things I don't care for"
@@ -79,10 +80,11 @@
       - 'cups-browsed'
       - 'speech-dispatcher'
       - 'modem-manager'
+      - 'command-not-found'
     state: absent
     purge: yes
 
-- name: 'Set xterm as the default terminal'
+- name: 'Set the default terminal'
   become: true
   alternatives:
     name: 'x-terminal-emulator'

@@ -1,35 +1,38 @@
 ---
-- name: 'Create the ~/.vim directory'
+- name: 'Create the ~/.config/nvim directory'
   file:
-    path: '{{ home_directory }}/.vim'
+    path: '{{ home_directory }}/.config/nvim'
     owner: 'marvin'
     group: 'marvin'
     mode: '0700'
-    state: directory
+    state: 'directory'
 
-- name: 'Create the ~/.vim/bundle directory'
-  file:
-    path: '{{ home_directory }}/.vim/bundle'
-    owner: 'marvin'
-    group: 'marvin'
-    mode: '0700'
-    state: directory
-
-- name: 'Clone a copy of Vundle'
-  git:
-    repo: 'https://github.com/gmarik/Vundle.vim.git'
-    dest: '{{ home_directory }}/.vim/bundle/Vundle.vim'
-    force: yes
-    update: yes
-
-- name: 'Put the vimrc file in place'
+- name: 'Put the neovim init.vim file in place'
   copy:
-    src: 'vimrc'
-    dest: "{{ home_directory }}/.vimrc"
+    src: 'init.vim'
+    dest: "{{ home_directory }}/.config/nvim/init.vim"
     owner: 'marvin'
     group: 'marvin'
     mode: '0644'
 
-- name: 'Install the Vundle plugins'
-  shell: vim +PluginInstall +qall > /dev/null
-  changed_when: False
+- name: 'Create the ~/.local/share/nvim/site/autoload directory'
+  file:
+    path: '{{ home_directory }}/.local/share/nvim/site/autoload'
+    state: 'directory'
+    mode: '0755'
+
+- name: 'Check to see if vim-plug has already been downloaded'
+  stat:
+    path: '{{ home_directory }}/.local/share/nvim/site/autoload/plug.vim'
+  register: 'vim_plug'
+
+- name: 'Download vim-plug'
+  get_url:
+    url: 'https://raw.githubusercontent.com/junegunn/vim-plug/d16273e07231260e02412625f98651bc6ceebb56/plug.vim'
+    dest: '{{ home_directory }}/.local/share/nvim/site/autoload/plug.vim'
+    mode: '0755'
+  when: 'vim_plug.stat.exists == False'
+
+- name: 'Install the vim-plug plugins'
+  shell: nvim -es -u ~/.config/nvim/init.vim -i NONE -c "PlugInstall" -c "qa"
+  when: 'vim_plug.stat.exists == False'

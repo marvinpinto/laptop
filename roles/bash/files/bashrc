@@ -31,8 +31,8 @@ fi
 # Bash Exports
 #***************
 
-# Make vim the default editor
-export EDITOR="vim"
+# Make nvim the default editor
+export EDITOR="nvim"
 
 # Larger bash history
 export HISTSIZE=2000
@@ -122,6 +122,9 @@ alias op-logout='op signout && unset "${!OP_SESSION@}"'
 alias rscp='rsync -aP'
 alias rsmv='rsync -aP --remove-source-files'
 
+# Alias vi and vim to nvim
+alias vi="nvim"
+alias vim="nvim"
 
 #************
 # GPG agent
