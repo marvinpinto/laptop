@@ -70,7 +70,7 @@
         - 'dl_google_com_linux_chrome_deb.list'
         - 'security_ubuntu_com_ubuntu.list'
         - 'download_virtualbox_org_virtualbox_debian.list'
-        - 'apt_dockerproject_org_repo.list'
+        - 'download_docker_com_linux_ubuntu.list'
         - 'debian_sur5r_net_i3.list'
         - 'packagecloud_io_github_git_lfs_ubuntu.list'
         - 'ppa_yubico_stable_{{ ansible_distribution_release }}.list'

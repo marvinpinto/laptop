@@ -4,7 +4,6 @@
 - include: nvidia.yml
 - include: programs.yml
 - include: i3wm.yml
-- include: vscode.yml
 - include: rofi.yml
 - include: ranger.yml
 - include: google_chrome.yml
