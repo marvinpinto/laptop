@@ -18,7 +18,7 @@ i3-msg "workspace ${WORKSPACE_NAME};"
 sleep ${SLEEP_DURATION}
 i3-msg 'append_layout ~/.i3/dev-layout.json'
 
-for i in {1..7}
+for i in {1..4}
 do
   sleep ${SLEEP_DURATION}
   i3-msg exec "gnome-terminal --working-directory=${HOME}/projects/${WORKSPACE_NAME}"
@@ -30,5 +30,11 @@ do
   xdotool key KP_Enter
   sleep ${SLEEP_DURATION}
 done
+
+i3-msg exec "gnome-terminal --working-directory=${HOME}/projects/${WORKSPACE_NAME}"
+sleep ${SLEEP_DURATION}
+xdotool type "clear"
+xdotool key KP_Enter
+sleep ${SLEEP_DURATION}
 
 notify-send -i info -u normal -t 5000 -- 'Layout generation complete'

@@ -6,13 +6,12 @@
   dc = diff --cached
   ci = commit -v
   cis = commit -v -S -s
-  l = log --graph --pretty=format:\"%C(yellow)%h %Creset%C(cyan)%G?%Creset %C(green)%ae%Creset %<(80,trunc)%s\"
+  l = log --color --graph --pretty=format:\"%C(yellow)%h %Creset%C(cyan)%G?%Creset %C(green)%ae%Creset %<(80,trunc)%s\"
   st = status -sb
   sho = show --show-signature
+  d = diff
   # starting from the most recent, gpg-sign all commits upto and including $1
   signall = "!f() { git rebase --exec 'git commit --amend --no-edit -S -s' $1; }; f"
-  # Show the diff between the latest commit and the current state
-  d = !"git diff-index --quiet HEAD -- || git --no-pager diff --color --patch-with-stat | diff-highlight"
   # Clone a repository including all submodules
   cl = clone --recursive
   # Show verbose output about tags, branches or remotes
@@ -21,16 +20,6 @@
   remotes = remote -v
   # Use fzf to choose the SHA to interactively rebase onto
   reb = !git rebase -i --autostash --autosquash $(git log --color --oneline | fzf --ansi | cut -d ' ' -f1)^
-  # Find branches containing commit
-  fb = "!f() { git branch -a --contains $1; }; f"
-  # Find tags containing commit
-  ft = "!f() { git describe --always --contains $1; }; f"
-  # Find commits by source code
-  fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
-  # Find commits by commit message
-  fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
-  # Restore a deleted file
-  restore = "!f() { git checkout $(git rev-list -n 1 HEAD -- $1)~1 -- $(git diff --name-status $(git rev-list -n 1 HEAD -- $1)~1 | grep '^D' | cut -f 2); }; f"
   # Delete all local branches that have been merged into master
   cleanup = "!git branch --merged | grep  -v '\\*\\|master' | xargs -n 1 git branch -d"
   # Special grep -- include untracked files, case insensitive
@@ -68,25 +57,11 @@
   # This cache is meant to speed up commands that involve determining untracked
   # files such as git status.
   untrackedCache = true
-  # Use nvim as the default pager
-  pager = "nvim -R"
-
-[pager]
-  # Use the diff-highlight script to emphasize the changed parts of a line
-  # https://github.com/blog/2188-git-2-9-has-been-released
-  log = diff-highlight | less
-  show = diff-highlight | less
-  diff = diff-highlight | less
 
 [diff]
   # Enable the experimental compaction heuristic option
   # https://github.com/git/git/commit/5580b271af518bae30148edfd42cc8459d8da384
   compactionHeuristic = true
-
-[interactive]
-  # Use the diff-highlight script to emphasize the changed parts of a line
-  # https://github.com/blog/2188-git-2-9-has-been-released
-  diffFilter = diff-highlight
 
 [color]
   # Use colors in Git commands that are capable of colored output when
@@ -96,6 +71,7 @@
   current = yellow reverse
   local = yellow
   remote = green
+
 [color "diff"]
   meta = yellow bold
   frag = magenta bold

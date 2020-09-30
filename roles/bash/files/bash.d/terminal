@@ -9,6 +9,6 @@ gr() {
 
   if [[ -n $file ]]
   then
-     view $file +$line
+     nvim $file +$line
   fi
 }
