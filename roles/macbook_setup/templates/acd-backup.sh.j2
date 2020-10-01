@@ -46,6 +46,9 @@ rm -f ${TIMESTAMP}
 
 case "$1" in
   up)
+    # Prepare the firefox profile directory for backup
+    tar -cpzf ${BACKUP_LOCAL}/firefox-profile-backup.tar.gz ${HOME}/.mozilla
+
     # Sync all the upstream files using the local files as the source
     ${RCLONE} \
       --filter-from ${RCLONE_FILTERS} \
@@ -79,6 +82,9 @@ case "$1" in
     if [ $? -eq 0 ]; then
       info "Remote to local sync completed successfully"
       echo `date` > ${TIMESTAMP}
+
+      # Restore the firefox profile directory from the backup
+      tar -xpzf ${BACKUP_LOCAL}/firefox-profile-backup.tar.gz --numeric-owner
     else
       warn "Error completing backup"
     fi

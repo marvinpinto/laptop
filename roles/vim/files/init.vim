@@ -10,6 +10,13 @@ set clipboard+=unnamedplus
 " Do not attempt to rename the window
 set notitle
 
+" Convert tabs to spaces
+set expandtab
+
+" Make tabs as wide as two spaces
+set tabstop=2
+set shiftwidth=2
+
 " Load all the vim-plug plugins
 set rtp+=/usr/local/bin/fzf
 call plug#begin('~/.local/share/nvim/site/autoload')
