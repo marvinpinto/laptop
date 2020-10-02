@@ -39,3 +39,16 @@
   apt:
     name: 'git-lfs'
     state: latest
+
+- name: 'Add the diff-so-fancy ubuntu repo'
+  become: true
+  apt_repository:
+    repo: 'ppa:aos1/diff-so-fancy'
+    state: 'present'
+    update_cache: 'yes'
+
+- name: 'Install diff-so-fancy'
+  become: true
+  apt:
+    name: 'diff-so-fancy'
+    state: 'present'
