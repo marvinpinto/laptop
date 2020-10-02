@@ -142,6 +142,9 @@ nmap <leader>l :BLines<cr>
 " Bring up file explorer
 nmap <space> :NERDTreeToggle<CR>
 
+" Recursively search file contents
+nmap <leader>a :Ag<cr>
+
 " Better tab display & handling
 nnoremap th :tabprev<CR>
 nnoremap tl :tabnext<CR>

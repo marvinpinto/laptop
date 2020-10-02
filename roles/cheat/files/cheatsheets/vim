@@ -5,14 +5,13 @@ syntax: bash
 # Re-source vim config, without restarting (this isn't perfect)
 ,sv
 
-# Use fzf to dynamically find & open files in the cirrent directory
-,f
-
-# Bring up file explorer (normal mode)
-space
-
 # Reset the syntax highlighting in the whole file
 F12
+
+# File management
+space  # Bring up file explorer (from normal mode)
+,f  # Dynamically find & open files in the current directory
+,a  # Recursively search file contents
 
 # Vim tabs
 tn  # create a new tab
