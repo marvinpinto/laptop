@@ -10,8 +10,8 @@ F12
 
 # File management
 space  # Bring up file explorer (from normal mode)
-,f  # Dynamically find & open files in the current directory
-,a  # Recursively search file contents
+,g  # Recursively search for contents starting from the current directory
+,f  # Highlight the current file (in the file explorer)
 
 # Vim tabs
 tn  # create a new tab
