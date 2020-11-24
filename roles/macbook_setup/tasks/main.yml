@@ -31,6 +31,7 @@
 - include: usbmount.yml
 - include: ergodox.yml
 - include: aws-vault.yml
+- include: mkcert.yml
 - include: rng_tools.yml
 - include: docker_setup.yml
 - include: yubikey.yml

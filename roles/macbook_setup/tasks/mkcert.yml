@@ -1,0 +1,21 @@
+---
+- name: 'Needed utilities for mkcert'
+  become: true
+  apt:
+    name:
+      - 'libnss3-tools'
+    state: 'present'
+
+- name: 'Check to see if the mkcert binary exists'
+  become: true
+  stat:
+    path: '/usr/local/bin/mkcert'
+  register: mkcert_binary
+
+- name: 'Download the mkcert binary'
+  become: true
+  get_url:
+    url: 'https://github.com/FiloSottile/mkcert/releases/download/{{ mkcert_version }}/mkcert-{{ mkcert_version }}-linux-amd64'
+    dest: '/usr/local/bin/mkcert'
+    mode: '0755'
+  when: 'mkcert_binary.stat.exists == False'

@@ -3,3 +3,6 @@
 
 # Exclude any files/directories starting with '.dropbox'
 - .dropbox**
+
+# Exclude temp STS tokens
+- aws-vault-config/keys/sts.GetSessionToken**
