@@ -1,8 +1,7 @@
 ---
-virtualbox_major_version: '5'
-virtualbox_minor_version: '2'
-virtualbox_patch_version: '0'
-virtualbox_build_id: '118431'
+virtualbox_major_version: '6'
+virtualbox_minor_version: '1'
+virtualbox_patch_version: '16'
 plexamp_version: '1.1.0'
 digikam_version: '6.0.0'
 kdenlive_version: '19.04.2f'
