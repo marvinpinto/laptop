@@ -153,6 +153,7 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_section_c = airline#section#create(['%t'])
 let g:airline#extensions#nerdtree_statusline = 0
 let g:airline#extensions#tabline#show_splits = 0
+let g:airline#extensions#tabline#tab_nr_type = 1
 
 " vim-airline font symbols
 let g:airline_powerline_fonts = 1
