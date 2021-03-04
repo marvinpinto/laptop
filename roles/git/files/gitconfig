@@ -58,6 +58,7 @@
   # files such as git status.
   untrackedCache = true
   pager = "diff-so-fancy | less --tabs=4 -RFX"
+  autocrlf = true
 
 [diff]
   # Enable the experimental compaction heuristic option
