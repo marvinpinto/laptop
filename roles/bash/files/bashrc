@@ -460,7 +460,7 @@ function docker-gpg() {
     --name gpg \
     -v "/media/usb0:/media/usb" \
     -w /media/usb \
-    "quay.io/marvin/kitchensink:$(lsb_release --release --short)"
+    "ghcr.io/marvinpinto/kitchensink:$(lsb_release --release --short)-latest"
 }
 
 # Bash function to export the environment variables in the specified .env file
