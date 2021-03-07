@@ -2,7 +2,7 @@
 - name: 'Install the needed sur5r-keyring package'
   become: true
   apt:
-    deb: 'https://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2020.02.03_all.deb'
+    deb: 'https://debian.sur5r.net/i3/pool/main/s/sur5r-keyring/sur5r-keyring_2021.02.02_all.deb'
   notify: 'macbook_setup-apt-get-update'
 
 - name: 'Add the i3wm ubuntu repo'

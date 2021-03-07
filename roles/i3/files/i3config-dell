@@ -50,7 +50,7 @@ bindsym $mod+Shift+l move right
 bindsym $mod+o focus output left
 
 # split in horizontal orientation
-bindsym $mod+quotedbl split h
+bindsym $mod+semicolon split h
 
 # split in vertical orientation
 bindsym $mod+v split v
@@ -81,13 +81,11 @@ workspace "other" output DVI-I-1
 # Workspaces mapped to the primary monitor
 workspace "misc" output DP-0
 
-# switch to the previously used workspace
-bindsym $mod+b workspace back_and_forth
-
 # Volume controls for the Dell T1700
 bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.i3/pavolume.sh --up
 bindsym XF86AudioLowerVolume exec --no-startup-id ~/.i3/pavolume.sh --down
 bindsym XF86AudioMute exec --no-startup-id ~/.i3/pavolume.sh --togmute
+bindsym XF86Calculator exec --no-startup-id gnome-calculator
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -141,7 +139,6 @@ for_window [class="Plexamp"] floating enable, border normal, move to scratchpad
 # Ensure that the keybase window always stays in floating mode
 exec_always --no-startup-id /usr/bin/run_keybase
 for_window [class="Keybase"] floating enable, border normal, move to scratchpad
-bindsym $mod+c [class="Keybase"] scratchpad show
 
 # Ensure that the slack window always stays in floating mode
 exec_always --no-startup-id ~/.i3/startup-app.sh "slack" "slack"
@@ -151,12 +148,20 @@ for_window [class="Slack"] floating enable, border normal, move to scratchpad
 exec_always --no-startup-id gnome-terminal --geometry "110x35" -e "bash -l -c 'title irssi; im'"
 for_window [class="Gnome-terminal" title="irssi"] floating enable, border normal, move to scratchpad
 
-# Start a bunch of floating throwaway terminals, as needed
-bindsym $mod+n exec --no-startup-id "gnome-terminal --geometry '110x35' -e \\"bash -l -c 'title throwaway; bash'\\""
-for_window [class="Gnome-terminal" title="throwaway"] floating enable, border normal
+# Start up a floating terminal & leave it in the scratchpad
+exec_always --no-startup-id gnome-terminal --role "scratch-terminal" --geometry "110x35"
+for_window [window_role="scratch-terminal"] floating enable, border normal, move to scratchpad
+
+# Start up a floating ergodox help reference & leave it in the scratchpad
+exec_always --no-startup-id xpdf -title "xpdf-ergodox-cheatsheet" -geometry "1024x650" -z "100" ~/ergodox-layout.pdf
+for_window [title="xpdf-ergodox-cheatsheet"] floating enable, border normal, move to scratchpad
 
 # Scratchpad shortcuts
 bindsym $mod+minus scratchpad show
+bindsym $alt+t [window_role="scratch-terminal"] scratchpad show
+bindsym $alt+k [class="Keybase"] scratchpad show
+bindsym $alt+s [class="Slack"] scratchpad show
+bindsym $alt+e [title="xpdf-ergodox-cheatsheet"] scratchpad show
 
 # Ensure that the following windows always start in floating mode
 for_window [class="Pavucontrol"] floating enable, border normal

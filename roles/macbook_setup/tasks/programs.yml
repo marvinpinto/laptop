@@ -30,6 +30,7 @@
       - 'default-jre'
       - 'silversearcher-ag'
       - 'fonts-powerline'
+      - 'xpdf'
     state: 'present'
 
 - name: "Remove a few things I don't care for"
