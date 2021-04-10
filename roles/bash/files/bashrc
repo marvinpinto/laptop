@@ -131,6 +131,8 @@ alias vim="nvim"
 #************
 if [ "$(lsb_release --release --short)" == "16.04" ]; then
   export SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh
+elif [ "$(lsb_release --release --short)" == "20.04" ]; then
+  export SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh
 elif [ -f "${HOME}/.gnupg/gpg-agent-info" ]; then
   . "${HOME}/.gnupg/gpg-agent-info"
   export GPG_AGENT_INFO

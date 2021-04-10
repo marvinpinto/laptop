@@ -42,7 +42,7 @@ function sink() {
       --security-opt=seccomp:unconfined \
       $dockerargs \
       -w $workdir \
-      "ghcr.io/marvinpinto/kitchensink:$(lsb_release --release --short)-latest")
+      "ghcr.io/marvinpinto/kitchensink:20.04-latest")
   fi
   docker exec -it $dockerid /bin/bash
 }
@@ -51,7 +51,7 @@ function _sink_completion() {
   COMPREPLY=()
   local cur="${COMP_WORDS[COMP_CWORD]}"
   local prev="${COMP_WORDS[COMP_CWORD-1]}"
-  local words=$(docker ps --filter "ancestor=ghcr.io/marvinpinto/kitchensink:$(lsb_release --release --short)-latest" --format "{{.Names}}" | tr '\n' ' ' | xargs)
+  local words=$(docker ps --filter "ancestor=ghcr.io/marvinpinto/kitchensink:20.04-latest" --format "{{.Names}}" | tr '\n' ' ' | xargs)
   case $COMP_CWORD in
     1)
       COMPREPLY=( $(compgen -W "${words}" -- "${cur}") )
