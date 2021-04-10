@@ -14,8 +14,8 @@
       account_groups: 'docker'
 
     - role: 'sshd'
-      sshd_enabled: 'no'
-      sshd_state: 'stopped'
+      sshd_enabled: 'yes'
+      sshd_state: 'started'
 
     - 'sudoers'
     - 'verbose_boot'

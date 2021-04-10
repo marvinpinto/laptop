@@ -49,14 +49,14 @@ bindsym $mod+Shift+l move right
 # change focus to the other monitor
 bindsym $mod+o focus output left
 
+# Move the current workspace to another monitor
+bindsym $mod+Shift+o move workspace to output left
+
 # split in horizontal orientation
 bindsym $mod+semicolon split h
 
 # split in vertical orientation
 bindsym $mod+v split v
-
-# enter fullscreen mode for the focused container
-bindsym $mod+f fullscreen
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
@@ -64,10 +64,7 @@ bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
-bindsym $mod+Shift+space floating toggle
-
-# change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
+bindsym $mod+Shift+f floating toggle
 
 # focus on the parent container
 bindsym $mod+a focus parent

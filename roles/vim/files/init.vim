@@ -134,15 +134,8 @@ let g:vim_markdown_frontmatter = 1
 autocmd FileType markdown highlight mkdLink guifg=#c9d05c ctermfg=185 guibg=NONE ctermbg=NONE gui=underline cterm=underline
 
 " Bring up file explorer & highlight the current file
-nmap <space> :NERDTreeToggle<CR>
+nmap <leader>g :NERDTreeToggle<CR>
 nmap <leader>f :NERDTreeFind<CR>
-
-" Recursively search file contents
-command! -bang -nargs=* GGrep
-  \ call fzf#vim#grep(
-  \   'git grep -i --line-number '.shellescape(<q-args>).' -- '.expand('%:p:h').'/*', 0,
-  \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
-nmap <leader>g :GGrep<cr>
 
 " Better tab display & handling
 nnoremap th :tabprev<CR>

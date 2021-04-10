@@ -13,10 +13,12 @@ alt + s          # bring up the slack window
 # Windows & focus
 mod + <h,j,k,l>         # focus left,down,up,right
 mod + shift + <h,j,k,l> # move focused window left,down,up,right
-mod + o                 # focus on other monitor
 mod + space             # toggle focus between tiling/floating windows
 mod + r                 # resize window (use h,j,k,l)
 mod + shift + q         # kill window
+mod + shift + f         # toggle the tiling/floating mode on a window
+mod + o                 # focus on other monitor
+mod + shift + o         # move the focued window to the other monitor
 
 # Splits
 mod + ;  # horizontal split

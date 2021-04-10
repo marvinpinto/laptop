@@ -6,7 +6,7 @@ alias g="git"
 # Use system git completions for the 'g' alias
 if [ -e "/usr/share/bash-completion/completions/git" ]; then
   source /usr/share/bash-completion/completions/git
-  __git_complete g _git
+  __git_complete g git
 fi
 
 alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
