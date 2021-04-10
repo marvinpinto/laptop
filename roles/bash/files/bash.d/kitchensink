@@ -35,7 +35,6 @@ function sink() {
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       -v /media/usb:/media/usb \
       -v /usr/local/bin:/usr/local/sbin \
-      -v /home/marvin/.op:/root/.op \
       -v /home/marvin/.awsvault:/root/.awsvault \
       -v /home/marvin/.aws:/root/.aws \
       -v /etc/bash_completion.d:/etc/bash_completion.d \

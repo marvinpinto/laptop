@@ -114,10 +114,6 @@ alias yoloupdate="sudo apt-get clean && sudo apt-get autoremove -y --purge && su
 # Alias docker-compose to dc
 alias dc="docker-compose"
 
-# 1password helpers
-alias op-signin='eval $(op signin)'
-alias op-logout='op signout && unset "${!OP_SESSION@}"'
-
 # Copying/moving a large number of files (with progress)
 alias rscp='rsync -aP'
 alias rsmv='rsync -aP --remove-source-files'
