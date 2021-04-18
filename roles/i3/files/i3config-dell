@@ -127,7 +127,6 @@ exec_always --no-startup-id /usr/bin/xset r rate 250 50
 exec_always --no-startup-id ~/.i3/gpg-agent.sh
 exec_always --no-startup-id ~/.i3/fastmail_unread_count.py &
 exec_always --no-startup-id xrandr --output DP-0 --primary --rotate normal --output DVI-I-1 --right-of DP-0 --rotate left --brightness 0.8
-exec_always --no-startup-id ~/.i3/startup-app.sh "blueman-applet" "blueman-applet"
 
 # Start plexamp and move it to the default scratchpad
 exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/local/etc/plexamp/Plexamp.AppImage" "plexamp"
@@ -141,16 +140,13 @@ for_window [class="Keybase"] floating enable, border normal, move to scratchpad
 exec_always --no-startup-id ~/.i3/startup-app.sh "slack" "slack"
 for_window [class="Slack"] floating enable, border normal, move to scratchpad
 
-# Ensure that the irssi window always stays in floating mode
-exec_always --no-startup-id gnome-terminal --geometry "110x35" -e "bash -l -c 'title irssi; im'"
-for_window [class="Gnome-terminal" title="irssi"] floating enable, border normal, move to scratchpad
-
 # Start up a floating terminal & leave it in the scratchpad
-exec_always --no-startup-id gnome-terminal --role "scratch-terminal" --geometry "110x35"
+exec_always --no-startup-id ~/.i3/startup-app.sh "/usr/lib/gnome-terminal/gnome-terminal-server --app-id i3wm.startup" "gnome-terminal-server.*i3wm.startup"
+exec_always --no-startup-id gnome-terminal --app-id i3wm.startup --role "scratch-terminal" --geometry "110x35"
 for_window [window_role="scratch-terminal"] floating enable, border normal, move to scratchpad
 
 # Start up a floating ergodox help reference & leave it in the scratchpad
-exec_always --no-startup-id xpdf -title "xpdf-ergodox-cheatsheet" -geometry "1024x650" -z "100" ~/ergodox-layout.pdf
+exec_always --no-startup-id ~/.i3/startup-app.sh "xpdf -title 'xpdf-ergodox-cheatsheet' -geometry '1024x650' -z '100' ~/ergodox-layout.pdf" "xpdf-ergodox-cheatsheet"
 for_window [title="xpdf-ergodox-cheatsheet"] floating enable, border normal, move to scratchpad
 
 # Scratchpad shortcuts

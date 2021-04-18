@@ -47,7 +47,7 @@
     - name: 'Use UTF-8'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
       key: 'encoding'
-      value: 'UTF-8'
+      value: "'UTF-8'"
 
     - name: 'Re-wrap the terminal on window resize'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
@@ -57,7 +57,7 @@
     - name: 'Allow a set number of lines in scrollback'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
       key: 'scrollback-lines'
-      value: '8192'
+      value: "'8292'"
 
     - name: 'Disable unlimited scrollback'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
@@ -77,17 +77,17 @@
     - name: 'Do not display the scrollbar'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
       key: 'scrollbar-policy'
-      value: 'never'
+      value: "'never'"
 
     - name: 'Exit the terminal when a command exits'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
       key: 'exit-action'
-      value: 'close'
+      value: "'close'"
 
     - name: 'Disable cursor blinking'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
       key: 'cursor-blink-mode'
-      value: 'off'
+      value: "'off'"
 
     - name: 'Disable the audible bell'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
@@ -114,7 +114,7 @@
     - name: 'Set the bold text color'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'
       key: 'bold-color'
-      value: '"#000000"'
+      value: '"#d0d0d0"'
 
     - name: 'Bold text should not be the same color as regular text'
       schema: 'org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:{{default_gnome_terminal_profile.stdout}}/'

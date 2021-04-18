@@ -6,7 +6,7 @@ I3LOCK='/usr/bin/i3lock --color 333333'
 if [ -z $@ ]; then
   function gen_options()
   {
-    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Create Development Workspace","2FA Tokens","Emoji Picker","Switch Bluetooth Device")
+    option_list=("Lock Screen","Logout","Suspend Computer","Hibernate Computer","Reboot Computer","Shutdown Computer","Enable Screensaver","Disable Screensaver","Toggle Do Not Disturb (DND)","Initiate Backup","Check Email","Create Development Workspace","2FA Tokens","Emoji Picker","Switch Bluetooth Device","Development Chrome","Reset Workspace")
     echo ${option_list[@]} | tr ',' '\n' | sort
   }
 
@@ -63,6 +63,12 @@ else
       ;;
     'Switch Bluetooth Device')
       coproc (/usr/local/bin/switch-bluetooth-device)
+      ;;
+    'Development Chrome')
+      coproc (nice -n 19 chromium-browser --disable-gpu --disable-gpu-compositing --disable-sync --auto-open-devtools-for-tabs)
+      ;;
+    'Reset Workspace')
+      coproc (/usr/bin/xset r rate 250 50)
       ;;
     *)
       echo "Invalid option \"$OPTION\""

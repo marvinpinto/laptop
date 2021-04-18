@@ -31,6 +31,7 @@
       - 'silversearcher-ag'
       - 'fonts-powerline'
       - 'xpdf'
+      - 'cpulimit'
     state: 'present'
 
 - name: "Remove a few things I don't care for"

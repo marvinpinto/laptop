@@ -38,3 +38,13 @@
       schema: 'org.gnome.desktop.background'
       key: 'show-desktop-icons'
       value: 'false'
+
+    - role: 'set_gsettings_value'
+      schema: 'org.gnome.desktop.peripherals.keyboard'
+      key: 'repeat-interval'
+      value: "20"
+
+    - role: 'set_gsettings_value'
+      schema: 'org.gnome.desktop.peripherals.keyboard'
+      key: 'delay'
+      value: "250"
