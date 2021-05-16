@@ -4,8 +4,8 @@ set encoding=utf-8
 " Enable line numbers
 set number
 
-" Use the OS clipboard by default (on versions compiled with `+clipboard`)
-set clipboard+=unnamedplus
+" " Use the OS clipboard by default (on versions compiled with `+clipboard`)
+" set clipboard+=unnamedplus
 
 " Do not attempt to rename the window
 set notitle
@@ -20,17 +20,12 @@ set shiftwidth=2
 " Load all the vim-plug plugins
 set rtp+=/usr/local/bin/fzf
 call plug#begin('~/.local/share/nvim/site/autoload')
-Plug 'tpope/vim-fugitive'
 Plug 'jacoborus/tender.vim'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-commentary'
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
 Plug 'gcmt/taboo.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'preservim/nerdtree'
-Plug 'junegunn/goyo.vim', {'for': 'markdown'}
-Plug 'junegunn/limelight.vim', {'for': 'markdown'}
 Plug 'docker/docker', {'for': 'dockerfile', 'rtp': '/contrib/syntax/vim/'}
 Plug 'ledger/vim-ledger', {'for': 'ledger'}
 Plug 'leafgarland/typescript-vim', {'for': 'typescript'}
@@ -93,6 +88,12 @@ set shortmess=atI
 
 " Start scrolling three lines before the horizontal window border
 set scrolloff=3
+
+" shortcuts to interact with the other clipboards
+noremap <leader>y "+y
+noremap <leader>p "+p
+noremap <leader>Y "*y
+noremap <leader>P "*p
 
 " Set some filetypes depending on the file extension
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
@@ -173,20 +174,12 @@ let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = ''
 let g:airline_symbols.linenr = ''
 
+" vim-airline performance tweaks
+let g:airline_highlighting_cache = 1
+
 " Reload neovim config with ,sv
 nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " Control where new vertical & horizontal windows are split
 set splitbelow
 set splitright
-
-" Terminal creation
-nnoremap tb :split term://bash<CR>
-nnoremap tr :vsplit term://bash<CR>
-
-" Improved writing (hooks for Goyo)
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
-
-" Use :g as an alias for :Git
-cnoreabbrev g Git
